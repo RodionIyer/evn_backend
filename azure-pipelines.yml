@@ -1,0 +1,23 @@
+# ICT PLATFORM
+# Build your Java project and run tests with Apache Maven.
+# Author: Hoangl
+
+trigger:
+  branches:
+    include:
+    - dev
+    - staging
+    - releases/*
+    exclude:
+    - releases/old*
+
+pool:
+  name: AgentPool
+
+variables:
+- group: k8s-ci-variable
+
+steps:
+- script: |
+   ./mvnw compile jib:build -Djib.to.image=$(REGISTRY)/$(ENV)/$(IMAGE):$(TAG) -Djib.container.entrypoint=/bin/sh,/entrypoint.sh -X -DsendCredentialsOverHttp=false -Djib.allowInsecureRegistries=true
+  displayName: 'Build Image'
