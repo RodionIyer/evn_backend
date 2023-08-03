@@ -80,7 +80,5 @@ local.properties
 *.class
 *.class
 *.lst
-src/main/resources/application.properties
-src/main/resources/application.properties
 *.class
-src/main/resources/application.properties
+
