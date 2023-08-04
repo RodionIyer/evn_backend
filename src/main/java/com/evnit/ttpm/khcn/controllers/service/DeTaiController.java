@@ -46,9 +46,9 @@ public class DeTaiController {
                     if (detai.getKeHoach() != null && detai.getKeHoach().getMaKeHoach() != null) {
                         detai.setMaKeHoach(detai.getKeHoach().getMaKeHoach());
                     }
-//                    detai.setNguoiTao(userId);
-//                    detai.setNguoiSua(userId);
-//                    detai.setNgayTao(new Date());
+                    detai.setNguoiTao(userId);
+                    detai.setNguoiSua(userId);
+                    detai.setNgayTao(new Date());
                     //break;
                 } else if ("TOKEN_LINK".equals(obj.getName())) {
                     token = obj.getValue().toString();
