@@ -135,8 +135,12 @@ public class ServiceController {
             case "FC95C3F7-942F-4C7E-88D7-46E12BFE9185": //xuat bao cao
                 // String orgId= SecurityUtils.getPrincipal().getORGID();
                 return excelController.exec_FC95C3F7_942F_4C7E_88D7_46E12BFE9185(execServiceRequest);
+
                 //Insert Ke hoach
 
+            case "8033B6AB-4918-42DD-8A0B-CDA6D22ACAAE": // list mã Kế hoạch
+                // String orgId= SecurityUtils.getPrincipal().getORGID();
+                return keHoachController.ChiTietKeHoachNhieuMaKeHoach(execServiceRequest);
             case "404ABE65-3B92-448F-A8F0-9543503AE1E3": //them ke hoach
                 // String orgId= SecurityUtils.getPrincipal().getORGID();
                 return keHoachController.ThemSua(execServiceRequest);
