@@ -231,6 +231,16 @@ public class KeHoachServiceImpl implements KeHoachService {
     }
 
     @Override
+    public List<KeHoachResp> KeHoachByListMa(List<String> maKeHoach) throws Exception{
+        String queryString = "SELECT [MA_KE_HOACH] maKeHoach,[TEN_KE_HOACH] name,[NAM] nam,[MA_DON_VI] maDonVi,[MA_TRANG_THAI] maTrangThai,[NGUOI_TAO] nguoiTao,[NGAY_TAO] ngayTao,[NGUOI_SUA] nguoiSua,[TONG_HOP] tongHop," +
+                "[Y_KIEN_NGUOI_PHE_DUYET] yKienNguoiPheDuyet,[TEN_BANG_TONG_HOP] tenBangTongHop,[KY_TONG_HOP] kyTongHop,[CAP_TAO] capTao FROM [dbo].[KH_KE_HOACH] WHERE MA_KE_HOACH IN(:MA_KE_HOACH)";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("MA_KE_HOACH",maKeHoach);
+        List<KeHoachResp> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(KeHoachResp.class));
+        return listObj;
+    }
+
+    @Override
     public List<KeHoachResp> ListKeHoach(String nam,String maTrangThai,String page,String pageSize,String orgId) throws Exception{
         String queryString = "SELECT COUNT(kh.NGAY_TAO) OVER() as TotalPage,kh.[MA_KE_HOACH] maKeHoach,kh.[TEN_KE_HOACH] name,kh.[NAM] nam,kh.[MA_DON_VI] maDonVi,kh.[MA_TRANG_THAI] maTrangThai,kh.[NGUOI_TAO] nguoiTao,kh.[NGAY_TAO] ngayTao,kh.[NGUOI_SUA] nguoiSua,kh.[TONG_HOP] tongHop," +
                 "kh.[Y_KIEN_NGUOI_PHE_DUYET] yKienNguoiPheDuyet,kh.[TEN_BANG_TONG_HOP] tenBangTongHop,kh.[KY_TONG_HOP] kyTongHop,kh.[CAP_TAO] capTao  ";

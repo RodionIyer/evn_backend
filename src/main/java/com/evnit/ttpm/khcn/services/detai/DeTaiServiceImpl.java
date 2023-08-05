@@ -170,8 +170,9 @@ public class DeTaiServiceImpl implements DeTaiService {
         }
         RoleResp role = CheckQuyen(userId);
         if(role != null && role.roleCode.equals("KHCN_ROLE_CANBO_KHCN")){
-            queryString +=" AND dt.MA_DON_VI_CHU_TRI =:ORGID";
+            queryString +=" AND (dt.MA_DON_VI_CHU_TRI =:ORGID OR dt.NGUOI_TAO = :USERID OR NGUOI_SUA = :USERID)";
             parameters.addValue("ORGID", orgId);
+            parameters.addValue("USERID", userId);
         }else{
             queryString += " AND (dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_HOI_DONG hd, DM_NGUOI_THUC_HIEN th \n" +
                     " WHERE hd.MA_NGUOI_THUC_HIEN = th.MA_NGUOI_THUC_HIEN \n" +

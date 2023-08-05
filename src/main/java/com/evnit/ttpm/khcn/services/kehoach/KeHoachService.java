@@ -25,4 +25,5 @@ public interface KeHoachService {
     int EmailSend(String maKeHoach,String ghiChu,Integer nam,String maTrangThai,String nguoiTao) throws Exception;
     List<LichSuKeHoach> ListLichsuKeHoach(String maKeHoach) throws Exception;
     List<DanhSachMau> ListMauByMaCha(String maCha) throws Exception;
+    List<KeHoachResp> KeHoachByListMa(List<String> maKeHoach) throws Exception;
 }
