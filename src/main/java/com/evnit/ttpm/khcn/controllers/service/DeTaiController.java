@@ -42,7 +42,8 @@ public class DeTaiController {
             for (Api_Service_Input obj : execServiceRequest.getParameters()) {
                 if ("DE_TAI".equals(obj.getName())) {
                     Gson gsons = new GsonBuilder().serializeNulls().create();
-                    detai = gsons.fromJson(obj.getValue().toString(), DeTaiReq.class);
+                    String objectJson = obj.getValue().toString().replace("\"thuKyDeTaiInfo\":\"\"", "\"thuKyDeTaiInfo\":{}");
+                    detai = gsons.fromJson(objectJson, DeTaiReq.class);
                     if (detai.getKeHoach() != null && detai.getKeHoach().getMaKeHoach() != null) {
                         detai.setMaKeHoach(detai.getKeHoach().getMaKeHoach());
                     }
