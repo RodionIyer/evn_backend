@@ -42,7 +42,8 @@ public class SangKienController {
             for (Api_Service_Input obj : execServiceRequest.getParameters()) {
                 if ("SANG_KIEN".equals(obj.getName())) {
                     Gson gsons = new GsonBuilder().serializeNulls().create();
-                    sangKien = gsons.fromJson(obj.getValue().toString(), SangKienReq.class);
+                    String objectJson = obj.getValue().toString().replace("\"donViApDungInfo\":\"\"", "\"donViApDungInfo\":{}");
+                    sangKien = gsons.fromJson(objectJson, SangKienReq.class);
 //                    if (sangKien.getMaSangKien() != null) {
 //                        detai.setMaKeHoach(detai.getKeHoach().getMaKeHoach());
 //                    }
@@ -88,7 +89,7 @@ public class SangKienController {
             sangKienService.insertSangKien(sangKien, maSangKien);
             sangKienService.InsertSangKienLichSu(maSangKien, "", sangKien.getMaTrangThai(), "", userId);
         }
-        sangKienService.InsertThanhVien(sangKien.getDanhSachThanhVien(), maSangKien, userId, userId);
+        sangKienService.InsertThanhVien(sangKien.getTacGiaGiaiPhap(), maSangKien, userId, userId);
         List<FileReq> listFile = new ArrayList<>();
         List<String> listFolder = new ArrayList<>();
         if (sangKien != null && sangKien.getListFolderFile() != null && sangKien.getListFolderFile().size() > 0) {
@@ -117,7 +118,8 @@ public class SangKienController {
                 }
             }
         }
-        sangKienService.InsertListFile(sangKien.getListFile(), maSangKien, userId, userId, listFolder);
+        sangKienService.InsertListFile(listFile, maSangKien, userId, userId, listFolder);
+        sangKienService.insertLinhVucNC(sangKien.getLinhVucNghienCuu(), maSangKien, userId, userId);
         return msg;
     }
 
@@ -166,7 +168,7 @@ public class SangKienController {
                 tieude = listTrangThaiTen.get(0).getName() + " " + sangKien.getTenGiaiPhap();
             }
             String nhomNguoiGui = sangKienService.GetMailNguoiThucHien(sangKien.getMaSangKien());
-            if(Util.isNotEmpty(nhomNguoiGui)){
+            if (Util.isNotEmpty(nhomNguoiGui)) {
                 sangKienService.insertSendMail(userId, nhomNguoiGui, sangKien.getNoiDungGuiMail(), "SANGKIEN", tieude);
             }
         }
@@ -390,7 +392,7 @@ public class SangKienController {
                     //break;
                 }
             }
-            List<SangKienResp> listSangKien = sangKienService.ListSangKien(userId, page, pagezise,orgId);
+            List<SangKienResp> listSangKien = sangKienService.ListSangKien(userId, page, pagezise, orgId);
             List<SangKienResp> listSangKienNew = new ArrayList<>();
             if (listSangKien != null && listSangKien.size() > 0) {
                 List<DanhSachChung> listCapDo = sangKienService.ListCapDo();
@@ -728,7 +730,7 @@ public class SangKienController {
 
         if (obj != null && obj.getMaSangKien() != null) {
             List<DanhSachThanhVien> listThanhVien = sangKienService.ListNguoiThucHienByMa(maSangKien);
-            obj.setDanhSachThanhVien(listThanhVien);
+            obj.setTacGiaGiaiPhap(listThanhVien);
 
             List<FileReq> listFile = sangKienService.ListFileByMa(maSangKien);
             List<Folder> listFolderFile = sangKienService.ListFolderFile();
@@ -745,6 +747,8 @@ public class SangKienController {
 
             obj.setListFolderFile(listFolderFileNew);
         }
+        List<String> linhVucNC = sangKienService.ListLinhVucNghienCuuMa(maSangKien);
+        obj.setLinhVucNghienCuu(linhVucNC);
         return obj;
     }
 }

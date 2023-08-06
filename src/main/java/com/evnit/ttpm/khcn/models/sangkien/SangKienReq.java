@@ -2,6 +2,7 @@ package com.evnit.ttpm.khcn.models.sangkien;
 
 import com.evnit.ttpm.khcn.models.detai.DanhSachThanhVien;
 import com.evnit.ttpm.khcn.models.detai.Folder;
+import com.evnit.ttpm.khcn.models.detai.UserResp;
 import com.evnit.ttpm.khcn.models.kehoach.FileReq;
 import lombok.Data;
 
@@ -45,4 +46,6 @@ public class SangKienReq {
     public String thoaThuanChiPhi;
     public String luanGiaiHoiDong;
     public String kienNghiHoiDong;
+    public List<DanhSachThanhVien> tacGiaGiaiPhap;
+    public UserResp donViApDungInfo;
 }

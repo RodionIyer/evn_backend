@@ -34,4 +34,6 @@ public interface SangKienService {
     List<Folder> ListFolderFileThuLao() throws Exception;
     List<Folder> ListFolderFile() throws Exception;
     RoleResp CheckQuyen(String userId) throws Exception;
+    int insertLinhVucNC(List<String> linhVucNghienCuu,String maSangKien,String nguoiTao,String nguoiSua) throws Exception;
+    List<String> ListLinhVucNghienCuuMa(String maSangKien) throws Exception;
 }
