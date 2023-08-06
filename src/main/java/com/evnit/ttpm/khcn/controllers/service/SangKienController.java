@@ -84,6 +84,7 @@ public class SangKienController {
             sangKienService.updateSangKien(sangKien, maSangKien);
             msg = "Cập nhật thành công";
         } else {
+            sangKien.setMaSangKien(maSangKien);
             sangKien.setNguoiSua(userId);
             sangKien.setNguoiTao(userId);
             sangKienService.insertSangKien(sangKien, maSangKien);
