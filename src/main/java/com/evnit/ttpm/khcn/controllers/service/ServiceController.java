@@ -178,6 +178,9 @@ public class ServiceController {
 			 case "395A68D9-587F-4603-9E1D-DCF1987517B4": //danh sách user
                 // String orgId= SecurityUtils.getPrincipal().getORGID();
                 return deTaiController.DanhSachUser(execServiceRequest);
+            case "D5738375-3591-4986-94FC-E523F645A858": //danh sách Hôi Đồng
+                // String orgId= SecurityUtils.getPrincipal().getORGID();
+                return deTaiController.DanhSachHoiDong(execServiceRequest);
 
             case "BDA6825F-9CAB-4363-A093-5A2C7D906AE5": //danh sách lich su
                 // String orgId= SecurityUtils.getPrincipal().getORGID();

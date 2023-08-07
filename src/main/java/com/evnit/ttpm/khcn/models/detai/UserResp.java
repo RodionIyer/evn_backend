@@ -9,6 +9,7 @@ public class UserResp {
     private String userId;
     private String maNhanVien;
     private String orgId;
+    private String orgName;
     private String username;
     private Double nsId;
     private String maHocHam;

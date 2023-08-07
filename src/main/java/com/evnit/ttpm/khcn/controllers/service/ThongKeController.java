@@ -200,10 +200,9 @@ public class ThongKeController {
             }else  if(loaiTimKiem != null && loaiTimKiem.equals("SANGKIEN")){
                 tieuDe ="Báo cáo - Thống kê hoạt động sáng kiến";
             }
-            ExecServiceResponse result =  excelController.exportThongKe(listObj,tieuDe,loaiTimKiem,thongKeReq.getLoaiThongKe());
 
 
-            return result;
+            return excelController.exportThongKe(listObj,tieuDe,loaiTimKiem,thongKeReq.getLoaiThongKe());
 
         } catch (Exception ex) {
             System.out.println(ex.getMessage());

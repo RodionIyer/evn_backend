@@ -9,6 +9,7 @@ import com.evnit.ttpm.khcn.payload.request.service.ExecServiceRequest;
 import com.evnit.ttpm.khcn.payload.response.service.ExecServiceResponse;
 import com.evnit.ttpm.khcn.security.services.SecurityUtils;
 import com.evnit.ttpm.khcn.services.kehoach.ExcelService;
+import com.microsoft.sqlserver.jdbc.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -30,47 +31,50 @@ public class ExcelController {
     @Autowired
     ExcelService excelService;
 
-
-
     public ExecServiceResponse exec_FC95C3F7_942F_4C7E_88D7_46E12BFE9185(ExecServiceRequest execServiceRequest) { //xuat bao cao
         String orgId = SecurityUtils.getPrincipal().getORGID();
         String maKeHoach = "";
         for (Api_Service_Input obj : execServiceRequest.getParameters()) {
             if ("MA_KE_HOACH".equals(obj.getName())) {
-                maKeHoach = obj.getValue().toString();
-                //break;
+                if (obj.getValue() != null) {
+                    maKeHoach = obj.getValue().toString();
+                    //break;
+                }
             }
         }
-        KeHoach kehoach = excelService.getFirstMaKeHoach(maKeHoach);
-        List<DonVi> listDonVi = excelService.getListDonVi(kehoach.getMA_DON_VI());
-        List<DanhSachMau> listDanhSachMau = excelService.getListDanhsachMau();
-        DonVi donVi = excelService.getFirstDonVi(kehoach.getMA_DON_VI());
-        List<KeHoachChiTiet> listKeHoachChiTiet = excelService.getListKeHoachChiTiet(maKeHoach);
-        List<NguonKinhPhi> listNguonKinhPhi = excelService.getListNguonKinhPhi();
 
-        try {
-            String path = System.getProperty("user.dir");
-            String html = CreateHtml(listDonVi, listDanhSachMau, donVi, listKeHoachChiTiet, listNguonKinhPhi, kehoach);
-            if (html != null) {
-                UUID uuid = UUID.randomUUID();
-                String pathHtml = path + "/file" + uuid + ".html";
-                File newHtmlFile = new File(pathHtml);
-                FileUtils.writeStringToFile(newHtmlFile, html);
-                Document doc = new Document(pathHtml);
+        if (!StringUtils.isEmpty(maKeHoach)) {
+            KeHoach kehoach = excelService.getFirstMaKeHoach(maKeHoach);
+            List<DonVi> listDonVi = excelService.getListDonVi(kehoach.getMA_DON_VI());
+            List<DanhSachMau> listDanhSachMau = excelService.getListDanhsachMau();
+            DonVi donVi = excelService.getFirstDonVi(kehoach.getMA_DON_VI());
+            List<KeHoachChiTiet> listKeHoachChiTiet = excelService.getListKeHoachChiTiet(maKeHoach);
+            List<NguonKinhPhi> listNguonKinhPhi = excelService.getListNguonKinhPhi();
 
-                String fileName = "xuat_bieu_mau_" + uuid + ".docx";
-                String pathSave = path + "/" + fileName;
-                doc.save(pathSave);
-                File file = new File(pathSave);
-                byte[] fileContent = Files.readAllBytes(file.toPath());
-                String fileBase64 = Base64.getEncoder().encodeToString(fileContent);
-                boolean result = Files.deleteIfExists(newHtmlFile.toPath());
-                boolean result2 = Files.deleteIfExists(file.toPath());
-                return new ExecServiceResponse(fileBase64, 1, "Thành công.");
+            try {
+                String path = System.getProperty("user.dir");
+                String html = CreateHtml(listDonVi, listDanhSachMau, donVi, listKeHoachChiTiet, listNguonKinhPhi, kehoach);
+                if (html != null) {
+                    UUID uuid = UUID.randomUUID();
+                    String pathHtml = path + "/file" + uuid + ".html";
+                    File newHtmlFile = new File(pathHtml);
+                    FileUtils.writeStringToFile(newHtmlFile, html);
+                    Document doc = new Document(pathHtml);
+
+                    String fileName = "xuat_bieu_mau_" + uuid + ".docx";
+                    String pathSave = path + "/" + fileName;
+                    doc.save(pathSave);
+                    File file = new File(pathSave);
+                    byte[] fileContent = Files.readAllBytes(file.toPath());
+                    String fileBase64 = Base64.getEncoder().encodeToString(fileContent);
+                    boolean result = Files.deleteIfExists(newHtmlFile.toPath());
+                    boolean result2 = Files.deleteIfExists(file.toPath());
+                    return new ExecServiceResponse(fileBase64, 1, "Thành công.");
+                }
+
+            } catch (Exception ex) {
+                ex.getMessage();
             }
-
-        } catch (Exception ex) {
-            ex.getMessage();
         }
 
         return new ExecServiceResponse(-1, "Không thành công.");
@@ -79,593 +83,14 @@ public class ExcelController {
     public String CreateHtml(List<DonVi> listDonVi, List<DanhSachMau> listDanhSachMau, DonVi donVi, List<KeHoachChiTiet> listKeHoachChiTiet, List<NguonKinhPhi> listNguonKinhPhi, KeHoach kehoach) {
 
 
-        String html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
-                "<html xmlns:v=\"urn:schemas-microsoft-com:vml\"\n" +
-                "xmlns:o=\"urn:schemas-microsoft-com:office:office\"\n" +
-                "xmlns:x=\"urn:schemas-microsoft-com:office:excel\"\n" +
-                "xmlns=\"http://www.w3.org/TR/REC-html40\">\n" +
-                "\n" +
-                "<head>\n" +
-                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n" +
-                "<meta name=\"ProgId\" content=\"Excel.Sheet\"/>\n" +
-                "<meta name=\"Generator\" content=\"Aspose.Cell 23.6.5\"/>\n" +
-                "<link rel=\"File-List\" href=\"_files_files/filelist.xml\"/>\n" +
-                "<link rel=\"Edit-Time-Data\" href=\"_files_files/editdata.mso\"/>\n" +
-                "<link rel=\"OLE-Object-Data\" href=\"_files_files/oledata.mso\"/>\n" +
-                "<!--[if gte mso 9]><xml>\n" +
-                " <o:DocumentProperties>\n" +
-                "  <o:Author>Admin</o:Author>\n" +
-                "  <o:LastPrinted>2023-07-09T01:37:41Z</o:LastPrinted>\n" +
-                "  <o:Created>2023-04-06T02:51:22Z</o:Created>\n" +
-                "  <o:LastSaved>2023-07-09T01:37:47Z</o:LastSaved>\n" +
-                "</o:DocumentProperties>\n" +
-                "</xml><![endif]-->\n" +
-                "<style>\n" +
-                "<!--table\n" +
-                " {mso-displayed-decimal-separator:\"\\.\";\n" +
-                " mso-displayed-thousand-separator:\"\\,\";}\n" +
-                "@page\n" +
-                " {\n" +
-                " mso-header-data:\"\";\n" +
-                " mso-footer-data:\"\";\n" +
-                " margin:0.75in 0.1in 0.75in 0.2in;\n" +
-                " mso-header-margin:0.3in;\n" +
-                " mso-footer-margin:0.3in;\n" +
-                " mso-page-orientation:Portrait;\n" +
-                " }\n" +
-                "tr\n" +
-                " {mso-height-source:auto;\n" +
-                " mso-ruby-visibility:none;}\n" +
-                "col\n" +
-                " {mso-width-source:auto;\n" +
-                " mso-ruby-visibility:none;}\n" +
-                "br\n" +
-                " {mso-data-placement:same-cell;}\n" +
-                "ruby\n" +
-                " {ruby-align:left;}\n" +
-                ".style0\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:general;\n" +
-                " vertical-align:bottom;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:11pt;\n" +
-                " font-weight:400;\n" +
-                " font-style:normal;\n" +
-                " font-family:Calibri,sans-serif;\n" +
-                " mso-protection:locked visible;\n" +
-                " mso-style-name:Normal;\n" +
-                " mso-style-id:0;}\n" +
-                ".font2\n" +
-                " {\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif; }\n" +
-                ".font5\n" +
-                " {\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:400;\n" +
-                " font-style:italic;\n" +
-                " font-family:'Times New Roman',serif; }\n" +
-                ".font9\n" +
-                " {\n" +
-                " color:#FF0000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif; }\n" +
-                "td\n" +
-                " {mso-style-parent:style0;\n" +
-                " mso-number-format:General;\n" +
-                " text-align:general;\n" +
-                " vertical-align:bottom;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:11pt;\n" +
-                " font-weight:400;\n" +
-                " font-style:normal;\n" +
-                " font-family:Calibri,sans-serif;\n" +
-                " mso-protection:locked visible;\n" +
-                " mso-ignore:padding;}\n" +
-                ".x15\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:general;\n" +
-                " vertical-align:bottom;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:11pt;\n" +
-                " font-weight:400;\n" +
-                " font-style:normal;\n" +
-                " font-family:Calibri,sans-serif;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x21\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:center;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x22\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:justify;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x23\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:general;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x24\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:center;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:italic;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x25\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:justify;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:italic;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x26\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:general;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:italic;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x27\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:center;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:400;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x28\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:justify;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:400;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x29\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:general;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:400;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x30\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:center;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:13pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x31\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:general;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:400;\n" +
-                " font-style:italic;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x32\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:justify;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:400;\n" +
-                " font-style:italic;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x33\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:left;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x34\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:center;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x35\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:general;\n" +
-                " vertical-align:bottom;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x36\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:center;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#FF0000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x37\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:left;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x38\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:center;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:normal;word-wrap:break-word;\n" +
-                " background:#D9D9D9;\n" +
-                " mso-pattern:auto none;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " border-top:1px solid windowtext;\n" +
-                " border-right:1px solid windowtext;\n" +
-                " border-bottom:1px solid windowtext;\n" +
-                " border-left:1px solid windowtext;\n" +
-                " mso-diagonal-down:none;\n" +
-                " mso-diagonal-up:none;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x39\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:center;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:14pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                ".x40\n" +
-                " {\n" +
-                " mso-number-format:General;\n" +
-                " text-align:center;\n" +
-                " vertical-align:middle;\n" +
-                " white-space:nowrap;\n" +
-                " background:auto;\n" +
-                " mso-pattern:auto;\n" +
-                " color:#000000;\n" +
-                " font-size:12pt;\n" +
-                " font-weight:700;\n" +
-                " font-style:normal;\n" +
-                " font-family:'Times New Roman',serif;\n" +
-                " mso-protection:locked visible;\n" +
-                " }\n" +
-                "-->\n" +
-                "</style>\n" +
-                "<!--[if gte mso 9]><xml>\n" +
-                " <x:ExcelWorkbook>\n" +
-                "  <x:ExcelWorksheets>\n" +
-                "   <x:ExcelWorksheet>\n" +
-                "    <x:Name>Sheet1</x:Name>\n" +
-                "<x:WorksheetOptions>\n" +
-                " <x:StandardWidth>2048</x:StandardWidth>\n" +
-                " <x:Print>\n" +
-                "  <x:ValidPrinterInfo/>\n" +
-                "  <x:PaperSizeIndex>9</x:PaperSizeIndex>\n" +
-                "  <x:HorizontalResolution>600</x:HorizontalResolution>\n" +
-                "  <x:VerticalResolution>600</x:VerticalResolution>\n" +
-                " </x:Print>\n" +
-                " <x:Selected/>\n" +
-                "</x:WorksheetOptions>\n" +
-                "   </x:ExcelWorksheet>\n" +
-                "  </x:ExcelWorksheets>\n" +
-                "  <x:WindowHeight>12330</x:WindowHeight>\n" +
-                "  <x:WindowWidth>28800</x:WindowWidth>\n" +
-                "  <x:WindowTopX>0</x:WindowTopX>\n" +
-                "  <x:WindowTopY>0</x:WindowTopY>\n" +
-                "  <x:RefModeR1C1/>\n" +
-                "  <x:TabRatio>600</x:TabRatio>\n" +
-                "  <x:ActiveSheet>0</x:ActiveSheet>\n" +
-                " </x:ExcelWorkbook>\n" +
-                "</xml><![endif]-->\n" +
-                "</head>\n" +
-                "<body link='blue' vlink='purple' >\n" +
-                "\n" +
-                "<table border='0' cellpadding='0' cellspacing='0' width='708' style='border-collapse: \n" +
-                " collapse;table-layout:fixed;width:531pt'>\n" +
-                " <col width='43' style='mso-width-source:userset;width:32.25pt'/>\n" +
-                " <col width='217' style='mso-width-source:userset;width:162.75pt'/>\n" +
-                " <col width='60' style='mso-width-source:userset;width:45pt'/>\n" +
-                " <col width='76' style='mso-width-source:userset;width:57pt'/>\n" +
-                " <col width='70' style='mso-width-source:userset;width:52.5pt'/>\n" +
-                " <col width='78' style='mso-width-source:userset;width:58.5pt'/>\n" +
-                " <col width='88' style='mso-width-source:userset;width:66pt'/>\n" +
-                " <col width='76' style='mso-width-source:userset;width:57pt'/>\n" +
-                " <tr height='41' style='mso-height-source:userset;height:30.75pt'>\n" +
-                "<td colspan='8' height='41' class='x39' width='708' style='height:30.75pt;'>BẢNG TỔNG HỢP ĐỊNH HƯỚNG HOẠT ĐỘNG KHCN</td>\n" +
-                " </tr>\n" +
-                " <tr height='30' style='mso-height-source:userset;height:22.5pt'>\n" +
-                "<td height='30' class='x30' style='height:22.5pt;'></td>\n" +
-                "<td colspan='5' class='x40'><font class=\"font8\" style=\"text-decoration: none;\">{tieudedonvi}</font></td>\n" +
-                "<td class='x37'><font class=\"font8\" style=\"text-decoration: none;\">{tieudenam}</font></td>\n" +
+        String html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" + "<html xmlns:v=\"urn:schemas-microsoft-com:vml\"\n" + "xmlns:o=\"urn:schemas-microsoft-com:office:office\"\n" + "xmlns:x=\"urn:schemas-microsoft-com:office:excel\"\n" + "xmlns=\"http://www.w3.org/TR/REC-html40\">\n" + "\n" + "<head>\n" + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n" + "<meta name=\"ProgId\" content=\"Excel.Sheet\"/>\n" + "<meta name=\"Generator\" content=\"Aspose.Cell 23.6.5\"/>\n" + "<link rel=\"File-List\" href=\"_files_files/filelist.xml\"/>\n" + "<link rel=\"Edit-Time-Data\" href=\"_files_files/editdata.mso\"/>\n" + "<link rel=\"OLE-Object-Data\" href=\"_files_files/oledata.mso\"/>\n" + "<!--[if gte mso 9]><xml>\n" + " <o:DocumentProperties>\n" + "  <o:Author>Admin</o:Author>\n" + "  <o:LastPrinted>2023-07-09T01:37:41Z</o:LastPrinted>\n" + "  <o:Created>2023-04-06T02:51:22Z</o:Created>\n" + "  <o:LastSaved>2023-07-09T01:37:47Z</o:LastSaved>\n" + "</o:DocumentProperties>\n" + "</xml><![endif]-->\n" + "<style>\n" + "<!--table\n" + " {mso-displayed-decimal-separator:\"\\.\";\n" + " mso-displayed-thousand-separator:\"\\,\";}\n" + "@page\n" + " {\n" + " mso-header-data:\"\";\n" + " mso-footer-data:\"\";\n" + " margin:0.75in 0.1in 0.75in 0.2in;\n" + " mso-header-margin:0.3in;\n" + " mso-footer-margin:0.3in;\n" + " mso-page-orientation:Portrait;\n" + " }\n" + "tr\n" + " {mso-height-source:auto;\n" + " mso-ruby-visibility:none;}\n" + "col\n" + " {mso-width-source:auto;\n" + " mso-ruby-visibility:none;}\n" + "br\n" + " {mso-data-placement:same-cell;}\n" + "ruby\n" + " {ruby-align:left;}\n" + ".style0\n" + " {\n" + " mso-number-format:General;\n" + " text-align:general;\n" + " vertical-align:bottom;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:11pt;\n" + " font-weight:400;\n" + " font-style:normal;\n" + " font-family:Calibri,sans-serif;\n" + " mso-protection:locked visible;\n" + " mso-style-name:Normal;\n" + " mso-style-id:0;}\n" + ".font2\n" + " {\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif; }\n" + ".font5\n" + " {\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:400;\n" + " font-style:italic;\n" + " font-family:'Times New Roman',serif; }\n" + ".font9\n" + " {\n" + " color:#FF0000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif; }\n" + "td\n" + " {mso-style-parent:style0;\n" + " mso-number-format:General;\n" + " text-align:general;\n" + " vertical-align:bottom;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:11pt;\n" + " font-weight:400;\n" + " font-style:normal;\n" + " font-family:Calibri,sans-serif;\n" + " mso-protection:locked visible;\n" + " mso-ignore:padding;}\n" + ".x15\n" + " {\n" + " mso-number-format:General;\n" + " text-align:general;\n" + " vertical-align:bottom;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:11pt;\n" + " font-weight:400;\n" + " font-style:normal;\n" + " font-family:Calibri,sans-serif;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x21\n" + " {\n" + " mso-number-format:General;\n" + " text-align:center;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x22\n" + " {\n" + " mso-number-format:General;\n" + " text-align:justify;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x23\n" + " {\n" + " mso-number-format:General;\n" + " text-align:general;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x24\n" + " {\n" + " mso-number-format:General;\n" + " text-align:center;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:italic;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x25\n" + " {\n" + " mso-number-format:General;\n" + " text-align:justify;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:italic;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x26\n" + " {\n" + " mso-number-format:General;\n" + " text-align:general;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:italic;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x27\n" + " {\n" + " mso-number-format:General;\n" + " text-align:center;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:400;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x28\n" + " {\n" + " mso-number-format:General;\n" + " text-align:justify;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:400;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x29\n" + " {\n" + " mso-number-format:General;\n" + " text-align:general;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:400;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x30\n" + " {\n" + " mso-number-format:General;\n" + " text-align:center;\n" + " vertical-align:middle;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:13pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x31\n" + " {\n" + " mso-number-format:General;\n" + " text-align:general;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:400;\n" + " font-style:italic;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x32\n" + " {\n" + " mso-number-format:General;\n" + " text-align:justify;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:400;\n" + " font-style:italic;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x33\n" + " {\n" + " mso-number-format:General;\n" + " text-align:left;\n" + " vertical-align:middle;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x34\n" + " {\n" + " mso-number-format:General;\n" + " text-align:center;\n" + " vertical-align:middle;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x35\n" + " {\n" + " mso-number-format:General;\n" + " text-align:general;\n" + " vertical-align:bottom;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x36\n" + " {\n" + " mso-number-format:General;\n" + " text-align:center;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#FF0000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x37\n" + " {\n" + " mso-number-format:General;\n" + " text-align:left;\n" + " vertical-align:middle;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x38\n" + " {\n" + " mso-number-format:General;\n" + " text-align:center;\n" + " vertical-align:middle;\n" + " white-space:normal;word-wrap:break-word;\n" + " background:#D9D9D9;\n" + " mso-pattern:auto none;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " border-top:1px solid windowtext;\n" + " border-right:1px solid windowtext;\n" + " border-bottom:1px solid windowtext;\n" + " border-left:1px solid windowtext;\n" + " mso-diagonal-down:none;\n" + " mso-diagonal-up:none;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x39\n" + " {\n" + " mso-number-format:General;\n" + " text-align:center;\n" + " vertical-align:middle;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:14pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " mso-protection:locked visible;\n" + " }\n" + ".x40\n" + " {\n" + " mso-number-format:General;\n" + " text-align:center;\n" + " vertical-align:middle;\n" + " white-space:nowrap;\n" + " background:auto;\n" + " mso-pattern:auto;\n" + " color:#000000;\n" + " font-size:12pt;\n" + " font-weight:700;\n" + " font-style:normal;\n" + " font-family:'Times New Roman',serif;\n" + " mso-protection:locked visible;\n" + " }\n" + "-->\n" + "</style>\n" + "<!--[if gte mso 9]><xml>\n" + " <x:ExcelWorkbook>\n" + "  <x:ExcelWorksheets>\n" + "   <x:ExcelWorksheet>\n" + "    <x:Name>Sheet1</x:Name>\n" + "<x:WorksheetOptions>\n" + " <x:StandardWidth>2048</x:StandardWidth>\n" + " <x:Print>\n" + "  <x:ValidPrinterInfo/>\n" + "  <x:PaperSizeIndex>9</x:PaperSizeIndex>\n" + "  <x:HorizontalResolution>600</x:HorizontalResolution>\n" + "  <x:VerticalResolution>600</x:VerticalResolution>\n" + " </x:Print>\n" + " <x:Selected/>\n" + "</x:WorksheetOptions>\n" + "   </x:ExcelWorksheet>\n" + "  </x:ExcelWorksheets>\n" + "  <x:WindowHeight>12330</x:WindowHeight>\n" + "  <x:WindowWidth>28800</x:WindowWidth>\n" + "  <x:WindowTopX>0</x:WindowTopX>\n" + "  <x:WindowTopY>0</x:WindowTopY>\n" + "  <x:RefModeR1C1/>\n" + "  <x:TabRatio>600</x:TabRatio>\n" + "  <x:ActiveSheet>0</x:ActiveSheet>\n" + " </x:ExcelWorkbook>\n" + "</xml><![endif]-->\n" + "</head>\n" + "<body link='blue' vlink='purple' >\n" + "\n" + "<table border='0' cellpadding='0' cellspacing='0' width='708' style='border-collapse: \n" + " collapse;table-layout:fixed;width:531pt'>\n" + " <col width='43' style='mso-width-source:userset;width:32.25pt'/>\n" + " <col width='217' style='mso-width-source:userset;width:162.75pt'/>\n" + " <col width='60' style='mso-width-source:userset;width:45pt'/>\n" + " <col width='76' style='mso-width-source:userset;width:57pt'/>\n" + " <col width='70' style='mso-width-source:userset;width:52.5pt'/>\n" + " <col width='78' style='mso-width-source:userset;width:58.5pt'/>\n" + " <col width='88' style='mso-width-source:userset;width:66pt'/>\n" + " <col width='76' style='mso-width-source:userset;width:57pt'/>\n" + " <tr height='41' style='mso-height-source:userset;height:30.75pt'>\n" + "<td colspan='8' height='41' class='x39' width='708' style='height:30.75pt;'>BẢNG TỔNG HỢP ĐỊNH HƯỚNG HOẠT ĐỘNG KHCN</td>\n" + " </tr>\n" + " <tr height='30' style='mso-height-source:userset;height:22.5pt'>\n" + "<td height='30' class='x30' style='height:22.5pt;'></td>\n" + "<td colspan='5' class='x40'><font class=\"font8\" style=\"text-decoration: none;\">{tieudedonvi}</font></td>\n" + "<td class='x37'><font class=\"font8\" style=\"text-decoration: none;\">{tieudenam}</font></td>\n" +
                 //"<td colspan='5' class='x40'><font class=\"font8\" style=\"text-decoration: none;\">{tieudedonvi}&nbsp;</font><font class=\"font9\" style=\"text-decoration: none;\">{tendonvi}</font></td>\n" +
                 //"<td class='x37'><font class=\"font8\" style=\"text-decoration: none;\">{tieudenam}</font><font class=\"font9\" style=\"text-decoration: none;\">&nbsp;{nam}</font></td>\n" +
 
-                "<td class='x37'></td>\n" +
-                " </tr>\n" +
-                " <tr height='30' style='mso-height-source:userset;height:22.5pt'>\n" +
-                "<td height='30' class='x30' style='height:22.5pt;'></td>\n" +
-                "<td class='x33'><font class=\"font8\" style=\"text-decoration: none;\">{tieudedutoan}</font></td>\n" +
+                "<td class='x37'></td>\n" + " </tr>\n" + " <tr height='30' style='mso-height-source:userset;height:22.5pt'>\n" + "<td height='30' class='x30' style='height:22.5pt;'></td>\n" + "<td class='x33'><font class=\"font8\" style=\"text-decoration: none;\">{tieudedutoan}</font></td>\n" +
                 // "<td class='x33'><font class=\"font8\" style=\"text-decoration: none;\">Tổng dự toán (triệu đồng):&nbsp;</font><font class=\"font9\" style=\"text-decoration: none;\">xxx</font></td>\n" +
 
-                "<td colspan='6' class='x33' style='mso-ignore:colspan;'></td>\n" +
-                " </tr>\n" +
-                " <tr height='83' style='mso-height-source:userset;height:62.25pt'>\n" +
-                "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>STT</td>\n" +
-                "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Hoạt động</td>\n" +
-                "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Nguồn kinh phí (EVN/Đơn vị)</td>\n" +
-                "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Kinh phí dự kiến (triệu đồng)</td>\n" +
-                "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Đơn vị chủ trì</td>\n" +
-                "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Chủ nhiệm nhiệm vụ</td>\n" +
-                "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Nội dung hoạt động</td>\n" +
-                "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Thời gian dự kiến thực hiện (từ tháng/năm đến tháng/năm)</td>\n" +
-                " </tr>\n" +
-                " <tr height='20' style='mso-height-source:userset;height:15pt'>\n" +
-                " </tr>\n" +
-                " <tr height='20' style='mso-height-source:userset;height:15pt'>\n" +
-                " </tr>\n" +
-                "{tempChung}" +
-                "<![if supportMisalignedColumns]>\n" +
-                " <tr height='0' style='display:none'>\n" +
-                "  <td width='43' style='width:32.25pt;'></td>\n" +
-                "  <td width='217' style='width:162.75pt;'></td>\n" +
-                "  <td width='60' style='width:45pt;'></td>\n" +
-                "  <td width='76' style='width:57pt;'></td>\n" +
-                "  <td width='70' style='width:52.5pt;'></td>\n" +
-                "  <td width='78' style='width:58.5pt;'></td>\n" +
-                "  <td width='88' style='width:66pt;'></td>\n" +
-                "  <td width='76' style='width:57pt;'></td>\n" +
-                " </tr>\n" +
-                " <![endif]>\n" +
-                "</table>\n" +
-                "\n" +
-                "</body>\n" +
-                "\n" +
-                "</html>\n";
+                "<td colspan='6' class='x33' style='mso-ignore:colspan;'></td>\n" + " </tr>\n" + " <tr height='83' style='mso-height-source:userset;height:62.25pt'>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>STT</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Hoạt động</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Nguồn kinh phí (EVN/Đơn vị)</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Kinh phí dự kiến (triệu đồng)</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Đơn vị chủ trì</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Chủ nhiệm nhiệm vụ</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Nội dung hoạt động</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Thời gian dự kiến thực hiện (từ tháng/năm đến tháng/năm)</td>\n" + " </tr>\n" + " <tr height='20' style='mso-height-source:userset;height:15pt'>\n" + " </tr>\n" + " <tr height='20' style='mso-height-source:userset;height:15pt'>\n" + " </tr>\n" + "{tempChung}" + "<![if supportMisalignedColumns]>\n" + " <tr height='0' style='display:none'>\n" + "  <td width='43' style='width:32.25pt;'></td>\n" + "  <td width='217' style='width:162.75pt;'></td>\n" + "  <td width='60' style='width:45pt;'></td>\n" + "  <td width='76' style='width:57pt;'></td>\n" + "  <td width='70' style='width:52.5pt;'></td>\n" + "  <td width='78' style='width:58.5pt;'></td>\n" + "  <td width='88' style='width:66pt;'></td>\n" + "  <td width='76' style='width:57pt;'></td>\n" + " </tr>\n" + " <![endif]>\n" + "</table>\n" + "\n" + "</body>\n" + "\n" + "</html>\n";
 
         if (listDonVi != null && listDonVi.size() > 0) {
             html = html.replace("{tieudedonvi}", "Năm: " + kehoach.getNAM());
@@ -682,16 +107,7 @@ public class ExcelController {
     }
 
     public String CreateBodyHtml(List<DonVi> listDonVi, List<DanhSachMau> listDanhSachMau, DonVi donVi, List<KeHoachChiTiet> listKeHoachChiTiet, List<NguonKinhPhi> listNguonKinhPhi) {
-        String htmlTemp = " <tr height='21' style='mso-height-source:userset;height:15.75pt'>\n" +
-                "<td height='19' class='x21' style='height:14.25pt;'>{stt1}</td>\n" +
-                "<td class='x22'>{temp1}</td>\n" +
-                "<td class='x21'></td>\n" +
-                "<td class='x21'></td>\n" +
-                "<td class='x21'></td>\n" +
-                "<td class='x21'></td>\n" +
-                "<td class='x23'></td>\n" +
-                "<td class='x22'></td>\n" +
-                " </tr>\n" +
+        String htmlTemp = " <tr height='21' style='mso-height-source:userset;height:15.75pt'>\n" + "<td height='19' class='x21' style='height:14.25pt;'>{stt1}</td>\n" + "<td class='x22'>{temp1}</td>\n" + "<td class='x21'></td>\n" + "<td class='x21'></td>\n" + "<td class='x21'></td>\n" + "<td class='x21'></td>\n" + "<td class='x23'></td>\n" + "<td class='x22'></td>\n" + " </tr>\n" +
 //                " <tr height='21' style='mso-height-source:userset;height:15.75pt'>\n" +
 //                "<td height='19' class='x24' style='height:14.25pt;'>{stt2}</td>\n" +
 //                "<td class='x25'>{temp2}</td>\n" +
@@ -704,40 +120,11 @@ public class ExcelController {
 //                " </tr>\n" +
                 "{tempCap}";
 
-        String htmlTempCap = " <tr height='21' style='mso-height-source:userset;height:15.75pt'>\n" +
-                "<td height='19' class='x24' style='height:14.25pt;'>{stt2}</td>\n" +
-                "<td class='x25'>{temp2}</td>\n" +
-                "<td class='x24'></td>\n" +
-                "<td class='x24'></td>\n" +
-                "<td class='x24'></td>\n" +
-                "<td class='x24'></td>\n" +
-                "<td class='x26'></td>\n" +
-                "<td class='x24'></td>\n" +
-                " </tr>\n" +
-                "{tempDonVi}";
+        String htmlTempCap = " <tr height='21' style='mso-height-source:userset;height:15.75pt'>\n" + "<td height='19' class='x24' style='height:14.25pt;'>{stt2}</td>\n" + "<td class='x25'>{temp2}</td>\n" + "<td class='x24'></td>\n" + "<td class='x24'></td>\n" + "<td class='x24'></td>\n" + "<td class='x24'></td>\n" + "<td class='x26'></td>\n" + "<td class='x24'></td>\n" + " </tr>\n" + "{tempDonVi}";
 
 
-        String htmlTempDonVi = " <tr height='21' style='mso-height-source:userset;height:15.75pt'>\n" +
-                "<td height='19' class='x24' style='height:14.25pt;'>{stt2}</td>\n" +
-                "<td class='x25'>{temp2}</td>\n" +
-                "<td class='x24'></td>\n" +
-                "<td class='x24'></td>\n" +
-                "<td class='x24'></td>\n" +
-                "<td class='x24'></td>\n" +
-                "<td class='x26'></td>\n" +
-                "<td class='x24'></td>\n" +
-                " </tr>\n" +
-                "{tempChiTiet}";
-        String htmlTempChiTiet = " <tr height='21' style='mso-height-source:userset;height:15.75pt'>\n" +
-                "<td height='19' class='x27' style='height:14.25pt;'>{tempstt}</td>\n" +
-                "<td class='x28'>{tempNoiDung}</td>\n" +
-                "<td class='x27'>{tempNguonKinhPhi}</td>\n" +
-                "<td class='x27'>{tempDuToan}</td>\n" +
-                "<td class='x27'>{tempDonVi}</td>\n" +
-                "<td class='x27'>{tempChuNhiem}</td>\n" +
-                "<td class='x29'>{tempNoiDung}</td>\n" +
-                "<td class='x32'>{tempThoiGian}</td>\n" +
-                " </tr>";
+        String htmlTempDonVi = " <tr height='21' style='mso-height-source:userset;height:15.75pt'>\n" + "<td height='19' class='x24' style='height:14.25pt;'>{stt2}</td>\n" + "<td class='x25'>{temp2}</td>\n" + "<td class='x24'></td>\n" + "<td class='x24'></td>\n" + "<td class='x24'></td>\n" + "<td class='x24'></td>\n" + "<td class='x26'></td>\n" + "<td class='x24'></td>\n" + " </tr>\n" + "{tempChiTiet}";
+        String htmlTempChiTiet = " <tr height='21' style='mso-height-source:userset;height:15.75pt'>\n" + "<td height='19' class='x27' style='height:14.25pt;'>{tempstt}</td>\n" + "<td class='x28'>{tempNoiDung}</td>\n" + "<td class='x27'>{tempNguonKinhPhi}</td>\n" + "<td class='x27'>{tempDuToan}</td>\n" + "<td class='x27'>{tempDonVi}</td>\n" + "<td class='x27'>{tempChuNhiem}</td>\n" + "<td class='x29'>{tempNoiDung}</td>\n" + "<td class='x32'>{tempThoiGian}</td>\n" + " </tr>";
         String html = "";
         String htmlDonVi = "";
         String htmlChiTiet = "";
@@ -834,6 +221,7 @@ public class ExcelController {
     }
 
 
+
     public ExecServiceResponse exec_030A9A96_90D5_4AD0_80E4_C596AED63EE7(ExecServiceRequest execServiceRequest) {
         String orgId = SecurityUtils.getPrincipal().getORGID();
 //        String orgId = "";
@@ -890,6 +278,7 @@ public class ExcelController {
                 //Create Workbook instance holding reference to .xlsx file
 
 
+
                 Workbook workbook = new XSSFWorkbook(is);
 
                 //Get first/desired sheet from the workbook
@@ -910,7 +299,7 @@ public class ExcelController {
 
                 String DonViNam = "Tên Đơn vị: " + donVi.getOrgdesc();
                 //don vi nam
-//                if (checkChild) {
+             //   if (checkChild) {
                     DonViNam = "Năm: " + Year.now().getValue();
                     Row row11 = sheet.createRow(1);
                     sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 7));
@@ -1016,10 +405,28 @@ public class ExcelController {
 
     private static void writeExportData(Sheet sheet, Row rows, int cell, String val, int position) {
         try {
-            CellStyle cellStyle = createStyle(sheet, position);
+            CellStyle cellStyle = createStyleForData(sheet, position);
             Cell cells = rows.createCell(cell);
             cells.setCellStyle(cellStyle);
             cells.setCellValue(val);
+
+        } catch (Exception ex) {
+
+        }
+    }
+
+    private static void writeExportDataForLinhVuc(Sheet sheet, Row rows, int cell, String val, int position) {
+        try {
+            CellStyle cellStyle = createStyle(sheet, position);
+            Cell cells = rows.createCell(0);
+            cells.setCellStyle(cellStyle);
+            cells.setCellValue(val);
+            for (int i = 1; i <= cell; i++) {
+                cells = rows.createCell(cell);
+                cells.setCellStyle(cellStyle);
+                cells.setCellValue(val);
+            }
+
         } catch (Exception ex) {
 
         }
@@ -1066,25 +473,10 @@ public class ExcelController {
 
     }
 
-    private static void writeExportHeaderExcelThongKe(Sheet sheet, int rowIndex, List<String> listHeader, int position) throws Exception {
+    private static void writeExportHeaderExcelThongKe(Sheet sheet, int rowIndex, List<String> listHeader) throws Exception {
         // create CellStyle
-        CellStyle cellStyle = createStyleForHeader(sheet, position);
-//        sheet.addMergedRegion(new CellRangeAddress(3, 5, 0, 0));
-//        sheet.addMergedRegion(new CellRangeAddress(3, 5, 1, 1));
-//        sheet.addMergedRegion(new CellRangeAddress(3, 5, 2, 2));
-//        sheet.addMergedRegion(new CellRangeAddress(3, 5, 3, 3));
-//        sheet.addMergedRegion(new CellRangeAddress(3, 5, 4, 4));
-//        sheet.addMergedRegion(new CellRangeAddress(3, 5, 5, 5));
-//        sheet.addMergedRegion(new CellRangeAddress(3, 5, 6, 6));
-//        sheet.addMergedRegion(new CellRangeAddress(3, 5, 7, 7));
+        CellStyle cellStyle = createStyleForHeader(sheet, 1);
         // Create row
-        sheet.setColumnWidth(1, 10000);
-        sheet.setColumnWidth(2, 5000);
-        sheet.setColumnWidth(3, 5000);
-        sheet.setColumnWidth(4, 5000);
-        sheet.setColumnWidth(5, 5000);
-        sheet.setColumnWidth(6, 5000);
-        sheet.setColumnWidth(7, 5000);
         Row row = sheet.createRow(rowIndex);
 
         for (int i = 0; i < listHeader.size(); i++) {
@@ -1092,6 +484,23 @@ public class ExcelController {
             Cell cell = row.createCell(i);
             cell.setCellStyle(cellStyle);
             cell.setCellValue(listHeader.get(i));
+        }
+
+        //set border
+        rowIndex++;
+        Row row1 = sheet.createRow(rowIndex);
+        for (int i = 0; i < listHeader.size(); i++) {
+            CellStyle cs = createStyleForBorderLefAndRight(sheet);
+            Cell cell = row1.createCell(i);
+            cell.setCellStyle(cs);
+        }
+
+        rowIndex++;
+        Row row2 = sheet.createRow(rowIndex);
+        for (int i = 0; i < listHeader.size(); i++) {
+            CellStyle cs = createStyleForBorderBottomAndLefAndRight(sheet);
+            Cell cell = row2.createCell(i);
+            cell.setCellStyle(cs);
         }
 
     }
@@ -1119,6 +528,38 @@ public class ExcelController {
         // Create CellStyle
         CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
         cellStyle.setFont(font);
+
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+
+        if (position == 1) {
+            cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        }
+        // cellStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+        //  cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        //cellStyle.setBorderBottom(BorderStyle.THIN);
+        return cellStyle;
+    }
+
+    private static CellStyle createStyleForData(Sheet sheet, int position) throws Exception {
+        // Create font
+        Font font = sheet.getWorkbook().createFont();
+        font.setFontName("Times New Roman");
+        font.setFontHeightInPoints((short) 12); // font size
+
+        // font.setColor(IndexedColors.GREEN.getIndex()); // text color
+
+        // Create CellStyle
+        CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+        cellStyle.setFont(font);
+
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+
         if (position == 1) {
             cellStyle.setAlignment(HorizontalAlignment.CENTER);
         }
@@ -1133,7 +574,7 @@ public class ExcelController {
         Font font = sheet.getWorkbook().createFont();
         font.setFontName("Times New Roman");
         font.setBold(true);
-        font.setFontHeightInPoints((short) 14); // font size
+        font.setFontHeightInPoints((short) 16); // font size
         // font.setColor(IndexedColors.GREEN.getIndex()); // text color
 
         // Create CellStyle
@@ -1184,11 +625,29 @@ public class ExcelController {
         cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
         cellStyle.setWrapText(true);
         if (position == 1) {
             cellStyle.setAlignment(HorizontalAlignment.CENTER);
             cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         }
+        return cellStyle;
+    }
+
+    private static CellStyle createStyleForBorderLefAndRight(Sheet sheet) {
+        CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+        return cellStyle;
+    }
+
+    private static CellStyle createStyleForBorderBottomAndLefAndRight(Sheet sheet) {
+        CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
         return cellStyle;
     }
 
@@ -1210,6 +669,9 @@ public class ExcelController {
                 //DonVi donVi = excelService.getFirstDonVi(orgId);
                 List<NguonKinhPhi> listNguonKinhPhi = excelService.getListNguonKinhPhi();
                 boolean checkMaDonVi = false;
+                if (listDonVi != null && listDonVi.size() > 0) {
+                    checkMaDonVi = true;
+                }
 //                if (listDonVi != null && listDonVi.size() > 0) {
 //                    checkMaDonVi = true;
 //                }
@@ -1348,25 +810,19 @@ public class ExcelController {
     public String GetRow(Row row, int cellNum) throws Exception {
         try {
             Cell cell = row.getCell(cellNum);
-            CellType cellType = cell.getCellType();
-            return cell.getStringCellValue();
-//            if (cell != null && cell.getCellType() != null) {
-//                switch (cell.getCellType()) {
-//                    case 1:
-//                        return cell.getStringCellValue();
-//                    case 0:
-//                        if (DateUtil.isCellDateFormatted(cell)) {
-//                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-//                            return dateFormat.format(cell.getDateCellValue()) + "";
-//                        } else {
-//                            return cell.getNumericCellValue() + "";
-//                        }
-//                    case 4:
-//                        return cell.getBooleanCellValue() + "";
-//                    default:
-//                        return "";
-//                }
-//            }
+            if (cell != null) {
+                switch (cell.getCellType()) {
+                    case STRING:
+                        return cell.getStringCellValue();
+                    case NUMERIC:
+                        return String.format("%.2f", cell.getNumericCellValue());
+                    case BOOLEAN:
+                    case BLANK:
+                    case ERROR:
+                    default:
+                        System.out.println("Giá trị của ô không xác định");
+                }
+            }
         } catch (Exception ex) {
         }
         try {
@@ -1399,15 +855,6 @@ public class ExcelController {
 
             Workbook workbook = new XSSFWorkbook(is);
 
-            //Get first/desired sheet from the workbook
-            Sheet sheet = workbook.getSheetAt(0);
-            CellStyle cellStyle = createStyleTitle(sheet, 1);
-            CellStyle cellStyleCenter = createStyleTitle(sheet, 1);
-            Row row = sheet.createRow(0);
-            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 10));
-            Cell cell = row.createCell(0);
-            cell.setCellStyle(cellStyleCenter);
-            cell.setCellValue(tieude);
             //tao header
             List<String> listHeader = new ArrayList<>();
             if (loaiTimKiem != null && loaiTimKiem.equals("DETAI")) {
@@ -1455,21 +902,30 @@ public class ExcelController {
                 listHeader.add("Thù lao cho người áp dụng lần đầu");
                 listHeader.add("Tổng cộng");
             }
-            writeExportHeaderExcelThongKe(sheet, 3, listHeader, 1);
+            int width = listHeader.size() - 1;
+
+            //Get first/desired sheet from the workbook
+            Sheet sheet = workbook.getSheetAt(0);
+            CellStyle cellStyle = createStyleTitle(sheet, 1);
+            CellStyle cellStyleCenter = createStyleTitle(sheet, 1);
+            Row row = sheet.createRow(0);
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, width));
+            Cell cell = row.createCell(0);
+            cell.setCellStyle(cellStyleCenter);
+            cell.setCellValue(tieude);
+
+            writeExportHeaderExcelThongKe(sheet, 3, listHeader);
             //tao danh sach
             //List<DanhSachMau> listCha = listDanhSachMau.stream().filter(c -> c.getMA_NHOM_CHA()==null).collect(Collectors.toList());
             if (listObj != null && listObj.size() > 0) {
                 int rowIndex = 5;
-                int cellIndex = 0;
-                int i = 1;
+                int cellIndex;
                 for (ThongKeResp item : listObj) {
                     rowIndex++;
-                    cellIndex = 0;
-                    String stt = i + "";
+                    String stt;
                     Row rows = sheet.createRow(rowIndex);
-                    writeExportData(sheet, rows, cellIndex, stt, 1);
-                    cellIndex++;
-                    writeExportData(sheet, rows, cellIndex, item.getTenLinhVuc(), 0);
+                    writeExportDataForLinhVuc(sheet, rows, width, item.getTenLinhVuc(), 0);
+                    sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, width));
                     int j = 1;
                     for (ListData item2 : item.getListData()) {
                         rowIndex++;
@@ -1509,16 +965,33 @@ public class ExcelController {
                         }
                         j++;
                     }
-                    i++;
                 }
             }
 
-            byte[] resultFile = createOutputFile(workbook);
+            sheet.setColumnWidth(0, 1500);
+            for (int i = 1; i < listHeader.size(); i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+//            String filePath = "D:/example.xlsx"; // Đường dẫn file xuất ra
+//            try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+//                workbook.write(fileOut);
+//                System.out.println("Workbook đã được xuất ra file thành công!");
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } finally {
+//                try {
+//                    workbook.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+            byte[] resultFile =  createOutputFile(workbook);
             String encoded = Base64.getEncoder().encodeToString(resultFile);
 
             workbook.close();
             is.close();
-            return new ExecServiceResponse(encoded, 1, "Thành công.");
+            return new ExecServiceResponse(encoded,1, "Thành công.");
 
         } catch (Exception e) {
             e.printStackTrace();
