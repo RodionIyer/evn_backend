@@ -208,7 +208,7 @@ public class SangKienServiceImpl implements SangKienService {
         String queryString = "SELECT [MA_SANGKIEN] maSangKien,[TEN_SANGKIEN] tenGiaiPhap,[MA_CAPDO] capDoSangKien,[MA_DON_VI_DAU_TU] donViChuDauTu,[NAM] nam," +
                 "[LA_THU_TRUONG] thuTruongDonVi,[U_NHUOC_DIEM] uuNhuocDiem,[NOI_DUNG_GPHAP] noiDungGiaiPhap,[QTRINH_APDUNG] quaTrinhApDung,[HIEU_QUA_THUC_TIEN] hieuQuaThucTe," +
                 "[TOM_TAT_GIAI_PHAP] tomTat,[NGUOI_THAM_GIA_ADUNG] thamGiaToChuc,[SO_TIEN_HIEU_QUA] soTienLamLoi,[NGAY_XET_DUYET] ngayApDung,[KET_QUA_DANH_GIA_XET_DUYET] ketQuaDanhGiaXetDuyet,[KIEN_NGHI_HOI_DONG_XET_DUYET] kienNghiHoiDongXetDuyet,[THU_LAO] thuLao,[MA_TRANG_THAI] maTrangThai,[NGUOI_TAO] nguoiTao " +
-                "  FROM [dbo].[SK_SANGKIEN] sk WHERE 1=1";
+                "  FROM [dbo].[SK_SANGKIEN] sk WHERE 1=1 AND [DA_XOA] = 0";
 
         RoleResp role = CheckQuyen(userId);
         MapSqlParameterSource parameters = new MapSqlParameterSource();
@@ -216,11 +216,11 @@ public class SangKienServiceImpl implements SangKienService {
             queryString += " AND sk.MA_DON_VI_DAU_TU =:ORGID";
             parameters.addValue("ORGID", orgId);
         } else {
-            queryString += " AND (sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_HOIDONG hd, DM_NGUOI_THUC_HIEN th \n" +
+            queryString += " AND ((sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_HOIDONG hd, DM_NGUOI_THUC_HIEN th \n" +
                     "WHERE hd.MA_NGUOI_THUC_HIEN = th.MA_NGUOI_THUC_HIEN \n" +
                     "AND th.NS_ID IN (SELECT MA_NHAN_VIEN FROM Q_USER WHERE USERID=:USERID)) " +
                     "OR sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_NGUOI_THUC_HIEN tt WHERE  tt.NS_ID IN (SELECT MA_NHAN_VIEN FROM Q_USER WHERE USERID=:USERID)))" +
-                    " OR sk.NGUOI_TAO = :USERID OR sk.NGUOI_SUA = :USERID";
+                    " OR sk.NGUOI_TAO = :USERID OR sk.NGUOI_SUA = :USERID)";
             parameters.addValue("USERID", userId);
         }
 
