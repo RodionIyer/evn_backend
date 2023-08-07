@@ -810,25 +810,19 @@ public class ExcelController {
     public String GetRow(Row row, int cellNum) throws Exception {
         try {
             Cell cell = row.getCell(cellNum);
-            CellType cellType = cell.getCellType();
-            return cell.getStringCellValue();
-//            if (cell != null && cell.getCellType() != null) {
-//                switch (cell.getCellType()) {
-//                    case 1:
-//                        return cell.getStringCellValue();
-//                    case 0:
-//                        if (DateUtil.isCellDateFormatted(cell)) {
-//                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-//                            return dateFormat.format(cell.getDateCellValue()) + "";
-//                        } else {
-//                            return cell.getNumericCellValue() + "";
-//                        }
-//                    case 4:
-//                        return cell.getBooleanCellValue() + "";
-//                    default:
-//                        return "";
-//                }
-//            }
+            if (cell != null) {
+                switch (cell.getCellType()) {
+                    case STRING:
+                        return cell.getStringCellValue();
+                    case NUMERIC:
+                        return String.format("%.2f", cell.getNumericCellValue());
+                    case BOOLEAN:
+                    case BLANK:
+                    case ERROR:
+                    default:
+                        System.out.println("Giá trị của ô không xác định");
+                }
+            }
         } catch (Exception ex) {
         }
         try {
