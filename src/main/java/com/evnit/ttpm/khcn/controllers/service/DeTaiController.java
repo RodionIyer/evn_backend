@@ -275,7 +275,7 @@ public class DeTaiController {
         return msg;
     }
     public String HoiDong(DeTaiReq detai, String userId, String orgId, String token) throws Exception {
-        String msg = "";
+        String msg = "Thêm mới thành công";
         List<FileReq> listFile = new ArrayList<>();
         List<String> listFolder = new ArrayList<>();
         if (detai != null && detai.getListFolderFile() != null && detai.getListFolderFile().size() > 0) {
@@ -2000,6 +2000,38 @@ public class DeTaiController {
                 }
             }
             List<UserResp> listUser = deTaiService.ListUser(ten);
+
+
+            return new ExecServiceResponse(listUser, 1, "Danh Sách thành công.");
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return new ExecServiceResponse(-1, "Thực hiện thất bại");
+    }
+
+    public ExecServiceResponse DanhSachHoiDong(ExecServiceRequest execServiceRequest) {
+        try {
+
+            String orgId = SecurityUtils.getPrincipal().getORGID();
+            String userId = SecurityUtils.getPrincipal().getUserId();
+            String ten = "";
+            String maDonVi = "";
+            for (Api_Service_Input obj : execServiceRequest.getParameters()) {
+                if ("TEN_NGUOI_THUC_HIEN".equals(obj.getName())) {
+                    ten = obj.getValue().toString();
+                    //break;
+                }
+                if ("MA_DON_VI".equals(obj.getName())) {
+                    maDonVi = obj.getValue().toString();
+                    //break;
+                }
+            }
+            if(!Util.isNotEmpty(maDonVi)){
+                maDonVi =orgId;
+            }
+            List<UserResp> listUser = deTaiService.ListHoiDong(ten,maDonVi);
 
 
             return new ExecServiceResponse(listUser, 1, "Danh Sách thành công.");

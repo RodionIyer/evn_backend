@@ -50,4 +50,5 @@ public interface DeTaiService {
     List<DeTaiResp> ListDeTaiChung(String loaiTimKiem, TimKiemReq timKiemReq, String nguoiTao, String page, String pageSize,String orgId) throws Exception;
     List<Folder> ListFolderFileAll() throws Exception;
     RoleResp CheckQuyen(String userId) throws Exception;
+    List<UserResp> ListHoiDong(String ten,String capDonVi) throws Exception;
 }
