@@ -160,7 +160,7 @@ public class DeTaiServiceImpl implements DeTaiService {
                 " dt.[THOI_GIAN_KET_THUC] thoiGianThucHienDen,dt.[MA_NGUON_KINH_PHI] nguonKinhPhi,dt.[TONG_KINH_PHI] tongKinhPhi,dt.[MA_PHUONG_THUC_KHOAN] phuongThucKhoanChi,dt.[KINH_PHI_KHOAN] kinhPhiKhoan,dt.[KINH_PHI_KHONG_KHOAN] kinhPhiKhongKhoan,dt.[TINH_CAP_THIET] tinhCapThietCuaDeTaiNhiemVu," +
                 " dt.[MUC_TIEU] mucTieu,dt.[NHIEM_VU] nhiemVuVaPhamViNghienCuu,dt.[KET_QUA_DU_KIEN] ketQuaDuKien,dt.[KIEN_NGHI_DE_XUAT] kienNghiDeXuat,dt.[KET_LUAN_HOI_DONG_XET_DUYET] ketLuanHoiDongXetDuyet,dt.[MA_KET_QUA_NGHIEM_THU] maKetQuaNhiemThu," +
                 " dt.[KET_QUA_THUC_TE_NGHIEM_THU] ketQuaThucTeNghiemThu,dt.[TON_TAI_KHAC_PHUC_NGHIEM_THU] tonTaiKhacPhucNghiemThu,dt.[DIEM_NGHIEM_THU] diemNghiemThu,dt.[MA_TRANG_THAI] maTrangThai,dt.[NGUOI_TAO] nguoiTao,dt.[NGAY_TAO] ngayTao,dt.[NGUOI_SUA] nguoiSua" +
-                " FROM [dbo].[DT_DE_TAI] dt WHERE 1=1 ";
+                " FROM [dbo].[DT_DE_TAI] dt WHERE 1=1 AND [DA_XOA] = 0 ";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         //parameters.addValue("USERID",nguoiTao);
@@ -174,11 +174,11 @@ public class DeTaiServiceImpl implements DeTaiService {
             parameters.addValue("ORGID", orgId);
             parameters.addValue("USERID", userId);
         }else{
-            queryString += " AND (dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_HOI_DONG hd, DM_NGUOI_THUC_HIEN th \n" +
+            queryString += " AND ((dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_HOI_DONG hd, DM_NGUOI_THUC_HIEN th \n" +
                     " WHERE hd.MA_NGUOI_THUC_HIEN = th.MA_NGUOI_THUC_HIEN \n" +
                     " AND th.NS_ID IN (SELECT MA_NHAN_VIEN FROM Q_USER WHERE USERID=:USERID)) " +
                     " OR dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_NGUOI_THUC_HIEN tt WHERE  tt.NS_ID IN (SELECT MA_NHAN_VIEN FROM Q_USER WHERE USERID=:USERID)))" +
-                    " OR dt.NGUOI_TAO = :USERID OR NGUOI_SUA = :USERID";
+                    " OR dt.NGUOI_TAO = :USERID OR NGUOI_SUA = :USERID)";
             parameters.addValue("USERID", userId);
         }
 
