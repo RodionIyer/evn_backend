@@ -23,9 +23,9 @@ public class SangKienServiceImpl implements SangKienService {
     @Override
     public int insertSangKien(SangKienReq sangKienReq, String maSangKien) throws Exception {
         String queryString = "INSERT INTO [dbo].[SK_SANGKIEN]([MA_SANGKIEN],[TEN_SANGKIEN],[MA_CAPDO],[MA_DON_VI_DAU_TU],[NAM],[LA_THU_TRUONG],[U_NHUOC_DIEM],[NOI_DUNG_GPHAP],[QTRINH_APDUNG],[HIEU_QUA_THUC_TIEN]," +
-                " [TOM_TAT_GIAI_PHAP],[NGUOI_THAM_GIA_ADUNG],[SO_TIEN_HIEU_QUA],[NGAY_XET_DUYET],[KET_QUA_DANH_GIA_XET_DUYET],[KIEN_NGHI_HOI_DONG_XET_DUYET],[THU_LAO],[MA_TRANG_THAI],[NGUOI_TAO],[NGAY_TAO],[NGUOI_SUA],[NGAY_SUA],[DA_XOA])" +
+                " [TOM_TAT_GIAI_PHAP],[NGUOI_THAM_GIA_ADUNG],[SO_TIEN_HIEU_QUA],[NGAY_XET_DUYET],[KET_QUA_DANH_GIA_XET_DUYET],[KIEN_NGHI_HOI_DONG_XET_DUYET],[THU_LAO],[MA_TRANG_THAI],[NGUOI_TAO],[NGAY_TAO],[NGUOI_SUA],[NGAY_SUA],[DA_XOA], [DON_VI_AP_DUNG])" +
                 " VALUES(:MA_SANGKIEN,:TEN_SANGKIEN,:MA_CAPDO,:MA_DON_VI_DAU_TU,:NAM,:LA_THU_TRUONG,:U_NHUOC_DIEM,:NOI_DUNG_GPHAP,:QTRINH_APDUNG,:HIEU_QUA_THUC_TIEN," +
-                " :TOM_TAT_GIAI_PHAP,:NGUOI_THAM_GIA_ADUNG,:SO_TIEN_HIEU_QUA,:NGAY_XET_DUYET,:KET_QUA_DANH_GIA_XET_DUYET,:KIEN_NGHI_HOI_DONG_XET_DUYET,:THU_LAO,:MA_TRANG_THAI,:NGUOI_TAO,GETDATE(),:NGUOI_SUA,GETDATE(),0)";
+                " :TOM_TAT_GIAI_PHAP,:NGUOI_THAM_GIA_ADUNG,:SO_TIEN_HIEU_QUA,:NGAY_XET_DUYET,:KET_QUA_DANH_GIA_XET_DUYET,:KIEN_NGHI_HOI_DONG_XET_DUYET,:THU_LAO,:MA_TRANG_THAI,:NGUOI_TAO,GETDATE(),:NGUOI_SUA,GETDATE(),0, :DON_VI_AP_DUNG)";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("MA_SANGKIEN", maSangKien);
         parameters.addValue("TEN_SANGKIEN", sangKienReq.getTenGiaiPhap());
@@ -47,6 +47,7 @@ public class SangKienServiceImpl implements SangKienService {
         parameters.addValue("MA_TRANG_THAI", sangKienReq.getMaTrangThai());
         parameters.addValue("NGUOI_TAO", sangKienReq.getNguoiTao());
         parameters.addValue("NGUOI_SUA", sangKienReq.getNguoiSua());
+        parameters.addValue("DON_VI_AP_DUNG", sangKienReq.getDonViApDungInfo() != null ? sangKienReq.getDonViApDungInfo().getName() : null);
         int result = jdbcTemplate.update(queryString, parameters);
 
 //        KeHoachResp keHoachResp =KeHoachByMa(maKeHoach);
@@ -59,7 +60,7 @@ public class SangKienServiceImpl implements SangKienService {
     @Override
     public int updateSangKien(SangKienReq sangKienReq, String maSangKien) throws Exception {
         String queryString = "UPDATE [dbo].[SK_SANGKIEN] SET [TEN_SANGKIEN] = :TEN_SANGKIEN,[MA_CAPDO] = :MA_CAPDO,[MA_DON_VI_DAU_TU] = :MA_DON_VI_DAU_TU,[NAM] = :NAM,[LA_THU_TRUONG] = :LA_THU_TRUONG,[U_NHUOC_DIEM] = :U_NHUOC_DIEM,[NOI_DUNG_GPHAP] = :NOI_DUNG_GPHAP,[QTRINH_APDUNG] = :QTRINH_APDUNG,[HIEU_QUA_THUC_TIEN] = :HIEU_QUA_THUC_TIEN," +
-                " [TOM_TAT_GIAI_PHAP] = :TOM_TAT_GIAI_PHAP,[NGUOI_THAM_GIA_ADUNG] = :NGUOI_THAM_GIA_ADUNG,[SO_TIEN_HIEU_QUA] = :SO_TIEN_HIEU_QUA,[NGAY_XET_DUYET] = :NGAY_XET_DUYET,[KET_QUA_DANH_GIA_XET_DUYET] = :KET_QUA_DANH_GIA_XET_DUYET,[KIEN_NGHI_HOI_DONG_XET_DUYET] = :KIEN_NGHI_HOI_DONG_XET_DUYET,[THU_LAO] = :THU_LAO,[MA_TRANG_THAI] = :MA_TRANG_THAI,[NGUOI_SUA] =:NGUOI_SUA,[NGAY_SUA] = GETDATE()" +
+                " [TOM_TAT_GIAI_PHAP] = :TOM_TAT_GIAI_PHAP,[NGUOI_THAM_GIA_ADUNG] = :NGUOI_THAM_GIA_ADUNG,[SO_TIEN_HIEU_QUA] = :SO_TIEN_HIEU_QUA,[NGAY_XET_DUYET] = :NGAY_XET_DUYET,[KET_QUA_DANH_GIA_XET_DUYET] = :KET_QUA_DANH_GIA_XET_DUYET,[KIEN_NGHI_HOI_DONG_XET_DUYET] = :KIEN_NGHI_HOI_DONG_XET_DUYET,[THU_LAO] = :THU_LAO,[MA_TRANG_THAI] = :MA_TRANG_THAI,[NGUOI_SUA] =:NGUOI_SUA,[NGAY_SUA] = GETDATE(), [DON_VI_AP_DUNG] = :DON_VI_AP_DUNG" +
                 " WHERE  [MA_SANGKIEN] =:MA_SANGKIEN ";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("MA_SANGKIEN", maSangKien);
@@ -81,6 +82,7 @@ public class SangKienServiceImpl implements SangKienService {
         parameters.addValue("THU_LAO", sangKienReq.getThuLao());
         parameters.addValue("MA_TRANG_THAI", sangKienReq.getMaTrangThai());
         parameters.addValue("NGUOI_SUA", sangKienReq.getNguoiSua());
+        parameters.addValue("DON_VI_AP_DUNG", sangKienReq.getDonViApDungInfo() != null ? sangKienReq.getDonViApDungInfo().getName() : null);
         int result = jdbcTemplate.update(queryString, parameters);
         return result;
     }
@@ -245,7 +247,7 @@ public class SangKienServiceImpl implements SangKienService {
     public SangKienResp ChiTietSangKien(String maSangKien) throws Exception {
         String queryString = "SELECT [MA_SANGKIEN] maSangKien,[TEN_SANGKIEN] tenGiaiPhap,[MA_CAPDO] capDoSangKien,[MA_DON_VI_DAU_TU] donViChuDauTu,[NAM] nam," +
                 "[LA_THU_TRUONG] thuTruongDonVi,[U_NHUOC_DIEM] uuNhuocDiem,[NOI_DUNG_GPHAP] noiDungGiaiPhap,[QTRINH_APDUNG] quaTrinhApDung,[HIEU_QUA_THUC_TIEN] hieuQuaThucTe," +
-                "[TOM_TAT_GIAI_PHAP] tomTat,[NGUOI_THAM_GIA_ADUNG] thamGiaToChuc,[SO_TIEN_HIEU_QUA] soTienLamLoi,[NGAY_XET_DUYET] ngayApDung,[KET_QUA_DANH_GIA_XET_DUYET] ketQuaDanhGiaXetDuyet,[KIEN_NGHI_HOI_DONG_XET_DUYET] kienNghiHoiDongXetDuyet,[THU_LAO] thuLao,[MA_TRANG_THAI] maTrangThai,[NGUOI_TAO] nguoiTao " +
+                "[TOM_TAT_GIAI_PHAP] tomTat,[NGUOI_THAM_GIA_ADUNG] thamGiaToChuc,[SO_TIEN_HIEU_QUA] soTienLamLoi,[NGAY_XET_DUYET] ngayApDung,[KET_QUA_DANH_GIA_XET_DUYET] ketQuaDanhGiaXetDuyet,[KIEN_NGHI_HOI_DONG_XET_DUYET] kienNghiHoiDongXetDuyet,[THU_LAO] thuLao,[MA_TRANG_THAI] maTrangThai,[NGUOI_TAO] nguoiTao, [DON_VI_AP_DUNG] donViApDung " +
                 "  FROM [dbo].[SK_SANGKIEN] sk WHERE sk.MA_SANGKIEN = :MA_SANGKIEN";
 
 
