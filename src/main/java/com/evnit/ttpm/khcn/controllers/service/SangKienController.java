@@ -181,7 +181,9 @@ public class SangKienController {
             SimpleDateFormat sdf = new SimpleDateFormat("ddMMYYYYhhmmss");
             String dateString = sdf.format(new Date());
             String path = pathFile + "/" + fileName;//"/khcn/"+orgId+"/"+userId+"/"+dateString+"/"+fileName;///khcn/<mã đơn vị>/<userid>/<20221201101013: ngày upload>/test.pdf
-            byte[] decodedBytes = Base64.getDecoder().decode(fileUpload);
+            String cleanedBase64String = fileUpload.replaceAll("\\s", "")
+                    .replaceAll("data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,","");
+            byte[] decodedBytes = Base64.getDecoder().decode(cleanedBase64String);
             //  String token=this.customService.generatingRandomAlphabeticString(50);
             Object obj = fileService.callPostFile(fileName, path, decodedBytes, token);
 
@@ -433,7 +435,7 @@ public class SangKienController {
 //            String page="";
 //            String pagezise="";
             for (Api_Service_Input obj : execServiceRequest.getParameters()) {
-                if ("MA_DETAI".equals(obj.getName())) {
+                if ("MA_SANGKIEN".equals(obj.getName())) {
                     maKeHoach = obj.getValue().toString();
                     //break;
                 }
@@ -723,6 +725,8 @@ public class SangKienController {
 
             obj.setListFolderFile(listFolderFileNew);
         }
+        List<String> linhVucNC = sangKienService.ListLinhVucNghienCuuMa(maSangKien);
+        obj.setLinhVucNghienCuu(linhVucNC);
         return obj;
     }
 

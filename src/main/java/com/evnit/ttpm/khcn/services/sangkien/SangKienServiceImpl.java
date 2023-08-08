@@ -362,7 +362,7 @@ public class SangKienServiceImpl implements SangKienService {
     @Override
     public List<FileReq> ListFileByMa(String maSangKien) throws Exception {
         String queryString = "SELECT [MA_FILE] mafile,[MA_SANGKIEN] maSangKien,[MA_LOAI_FILE] maLoaiFile,[SO_KY_HIEU] sovanban,[NGAY_VAN_BAN] ngayVanBan," +
-                " [TEN_FILE] fileName,[KICH_THUOC] size,[KIEU_FILE] kieuFile,[LOAI_FILE] loaiFile,[DUONG_DAN] duongDan,[NGUOI_TAO] nguoiTao,[NGAY_TAO] ngayTao,[NGUOI_SUA] nguoiSua  FROM [dbo].[SK_SANGKIEN_FILE] WHERE MA_SANGKIEN = :MA_SANGKIEN AND DA_XOA=0";
+                " [TEN_FILE] fileName,[KICH_THUOC] size,[KIEU_FILE] kieuFile,[LOAI_FILE] loaiFile,[DUONG_DAN] duongDan,[NGUOI_TAO] nguoiTao,[NGAY_TAO] ngayTao,[NGUOI_SUA] nguoiSua, [FILE_BASE64] base64  FROM [dbo].[SK_SANGKIEN_FILE] WHERE MA_SANGKIEN = :MA_SANGKIEN AND DA_XOA=0";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("MA_SANGKIEN", maSangKien);
