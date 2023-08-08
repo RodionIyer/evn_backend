@@ -408,7 +408,7 @@ public class SangKienController {
                     if (listDonViNew != null && listDonViNew.size() > 0) {
                         item.setTenDonViChuDauTu(listDonViNew.get(0).getName());
                     }
-                    List<DanhSachChung> listtrangThaiNew = listCapDo.stream().filter(c -> c.getId().equals(item.getMaTrangThai())).collect(Collectors.toList());
+                    List<DanhSachChung> listtrangThaiNew = listtrangThai.stream().filter(c -> c.getId().equals(item.getMaTrangThai())).collect(Collectors.toList());
                     if (listtrangThaiNew != null && listtrangThaiNew.size() > 0) {
                         item.setTenTrangThai(listtrangThaiNew.get(0).getName());
                     }
