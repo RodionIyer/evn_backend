@@ -435,7 +435,7 @@ public class SangKienController {
 //            String page="";
 //            String pagezise="";
             for (Api_Service_Input obj : execServiceRequest.getParameters()) {
-                if ("MA_DETAI".equals(obj.getName())) {
+                if ("MA_SANGKIEN".equals(obj.getName())) {
                     maKeHoach = obj.getValue().toString();
                     //break;
                 }
