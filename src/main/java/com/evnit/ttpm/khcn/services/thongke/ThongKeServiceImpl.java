@@ -345,7 +345,7 @@ public class ThongKeServiceImpl implements ThongKeService {
         String whereDT=" AND sk.MA_CAPDO IS NOT NULL";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         if(Util.isNotEmpty(thongKeReq.getDonViChuTri())){
-            whereDT += " AND sk.MA_DON_VI_CHU_TRI = :MA_DON_VI_CHU_TRI";
+            whereDT += " AND sk.MA_DON_VI_DAU_TU = :MA_DON_VI_CHU_TRI";
             parameters.addValue("MA_DON_VI_CHU_TRI",thongKeReq.getDonViChuTri());
         }
         if(Util.isNotEmpty(thongKeReq.getCapQuanLy())){
