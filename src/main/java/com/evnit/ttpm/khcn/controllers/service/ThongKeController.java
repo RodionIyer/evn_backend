@@ -86,7 +86,7 @@ public class ThongKeController {
                 if(listLinhVucNC != null && listLinhVucNC.size() >0){
                     for(DanhSachChung item : listLinhVucNC){
                         ThongKeResp thongKe = new ThongKeResp();
-                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaNghienCuu().equals(item.getId())).collect(Collectors.toList());
+                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaNghienCuu() != null && c.getMaNghienCuu().equals(item.getId())).collect(Collectors.toList());
                         if(listDeTaiKH != null && listDeTaiKH.size() >0) {
                             thongKe.setTenLinhVuc(item.getName());
                             thongKe.setListData(listDeTaiKH);
@@ -100,7 +100,7 @@ public class ThongKeController {
                 if(listCapDo != null && listCapDo.size() >0){
                     for(DanhSachChung item : listCapDo){
                         ThongKeResp thongKe = new ThongKeResp();
-                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaCapQuanLy().equals(item.getId())).collect(Collectors.toList());
+                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaCapQuanLy() != null && c.getMaCapQuanLy().equals(item.getId())).collect(Collectors.toList());
                         if(listDeTaiKH != null && listDeTaiKH.size() >0) {
                             thongKe.setTenLinhVuc(item.getName());
                             thongKe.setListData(listDeTaiKH);
@@ -114,7 +114,7 @@ public class ThongKeController {
                 if(listCapDonVi != null && listCapDonVi.size() >0){
                     for(DanhSachChung item : listCapDonVi){
                         ThongKeResp thongKe = new ThongKeResp();
-                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaDonViChuTri().equals(item.getId())).collect(Collectors.toList());
+                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaDonViChuTri() != null && c.getMaDonViChuTri().equals(item.getId())).collect(Collectors.toList());
                         if(listDeTaiKH != null && listDeTaiKH.size() >0) {
                             thongKe.setTenLinhVuc(item.getName());
                             thongKe.setListData(listDeTaiKH);
@@ -131,7 +131,7 @@ public class ThongKeController {
                 if(listLinhVucNC != null && listLinhVucNC.size() >0){
                     for(DanhSachChung item : listLinhVucNC){
                         ThongKeResp thongKe = new ThongKeResp();
-                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaNghienCuu().equals(item.getId())).collect(Collectors.toList());
+                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaNghienCuu() != null && c.getMaNghienCuu().equals(item.getId())).collect(Collectors.toList());
                         if(listDeTaiKH != null && listDeTaiKH.size() >0) {
                             thongKe.setTenLinhVuc(item.getName());
                             thongKe.setListData(listDeTaiKH);
@@ -145,7 +145,7 @@ public class ThongKeController {
                 if(listCapDo != null && listCapDo.size() >0){
                     for(DanhSachChung item : listCapDo){
                         ThongKeResp thongKe = new ThongKeResp();
-                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaCapQuanLy().equals(item.getId())).collect(Collectors.toList());
+                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c ->  c.getMaCapQuanLy() != null && c.getMaCapQuanLy().equals(item.getId())).collect(Collectors.toList());
                         if(listDeTaiKH != null && listDeTaiKH.size() >0) {
                             thongKe.setTenLinhVuc(item.getName());
                             thongKe.setListData(listDeTaiKH);
@@ -159,7 +159,7 @@ public class ThongKeController {
                 if(listCapDonVi != null && listCapDonVi.size() >0){
                     for(DanhSachChung item : listCapDonVi){
                         ThongKeResp thongKe = new ThongKeResp();
-                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaDonViChuTri().equals(item.getId())).collect(Collectors.toList());
+                        List<ListData> listDeTaiKH = listDeTai.stream().filter(c -> c.getMaDonViChuTri() != null && c.getMaDonViChuTri().equals(item.getId())).collect(Collectors.toList());
                         if(listDeTaiKH != null && listDeTaiKH.size() >0) {
                             thongKe.setTenLinhVuc(item.getName());
                             thongKe.setListData(listDeTaiKH);
