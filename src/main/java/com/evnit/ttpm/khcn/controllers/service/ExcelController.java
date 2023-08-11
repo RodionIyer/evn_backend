@@ -961,7 +961,7 @@ public class ExcelController {
                             cellIndex++;
                             writeExportData(sheet, rows, cellIndex, item2.getThuLaoNguoiApDung(), 0);
                             cellIndex++;
-                            writeExportData(sheet, rows, cellIndex, item2.getTongCong(), 0);
+                            writeExportData(sheet, rows, cellIndex, item2.getTongKinhPhi(), 0);
                         }
                         j++;
                     }
