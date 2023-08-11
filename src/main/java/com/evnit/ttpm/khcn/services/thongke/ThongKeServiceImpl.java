@@ -61,7 +61,7 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_CAPDO", thongKeReq.getCapQuanLy());
         }
         if (Util.isNotEmpty(thongKeReq.getLinhVucNghienCuu())) {
-            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
+            whereDT += "AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
@@ -125,7 +125,7 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_CAPDO", thongKeReq.getCapQuanLy());
         }
         if (Util.isNotEmpty(thongKeReq.getLinhVucNghienCuu())) {
-            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
+            whereDT += " AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU  AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
@@ -188,7 +188,7 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_CAPDO", thongKeReq.getCapQuanLy());
         }
         if (Util.isNotEmpty(thongKeReq.getLinhVucNghienCuu())) {
-            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
+            whereDT += " AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU  AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
@@ -281,7 +281,7 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_CAPDO", thongKeReq.getCapQuanLy());
         }
         if (Util.isNotEmpty(thongKeReq.getLinhVucNghienCuu())) {
-            whereDT += " AND sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
+            whereDT += " AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU AND sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
@@ -345,7 +345,7 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_CAPDO", thongKeReq.getCapQuanLy());
         }
         if (Util.isNotEmpty(thongKeReq.getLinhVucNghienCuu())) {
-            whereDT += " AND sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
+            whereDT += " AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU AND sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
@@ -409,7 +409,7 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_CAPDO", thongKeReq.getCapQuanLy());
         }
         if (Util.isNotEmpty(thongKeReq.getLinhVucNghienCuu())) {
-            whereDT += " AND sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
+            whereDT += " AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU AND sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {

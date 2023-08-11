@@ -941,6 +941,8 @@ public class ExcelController {
                         writeExportData(sheet, rows, cellIndex, item2.getCapQuanLy(), 0);
                         cellIndex++;
                         writeExportData(sheet, rows, cellIndex, item2.getLinhVucKhoaHoc(), 0);
+                        cellIndex++;
+                        writeExportData(sheet, rows, cellIndex, item2.getDonViChuTri(), 0);
                         if (loaiTimKiem != null && loaiTimKiem.equals("DETAI")) {
                             cellIndex++;
                             writeExportData(sheet, rows, cellIndex, item2.getKinhPhi(), 0);
@@ -952,8 +954,8 @@ public class ExcelController {
                             writeExportData(sheet, rows, cellIndex, item2.getThoiGianThucHien(), 0);
 
                         } else if (loaiTimKiem != null && loaiTimKiem.equals("SANGKIEN")) {
-                            cellIndex++;
-                            writeExportData(sheet, rows, cellIndex, item2.getDonViDangKy(), 0);
+//                            cellIndex++;
+//                            writeExportData(sheet, rows, cellIndex, item2.getDonViDangKy(), 0);
                             cellIndex++;
                             writeExportData(sheet, rows, cellIndex, item2.getSoTienLamLoi(), 0);
                             cellIndex++;

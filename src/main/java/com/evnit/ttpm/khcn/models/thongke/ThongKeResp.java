@@ -9,4 +9,5 @@ import java.util.List;
 public class ThongKeResp  extends BaseModel {
   List<ListData> listData;
   public String tenLinhVuc;
+  public Integer totalItem;
 }
