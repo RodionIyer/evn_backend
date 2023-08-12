@@ -53,6 +53,7 @@ public class TraCuuServiceImpl implements TraCuuService {
             queryString = " SELECT * FROM (" +
                     " SELECT 'DETAI' loaiDeTaiSK, " +
                     " dt.TEN_DETAI tenDeTaiSK, " +
+                    " dt.MA_DETAI maDeTaiSK, " +
                     " cd.TEN_CAPDO capQuanLy, " +
                     " nth.TEN_NGUOI_THUC_HIEN tenChuNhiemTG, " +
                     " dv.ORGDESC donViChuTri, " +
@@ -69,6 +70,7 @@ public class TraCuuServiceImpl implements TraCuuService {
                     " UNION ALL" +
                     " SELECT  'SANGKIEN' AS loaiDeTaiSK," +
                     " sk.TEN_SANGKIEN tenDeTaiSK, " +
+                    " sk.MA_SANGKIEN maDeTaiSK, " +
                     " cd.TEN_CAPDO capQuanLy," +
                     " nth.TEN_NGUOI_THUC_HIEN tenChuNhiemTG, " +
                     " dv.ORGDESC donViChuTri," +
@@ -86,6 +88,7 @@ public class TraCuuServiceImpl implements TraCuuService {
         } else if (traCuuReq.getHoatDongKhCN().equals("DE_TAI")) {
             queryString = " SELECT 'DETAI' loaiDeTaiSK, " +
                     " dt.TEN_DETAI tenDeTaiSK, " +
+                    " dt.MA_DETAI maDeTaiSK, " +
                     " cd.TEN_CAPDO capQuanLy, " +
                     " nth.TEN_NGUOI_THUC_HIEN tenChuNhiemTG, " +
                     " dv.ORGDESC donViChuTri, " +
@@ -103,6 +106,7 @@ public class TraCuuServiceImpl implements TraCuuService {
         } else if (traCuuReq.getHoatDongKhCN().equals("SANG_KIEN")) {
             queryString = " SELECT  'SANGKIEN' AS loaiDeTaiSK," +
                     " sk.TEN_SANGKIEN tenDeTaiSK, " +
+                    " sk.MA_SANGKIEN maDeTaiSK, " +
                     " cd.TEN_CAPDO capQuanLy," +
                     " nth.TEN_NGUOI_THUC_HIEN tenChuNhiemTG, " +
                     " dv.ORGDESC donViChuTri," +
