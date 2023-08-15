@@ -16,6 +16,7 @@ package com.evnit.ttpm.khcn.util;
 
 import java.security.SecureRandom;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -165,5 +166,29 @@ public class Util {
 		return false;
 	}
 
+	public static Integer toInt(Object obj){
+		try{
+			int number = Integer.parseInt(obj.toString());
+			return number;
+		}
+		catch (NumberFormatException ex){
+			ex.printStackTrace();
+		}
+		return 0;
+	}
+
+	public static String formatNumber(Object obj){
+		if(obj !=null && !obj.toString().isEmpty()){
+			try{
+				double number = Double.parseDouble(obj.toString());
+				String s = NumberFormat.getInstance(Locale.GERMANY).format(number);
+				return s;
+			}
+			catch (NumberFormatException ex){
+				ex.printStackTrace();
+			}
+		}
+		return "";
+	}
 
 }

@@ -13,4 +13,5 @@ public interface ExcelService {
     List<NguonKinhPhi> getListNguonKinhPhi();
     KeHoach getFirstMaKeHoach(String maKeHoach);
     List<KeHoachChiTiet> getListKeHoachChiTiet(String maKeHoach);
+    List<DonVi> getListDonViByListMaDonVi(List<String> orgId) ;
 }

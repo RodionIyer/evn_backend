@@ -25,4 +25,5 @@ public class Folder {
     public Boolean quyetToan;
     public Boolean trangThai;
     public String quyenCapNhat;
+    public String ghiChu;
 }

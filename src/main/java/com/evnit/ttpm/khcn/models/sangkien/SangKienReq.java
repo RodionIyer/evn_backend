@@ -48,4 +48,6 @@ public class SangKienReq {
     public String kienNghiHoiDong;
     public List<DanhSachThanhVien> tacGiaGiaiPhap;
     public ApplicationUnitReq donViApDungInfo;
+    public List<Folder> listFolderHSDK;
+    public List<Folder> listFolderHSXD;
 }

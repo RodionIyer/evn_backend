@@ -49,6 +49,8 @@ public class DeTaiResp extends BaseModel {
     public String soDienThoaiThuKy;
     public List<DanhSachThanhVien> danhSachThanhVien;
     public List<DanhSachThanhVien> danhSachThanhVienHD;
+    public List<DanhSachThanhVien> danhSachThanhVienHDNT;
+    public List<UserResp> danhSachHD;
     public String tenNguonKinhPhi;
     public String nguonKinhPhi;
     public String tongKinhPhi;
@@ -83,5 +85,8 @@ public class DeTaiResp extends BaseModel {
     public String nguoiTao;
     public Date ngayTao;
     public String nguoiSua;
+    public String diaDiem;
+    public Date thoiGianHop;
+    public String ketQuaPhieuDanhGia;
     public List<TienDoThucHien> listTienDoCongViec;
 }

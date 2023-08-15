@@ -87,4 +87,19 @@ public class DeTaiReq {
         public Date ngayTao;
         public String nguoiSua;
         public List<TienDoThucHien> TienDoThucHien;
+        public String orgId;
+        public String diaDiem;
+        public Date thoiGianHop;
+        public String ketQuaPhieuDanhGia;
+        public String ketLuanKienNghiHD;
+        public String maKetQuaNT;
+        public String tenKetQuaNT;
+        public String tonTaiKhacNT;
+        public int loaiHD;
+        public List<Folder> listFolderHSDK;
+        public List<Folder> listFolderHSXD;
+        public List<Folder> listFolderBanGiao;
+        public List<Folder> listFolderQuyetToan;
+        public List<Folder> listFolderHSNT;
+
 }

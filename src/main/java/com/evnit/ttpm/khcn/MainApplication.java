@@ -1,7 +1,9 @@
 package com.evnit.ttpm.khcn;
 
+import com.evnit.ttpm.khcn.controllers.service.WordController;
 import com.evnit.ttpm.khcn.models.admin.Q_Lst_Api;
 import com.evnit.ttpm.khcn.services.admin.ApiService;
+import com.evnit.ttpm.khcn.thread.ThreadSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 @EnableSwagger2
 @EnableWebMvc
 public class MainApplication {
-
+    ThreadSystem threadSystem;
     @Autowired
     ApiService apiService;
 
@@ -40,6 +42,9 @@ public class MainApplication {
 
     @EventListener
     public void onApplicationStartedEvent(ApplicationStartedEvent event) {
+        threadSystem = new ThreadSystem();
+        threadSystem.start();
+
         ApplicationContext applicationContext = event.getApplicationContext();
         applicationContext.getBean(RequestMappingHandlerMapping.class)
                 .getHandlerMethods().forEach((key, value)
@@ -63,11 +68,13 @@ public class MainApplication {
                             }
                     }
                 });
+
     }
 
     public static void main(String[] args) {
-//        String path = System.getProperty("${basedir}");
-//        System.out.println("path"+path);
+//        WordController word = new WordController();
+////        word.ConvertToWord();
+//        word.KeHoach("", "125");
         SpringApplication.run(MainApplication.class, args);
     }
 

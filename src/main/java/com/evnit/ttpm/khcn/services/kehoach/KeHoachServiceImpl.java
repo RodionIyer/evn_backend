@@ -259,7 +259,7 @@ public class KeHoachServiceImpl implements KeHoachService {
             parameters.addValue("MA_TRANG_THAI",maTrangThai);
         }
 
-        queryString +=" AND kh.MA_DON_VI IN(:ORGID) ORDER BY kh.NGAY_TAO DESC OFFSET "+page+" ROWS FETCH NEXT "+pageSize+" ROWS ONLY";
+        queryString +=" AND kh.MA_DON_VI IN(:ORGID) ORDER BY kh.NGAY_TAO DESC OFFSET "+ (Util.toInt(page) * Util.toInt(pageSize)) +" ROWS FETCH NEXT "+pageSize+" ROWS ONLY";
         parameters.addValue("ORGID",orgId);
 
         List<KeHoachResp> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(KeHoachResp.class));
@@ -294,7 +294,7 @@ public class KeHoachServiceImpl implements KeHoachService {
             parameters.addValue("MA_TRANG_THAI",maTrangThai);
         }
 
-        queryString +=" AND kh.MA_DON_VI IN(SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT= :ORGID) ORDER BY kh.NGAY_TAO DESC OFFSET "+page+" ROWS FETCH NEXT "+pageSize+" ROWS ONLY";
+        queryString +=" AND kh.MA_DON_VI IN(SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT= :ORGID) ORDER BY kh.NGAY_TAO DESC OFFSET " +(Util.toInt(page) * Util.toInt(pageSize)) +" ROWS FETCH NEXT "+pageSize+" ROWS ONLY";
         parameters.addValue("ORGID",orgId);
 
         List<KeHoachResp> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(KeHoachResp.class));
@@ -320,7 +320,7 @@ public class KeHoachServiceImpl implements KeHoachService {
 //            parameters.addValue("MA_TRANG_THAI",maTrangThai);
 //        }
 
-        queryString +=" AND kh.MA_DON_VI IN(:ORGID) ORDER BY kh.NGAY_TAO DESC OFFSET "+page+" ROWS FETCH NEXT "+pageSize+" ROWS ONLY";
+        queryString +=" AND kh.MA_DON_VI IN(:ORGID) ORDER BY kh.NGAY_TAO DESC OFFSET "+(Util.toInt(page) * Util.toInt(pageSize)) +" ROWS FETCH NEXT "+pageSize+" ROWS ONLY";
         parameters.addValue("ORGID",orgId);
 
         List<KeHoachResp> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(KeHoachResp.class));

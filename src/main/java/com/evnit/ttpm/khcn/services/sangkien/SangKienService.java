@@ -15,7 +15,8 @@ public interface SangKienService {
     int InsertSangKienLichSu(String maSangKien,String trangThaiCu,String trangThaiMoi,String ghiChu,String nguoiTao) throws Exception;
     int InsertListFile(List<FileReq> listFile,String maSangKien,String nguoiTao, String nguoiSua, List<String> listFolder) throws Exception;
     int InsertThanhVien(List<DanhSachThanhVien> listThanhVien, String maSangKien,String nguoiTao,String nguoiSua) throws Exception;
-    List<SangKienResp> ListSangKien(String nguoiTao, String page, String pageSize,String orgId) throws Exception;
+    int InsertHoiDong(List<DanhSachThanhVien> listThanhVien, String maSangKien,String nguoiTao,String nguoiSua) throws Exception;
+    List<SangKienResp> ListSangKien(String loaiTimKiem, TimKiemReq timKiemReq,String nguoiTao, String page, String pageSize,String orgId) throws Exception;
     SangKienResp ChiTietSangKien(String maSangKien) throws Exception;
     int updateTrangThai(String maSangKien,String maTrangThai) throws Exception;
     int insertLichSu(String maSangKien,String maTrangThaiCu,String maTrangThaiMoi,String ghiChu,String nguoiTao) throws Exception;
@@ -36,4 +37,7 @@ public interface SangKienService {
     RoleResp CheckQuyen(String userId) throws Exception;
     int insertLinhVucNC(List<String> linhVucNghienCuu,String maSangKien,String nguoiTao,String nguoiSua) throws Exception;
     List<String> ListLinhVucNghienCuuMa(String maSangKien) throws Exception;
+    List<SangKienResp> ListSkHoiDong(String loaiTimKiem, TimKiemReq timKiemReq, String nguoiTao, String page, String pageSize, String orgId) throws Exception;
+    List<DanhSachChung> ListChucDanh() throws Exception;
+    List<DanhSachThanhVien> ListHDByMaSK(String maSK) throws Exception;
 }
