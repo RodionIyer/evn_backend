@@ -59,6 +59,8 @@ public class ServiceController {
     DeTaiController deTaiController;
     @Autowired
     SangKienController sangKienController;
+    @Autowired
+    WordController wordController;
 
     @Autowired
     TraCuuController traCuuController;
@@ -185,8 +187,9 @@ public class ServiceController {
             case "BDA6825F-9CAB-4363-A093-5A2C7D906AE5": //danh sách lich su
                 // String orgId= SecurityUtils.getPrincipal().getORGID();
                 return deTaiController.ListLichSu(execServiceRequest);
-
-
+            case "1A8E4364-AA42-40B4-A188-3BBF97F0A1A1": //danh sách de tai lay hoi dong
+                // String orgId= SecurityUtils.getPrincipal().getORGID();
+                return deTaiController.ListDeTaiHoiDong(execServiceRequest);
 
             //Sang kien
             case "09E301E6-9C2E-424C-A3C3-FD46CE8CB18C": //them moi sang kien
@@ -203,6 +206,17 @@ public class ServiceController {
             case "6CB00DBC-A70D-41E1-956E-0C67E2A24342": //danh sách lich su
                 // String orgId= SecurityUtils.getPrincipal().getORGID();
                 return sangKienController.ListLichSu(execServiceRequest);
+            case "53BE3925-262C-4FB9-A2D4-6C898521D9EF": //Xuât mẫu sáng kiến
+                // String orgId= SecurityUtils.getPrincipal().getORGID();
+                return wordController.XuatMau(execServiceRequest);
+
+//            case "68C83185-D172-44BD-8FDE-DC5A5208FE07": //danh sách Hôi Đồng sáng kiên
+//                // String orgId= SecurityUtils.getPrincipal().getORGID();
+//                return deTaiController.DanhSachHoiDong(execServiceRequest);
+
+            case "8AC97350-516A-4757-BCD1-741FB86FFD8D": //ddanh sách sk lay hoi dong
+                // String orgId= SecurityUtils.getPrincipal().getORGID();
+                return sangKienController.ListSKHoiDong(execServiceRequest);
 
 
                 //tra cuu
@@ -210,6 +224,14 @@ public class ServiceController {
             case "63912FAF-0865-4E94-BDBB-6048F2D720C9": //danh sach tra cuu
                 // String orgId= SecurityUtils.getPrincipal().getORGID();
                 return traCuuController.ListDanhSachTraCuu(execServiceRequest);
+
+            case "8652B7BD-DE29-4698-B387-1566ABE92669": //Cap nhat de tai
+                // String orgId= SecurityUtils.getPrincipal().getORGID();
+                return deTaiController.ThemSuaHoanThanh(execServiceRequest);
+
+            case "ADB68831-D89B-423A-934C-DC917A479491": //Cap nhat SangKien
+                // String orgId= SecurityUtils.getPrincipal().getORGID();
+                return sangKienController.ThemSuaHoanThanh(execServiceRequest);
 
             //thống kê
             case "8EA6E3A8-860D-46A9-98B6-AD215E62FE45": //danh sach thống kê

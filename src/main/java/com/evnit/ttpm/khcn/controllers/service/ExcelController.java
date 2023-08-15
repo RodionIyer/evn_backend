@@ -9,6 +9,7 @@ import com.evnit.ttpm.khcn.payload.request.service.ExecServiceRequest;
 import com.evnit.ttpm.khcn.payload.response.service.ExecServiceResponse;
 import com.evnit.ttpm.khcn.security.services.SecurityUtils;
 import com.evnit.ttpm.khcn.services.kehoach.ExcelService;
+import com.evnit.ttpm.khcn.util.Util;
 import com.microsoft.sqlserver.jdbc.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -30,6 +31,8 @@ public class ExcelController {
 
     @Autowired
     ExcelService excelService;
+    @Autowired
+    WordController wordController;
 
     public ExecServiceResponse exec_FC95C3F7_942F_4C7E_88D7_46E12BFE9185(ExecServiceRequest execServiceRequest) { //xuat bao cao
         String orgId = SecurityUtils.getPrincipal().getORGID();
@@ -44,10 +47,21 @@ public class ExcelController {
         }
 
         if (!StringUtils.isEmpty(maKeHoach)) {
+//            try {
+//                String pathSave = wordController.KeHoach(maKeHoach, orgId);
+//                if (Util.isNotEmpty(pathSave)) {
+//                    File file = new File(pathSave);
+//                    byte[] fileContent = Files.readAllBytes(file.toPath());
+//                    String fileBase64 = Base64.getEncoder().encodeToString(fileContent);
+//                    boolean result2 = Files.deleteIfExists(file.toPath());
+//                    return new ExecServiceResponse(fileBase64, 1, "Thành công.");
+//                }
+//            } catch (Exception ex) {
+//            }
             KeHoach kehoach = excelService.getFirstMaKeHoach(maKeHoach);
-            List<DonVi> listDonVi = excelService.getListDonVi(kehoach.getMA_DON_VI());
+            List<DonVi> listDonVi = excelService.getListDonVi(kehoach.getMaDonVi());
             List<DanhSachMau> listDanhSachMau = excelService.getListDanhsachMau();
-            DonVi donVi = excelService.getFirstDonVi(kehoach.getMA_DON_VI());
+            DonVi donVi = excelService.getFirstDonVi(kehoach.getMaDonVi());
             List<KeHoachChiTiet> listKeHoachChiTiet = excelService.getListKeHoachChiTiet(maKeHoach);
             List<NguonKinhPhi> listNguonKinhPhi = excelService.getListNguonKinhPhi();
 
@@ -221,7 +235,6 @@ public class ExcelController {
     }
 
 
-
     public ExecServiceResponse exec_030A9A96_90D5_4AD0_80E4_C596AED63EE7(ExecServiceRequest execServiceRequest) {
         String orgId = SecurityUtils.getPrincipal().getORGID();
 //        String orgId = "";
@@ -278,7 +291,6 @@ public class ExcelController {
                 //Create Workbook instance holding reference to .xlsx file
 
 
-
                 Workbook workbook = new XSSFWorkbook(is);
 
                 //Get first/desired sheet from the workbook
@@ -299,13 +311,13 @@ public class ExcelController {
 
                 String DonViNam = "Tên Đơn vị: " + donVi.getOrgdesc();
                 //don vi nam
-             //   if (checkChild) {
-                    DonViNam = "Năm: " + Year.now().getValue();
-                    Row row11 = sheet.createRow(1);
-                    sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 7));
-                    Cell cell11 = row11.createCell(1);
-                    cell11.setCellStyle(cellStyle);
-                    cell11.setCellValue(DonViNam);
+                //   if (checkChild) {
+                DonViNam = "Năm: " + Year.now().getValue();
+                Row row11 = sheet.createRow(1);
+                sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 7));
+                Cell cell11 = row11.createCell(1);
+                cell11.setCellStyle(cellStyle);
+                cell11.setCellValue(DonViNam);
 //                } else {
 //                    CellStyle cellStyle2 = createStyle(sheet, 0);
 //                    Row row11 = sheet.createRow(1);
@@ -988,12 +1000,12 @@ public class ExcelController {
 //                    e.printStackTrace();
 //                }
 //            }
-            byte[] resultFile =  createOutputFile(workbook);
+            byte[] resultFile = createOutputFile(workbook);
             String encoded = Base64.getEncoder().encodeToString(resultFile);
 
             workbook.close();
             is.close();
-            return new ExecServiceResponse(encoded,1, "Thành công.");
+            return new ExecServiceResponse(encoded, 1, "Thành công.");
 
         } catch (Exception e) {
             e.printStackTrace();

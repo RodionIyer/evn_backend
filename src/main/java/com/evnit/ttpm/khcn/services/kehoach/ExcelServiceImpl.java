@@ -29,6 +29,18 @@ public class ExcelServiceImpl  implements ExcelService {
     }
 
     @Override
+    public List<DonVi> getListDonViByListMaDonVi(List<String> orgId) {
+        String queryString = "SELECT *,ORGID AS MA_NHOM,ORGDESC AS TEN_NHOM FROM S_ORGANIZATION WHERE ORGID IN(:ORGID) ORDER BY ORGDESC ASC";
+        try {
+            MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("ORGID", orgId);
+            List<DonVi> obj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(DonVi.class));
+            return obj;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
     public DonVi getFirstDonVi(String orgId) {
         String queryString = "SELECT * FROM S_ORGANIZATION WHERE [ENABLE] = 1 AND ORGID = :ORGID";
         try {

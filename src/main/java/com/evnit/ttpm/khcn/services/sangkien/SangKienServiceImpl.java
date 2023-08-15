@@ -204,7 +204,34 @@ public class SangKienServiceImpl implements SangKienService {
     }
 
     @Override
-    public List<SangKienResp> ListSangKien(String userId, String page, String pageSize, String orgId) throws Exception {
+    public int InsertHoiDong(List<DanhSachThanhVien> listThanhVien, String maSangKien, String nguoiTao, String nguoiSua) throws Exception {
+        String queryStringDelete = "DELETE FROM SK_SANGKIEN_HOIDONG WHERE MA_SANGKIEN = :MA_SANGKIEN";
+        MapSqlParameterSource parametersDelete = new MapSqlParameterSource();
+        parametersDelete.addValue("MA_SANGKIEN", maSangKien);
+        int result = jdbcTemplate.update(queryStringDelete, parametersDelete);
+        if (listThanhVien != null && listThanhVien.size() > 0) {
+            String queryString = "INSERT INTO [dbo].[SK_SANGKIEN_HOIDONG]([MA_NGUOI_THUC_HIEN],[MA_SANGKIEN],[NS_ID],[GHI_CHU],[MA_CHUC_DANH],[NGUOI_TAO],[NGAY_TAO],[NGUOI_SUA],[NGAY_SUA])  " +
+                    " VALUES(newid(),:MA_SANGKIEN,:NS_ID,:GHI_CHU,:MA_CHUC_DANH,:NGUOI_TAO,GETDATE(),:NGUOI_SUA,GETDATE())";
+            SqlParameterSource[] paramArr = new SqlParameterSource[listThanhVien.size()];
+            int i = 0;
+            for (DanhSachThanhVien item : listThanhVien) {
+                MapSqlParameterSource parameters = new MapSqlParameterSource();
+                parameters.addValue("MA_SANGKIEN", maSangKien);
+                parameters.addValue("NS_ID", item.getNsId());
+                parameters.addValue("GHI_CHU", item.getGhiChu());
+                parameters.addValue("MA_CHUC_DANH", item.getChucDanh());
+                parameters.addValue("NGUOI_TAO", nguoiTao);
+                parameters.addValue("NGUOI_SUA", nguoiSua);
+                paramArr[i] = parameters;
+                i++;
+            }
+            jdbcTemplate.batchUpdate(queryString, paramArr);
+        }
+        return 1;
+    }
+
+    @Override
+    public List<SangKienResp> ListSangKien(String loaiTimKiem, TimKiemReq timKiemReq,String userId, String page, String pageSize, String orgId) throws Exception {
         String queryString = "SELECT [MA_SANGKIEN] maSangKien,[TEN_SANGKIEN] tenGiaiPhap,[MA_CAPDO] capDoSangKien,[MA_DON_VI_DAU_TU] donViChuDauTu,[NAM] nam," +
                 "[LA_THU_TRUONG] thuTruongDonVi,[U_NHUOC_DIEM] uuNhuocDiem,[NOI_DUNG_GPHAP] noiDungGiaiPhap,[QTRINH_APDUNG] quaTrinhApDung,[HIEU_QUA_THUC_TIEN] hieuQuaThucTe," +
                 "[TOM_TAT_GIAI_PHAP] tomTat,[NGUOI_THAM_GIA_ADUNG] thamGiaToChuc,[SO_TIEN_HIEU_QUA] soTienLamLoi,[NGAY_XET_DUYET] ngayApDung,[KET_QUA_DANH_GIA_XET_DUYET] ketQuaDanhGiaXetDuyet,[KIEN_NGHI_HOI_DONG_XET_DUYET] kienNghiHoiDongXetDuyet,[THU_LAO] thuLao,[MA_TRANG_THAI] maTrangThai,[NGUOI_TAO] nguoiTao " +
@@ -213,7 +240,10 @@ public class SangKienServiceImpl implements SangKienService {
         RoleResp role = CheckQuyen(userId);
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         if (role != null && role.roleCode.equals("KHCN_ROLE_CANBO_KHCN")) {
-            queryString += " AND sk.MA_DON_VI_DAU_TU =:ORGID";
+           // queryString += " AND sk.MA_DON_VI_DAU_TU =:ORGID";
+            queryString +=" AND ((MA_CAPDO ='EVN' AND (MA_DON_VI_CHU_TRI IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID) OR 124=:ORGID))";
+            queryString +=" OR (MA_CAPDO='TCT'  AND MA_DON_VI_CHU_TRI IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID))";
+            queryString +=" OR (sk.MA_DON_VI_DAU_TU =:ORGID))";
             parameters.addValue("ORGID", orgId);
         } else {
             queryString += " AND ((sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_HOIDONG hd, DM_NGUOI_THUC_HIEN th \n" +
@@ -223,8 +253,39 @@ public class SangKienServiceImpl implements SangKienService {
                     " OR sk.NGUOI_TAO = :USERID OR sk.NGUOI_SUA = :USERID)";
             parameters.addValue("USERID", userId);
         }
+        if(loaiTimKiem != null && loaiTimKiem.equals("XETDUYET")){
+            if(Util.isNotEmpty(timKiemReq.getCapDo())) {
+                queryString += " AND sk.MA_CAPDO = :MA_CAPDO";
+                parameters.addValue("MA_CAPDO", timKiemReq.getCapDo());
+            }
+            if(Util.isNotEmpty(timKiemReq.getTrangThai())) {
+                queryString += " AND sk.MA_TRANG_THAI = :MA_TRANG_THAI";
+                parameters.addValue("MA_TRANG_THAI", timKiemReq.getTrangThai());
+            }
+            if(Util.isNotEmpty(timKiemReq.getNam())) {
+                queryString += " AND sk.NAM = :NAM";
+                parameters.addValue("NAM", timKiemReq.getNam());
+            }
+            if(Util.isNotEmpty(timKiemReq.getDonVi())) {
+                queryString += " AND sk.MA_DON_VI_DAU_TU = :MA_DON_VI_DAU_TU";
+                parameters.addValue("MA_DON_VI_DAU_TU", timKiemReq.getDonVi());
+            }
+        }else  if(loaiTimKiem != null && loaiTimKiem.equals("NGHIEMTHU")){
+            if(Util.isNotEmpty(timKiemReq.getCapDo())) {
+                queryString += " AND sk.MA_CAPDO = :MA_CAPDO";
+                parameters.addValue("MA_CAPDO", timKiemReq.getCapDo());
+            }
+            if(Util.isNotEmpty(timKiemReq.getNam())) {
+                queryString += " AND sk.NAM = :NAM";
+                parameters.addValue("NAM", timKiemReq.getNam());
+            }
+            if(Util.isNotEmpty(timKiemReq.getDonVi())) {
+                queryString += " AND sk.MA_DON_VI_DAU_TU = :MA_DON_VI_DAU_TU";
+                parameters.addValue("MA_DON_VI_DAU_TU", timKiemReq.getDonVi());
+            }
+        }
 
-        queryString += " ORDER BY sk.NGAY_TAO DESC OFFSET " + page + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+        queryString += " ORDER BY sk.NGAY_TAO DESC OFFSET " +(Util.toInt(page) * Util.toInt(pageSize)) + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
         List<SangKienResp> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(SangKienResp.class));
         return listObj;
     }
@@ -362,7 +423,7 @@ public class SangKienServiceImpl implements SangKienService {
     @Override
     public List<FileReq> ListFileByMa(String maSangKien) throws Exception {
         String queryString = "SELECT [MA_FILE] mafile,[MA_SANGKIEN] maSangKien,[MA_LOAI_FILE] maLoaiFile,[SO_KY_HIEU] sovanban,[NGAY_VAN_BAN] ngayVanBan," +
-                " [TEN_FILE] fileName,[KICH_THUOC] size,[KIEU_FILE] kieuFile,[LOAI_FILE] loaiFile,[DUONG_DAN] duongDan,[NGUOI_TAO] nguoiTao,[NGAY_TAO] ngayTao,[NGUOI_SUA] nguoiSua, [FILE_BASE64] base64  FROM [dbo].[SK_SANGKIEN_FILE] WHERE MA_SANGKIEN = :MA_SANGKIEN AND DA_XOA=0";
+                " [TEN_FILE] fileName,[KICH_THUOC] size,[KIEU_FILE] kieuFile,[LOAI_FILE] loaiFile,[DUONG_DAN] duongDan,[NGUOI_TAO] nguoiTao,[NGAY_TAO] ngayTao,[NGUOI_SUA] nguoiSua  FROM [dbo].[SK_SANGKIEN_FILE] WHERE MA_SANGKIEN = :MA_SANGKIEN AND DA_XOA=0";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("MA_SANGKIEN", maSangKien);
@@ -483,4 +544,61 @@ public class SangKienServiceImpl implements SangKienService {
         }
         return new ArrayList<>();
     }
+
+    @Override
+    public List<SangKienResp> ListSkHoiDong(String loaiTimKiem, TimKiemReq timKiemReq, String userId, String page, String pageSize,String orgId) throws Exception {
+        String queryString = "SELECT [MA_SANGKIEN] maSangKien,[TEN_SANGKIEN] tenGiaiPhap,[MA_CAPDO] capDoSangKien,[MA_DON_VI_DAU_TU] donViChuDauTu,[NAM] nam," +
+                "[LA_THU_TRUONG] thuTruongDonVi,[U_NHUOC_DIEM] uuNhuocDiem,[NOI_DUNG_GPHAP] noiDungGiaiPhap,[QTRINH_APDUNG] quaTrinhApDung,[HIEU_QUA_THUC_TIEN] hieuQuaThucTe," +
+                "[TOM_TAT_GIAI_PHAP] tomTat,[NGUOI_THAM_GIA_ADUNG] thamGiaToChuc,[SO_TIEN_HIEU_QUA] soTienLamLoi,[NGAY_XET_DUYET] ngayApDung,[KET_QUA_DANH_GIA_XET_DUYET] ketQuaDanhGiaXetDuyet,[KIEN_NGHI_HOI_DONG_XET_DUYET] kienNghiHoiDongXetDuyet,[THU_LAO] thuLao,[MA_TRANG_THAI] maTrangThai,[NGUOI_TAO] nguoiTao, [DON_VI_AP_DUNG] donViApDung " +
+                "  FROM [dbo].[SK_SANGKIEN] sk "+
+                " WHERE 1=1 AND [MA_SANGKIEN] IN(SELECT [MA_SANGKIEN] FROM [SK_SANGKIEN_HOIDONG])";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        //parameters.addValue("USERID",nguoiTao);
+        if (Util.isNotEmpty(timKiemReq.getQ())) {
+            queryString += " AND (sk.TEN_SANGKIEN LIKE :TEN_SANGKIEN)";
+            parameters.addValue("TEN_SANGKIEN", "%" + timKiemReq.getQ().toLowerCase() + "%");
+        }
+//        if (Util.isNotEmpty(timKiemReq.getCapQuanLy())) {
+//            queryString += " AND MA_CAPDO = :MA_CAPDO";
+//            parameters.addValue("MA_CAPDO", timKiemReq.getCapQuanLy());
+//        }
+//
+//        if (Util.isNotEmpty(timKiemReq.getDonViChuTri())) {
+//            queryString += " AND MA_DON_VI_CHU_TRI = :MA_DON_VI_CHU_TRI";
+//            parameters.addValue("MA_DON_VI_CHU_TRI", timKiemReq.getDonViChuTri());
+//        }
+
+        queryString += " ORDER BY sk.NGAY_TAO DESC OFFSET " + (Util.toInt(page) * Util.toInt(pageSize)) + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+        List<SangKienResp> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(SangKienResp.class));
+        return listObj;
+    }
+
+    @Override
+    public List<DanhSachChung> ListChucDanh() throws Exception{
+        int result = 0;
+        try {
+            String queryString = "SELECT MA_CHUC_DANH id, TEN_CHUC_DANH name FROM SK_DM_CHUC_DANH ";
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            List<DanhSachChung> obj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(DanhSachChung.class));
+            if (obj != null && obj.size() > 0) {
+                return obj;
+            }
+        } catch (Exception ex) {
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<DanhSachThanhVien> ListHDByMaSK(String maSK) throws Exception {
+        String queryString = "SELECT [MA_NGUOI_THUC_HIEN] maDanhSachThanhVien ,[MA_SANGKIEN] maDeTai,TEN_NGUOI_THUC_HIEN ten,[NS_ID] nsId,[GHI_CHU] ghiChu,[MA_CHUC_DANH] chucDanh  FROM [dbo].[SK_SANGKIEN_HOIDONG] " +
+                " WHERE MA_SANGKIEN = :MA_SANGKIEN";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("MA_SANGKIEN",maSK);
+
+        List<DanhSachThanhVien> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(DanhSachThanhVien.class));
+        return listObj;
+    }
+
 }

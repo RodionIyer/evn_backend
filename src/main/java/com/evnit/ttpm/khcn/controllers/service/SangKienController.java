@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -256,7 +258,7 @@ public class SangKienController {
         }
         List<DanhSachThanhVien> listThanhVien = new ArrayList<>();
         listThanhVien = sangKien.getDanhSachThanhVien();
-        sangKienService.InsertThanhVien(listThanhVien, sangKien.getMaSangKien(), userId, userId);
+        sangKienService.InsertHoiDong(listThanhVien, sangKien.getMaSangKien(), userId, userId);
         sangKienService.InsertListFile(listFile, sangKien.getMaSangKien(), userId, userId, listFolder);
 
         SangKienResp sangKienResp = sangKienService.ChiTietSangKien(sangKien.getMaSangKien());
@@ -385,8 +387,18 @@ public class SangKienController {
         String page = "";
         String pagezise = "";
         try {
-            SangKienReq sangKien = new SangKienReq();
+            TimKiemReq timKiemReq = new TimKiemReq();
+            String loaiTimKiem="";
             for (Api_Service_Input obj : execServiceRequest.getParameters()) {
+                if ("LOAI_TIM_KIEM".equals(obj.getName())) {
+                    loaiTimKiem = obj.getValue().toString();
+                    //break;
+                } else
+                if ("TIM_KIEM".equals(obj.getName())) {
+                    Gson gsons = new GsonBuilder().serializeNulls().create();
+                    timKiemReq = gsons.fromJson(obj.getValue().toString(), TimKiemReq.class);
+                    //break;
+                } else
                 if ("PAGE_NUM".equals(obj.getName())) {
                     page = obj.getValue().toString();
                     //break;
@@ -395,7 +407,7 @@ public class SangKienController {
                     //break;
                 }
             }
-            List<SangKienResp> listSangKien = sangKienService.ListSangKien(userId, page, pagezise, orgId);
+            List<SangKienResp> listSangKien = sangKienService.ListSangKien(loaiTimKiem,timKiemReq,userId, page, pagezise, orgId);
             List<SangKienResp> listSangKienNew = new ArrayList<>();
             if (listSangKien != null && listSangKien.size() > 0) {
                 List<DanhSachChung> listCapDo = sangKienService.ListCapDo();
@@ -542,7 +554,11 @@ public class SangKienController {
                 listFolderFileNew = listFolderFile;
             }
             obj.setListFolderFile(listFolderFileNew);
+            List<FileReq> listFile2 = listFile.stream().filter(c -> c.getMaLoaiFile().equals("QDINHHOIDONG")).collect(Collectors.toList());
+
+            obj.setListFile(listFile2);
         }
+
 
         return obj;
     }
@@ -756,4 +772,166 @@ public class SangKienController {
         obj.setLinhVucNghienCuu(linhVucNC);
         return obj;
     }
+
+    @Transactional
+    public ExecServiceResponse ThemSuaHoanThanh(ExecServiceRequest execServiceRequest) {
+        String msg = "Thêm mới thành công";
+        String userId = SecurityUtils.getPrincipal().getUserId();
+        String orgId = SecurityUtils.getPrincipal().getORGID();
+        String token = "";
+        try {
+            SangKienReq sangKien = new SangKienReq();
+            for (Api_Service_Input obj : execServiceRequest.getParameters()) {
+                if ("SANG_KIEN".equals(obj.getName())) {
+                    Gson gsons = new GsonBuilder().serializeNulls().create();
+                    String objectJson = obj.getValue().toString().replace("\"donViApDungInfo\":\"\"", "\"donViApDungInfo\":{}");
+                    sangKien = gsons.fromJson(objectJson, SangKienReq.class);
+//                    if (sangKien.getMaSangKien() != null) {
+//                        detai.setMaKeHoach(detai.getKeHoach().getMaKeHoach());
+//                    }
+//                    detai.setNguoiTao(userId);
+//                    detai.setNguoiSua(userId);
+//                    detai.setNgayTao(new Date());
+                    //break;
+                } else if ("TOKEN_LINK".equals(obj.getName())) {
+                    token = obj.getValue().toString();
+                }
+            }
+
+                msg = ThemAndSuaAll(sangKien, userId, orgId, token, msg);
+
+            return new ExecServiceResponse(1, msg);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return new ExecServiceResponse(-1, "Thực hiện thất bại");
+    }
+
+    public String ThemAndSuaAll(SangKienReq sangKien, String userId, String orgId, String token, String msg) throws Exception {
+        UUID uuid = UUID.randomUUID();
+        String maSangKien = uuid.toString().toUpperCase();
+        if (sangKien != null && sangKien.getMaSangKien() != null && !sangKien.getMaSangKien().equals("")) {
+            sangKien.setNguoiSua(userId);
+            sangKien.setNguoiTao(userId);
+            maSangKien = sangKien.getMaSangKien();
+            sangKienService.updateSangKien(sangKien, maSangKien);
+            msg = "Cập nhật thành công";
+        } else {
+            sangKien.setMaSangKien(maSangKien);
+            sangKien.setNguoiSua(userId);
+            sangKien.setNguoiTao(userId);
+            sangKienService.insertSangKien(sangKien, maSangKien);
+            sangKienService.InsertSangKienLichSu(maSangKien, "", sangKien.getMaTrangThai(), "", userId);
+        }
+        sangKienService.InsertThanhVien(sangKien.getTacGiaGiaiPhap(), maSangKien, userId, userId);
+        List<FileReq> listFile = new ArrayList<>();
+        List<String> listFolder = new ArrayList<>();
+        if (sangKien != null && sangKien.getListFolderHSDK() != null && sangKien.getListFolderHSDK().size() > 0) {
+            listFolder = sangKien.getListFolderHSDK().stream().map(Folder::getMaFolder).collect(Collectors.toList());
+            for (Folder item : sangKien.getListFolderHSDK()) {
+                if (item != null && item.getListFile() != null && item.getListFile().size() > 0) {
+                    for (FileReq item2 : item.getListFile()) {
+                        item2.setMaLoaiFile(item.getMaFolder());
+                        if (Util.isNotEmpty(item2.getBase64())) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("ddMMYYYYhhmmss");
+                            String dateString = sdf.format(new Date());
+                            String path = "/khcn/" + orgId + "/" + userId + "/" + dateString;
+                            FileUpload file = uploadFileToServer(path, item2.getFileName(), item2.getBase64(), token);
+                            if (file != null) {
+                                item2.setDuongDan(file.getPath());
+                                item2.setBase64(null);
+                                item2.setFileName(file.getName());
+                                item2.setRowid(file.getRowId());
+                                item2.setNguoiTao(userId);
+                                item2.setNguoiSua(userId);
+                                item2.setNgayTao(new Date());
+                            }
+                        }
+                        listFile.add(item2);
+                    }
+                }
+            }
+        }
+
+        if (sangKien != null && sangKien.getListFolderHSXD() != null && sangKien.getListFolderHSXD().size() > 0) {
+            listFolder = sangKien.getListFolderHSXD().stream().map(Folder::getMaFolder).collect(Collectors.toList());
+            for (Folder item : sangKien.getListFolderHSXD()) {
+                if (item != null && item.getListFile() != null && item.getListFile().size() > 0) {
+                    for (FileReq item2 : item.getListFile()) {
+                        item2.setMaLoaiFile(item.getMaFolder());
+                        if (Util.isNotEmpty(item2.getBase64())) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("ddMMYYYYhhmmss");
+                            String dateString = sdf.format(new Date());
+                            String path = "/khcn/" + orgId + "/" + userId + "/" + dateString;
+                            FileUpload file = uploadFileToServer(path, item2.getFileName(), item2.getBase64(), token);
+                            if (file != null) {
+                                item2.setDuongDan(file.getPath());
+                                item2.setBase64(null);
+                                item2.setFileName(file.getName());
+                                item2.setRowid(file.getRowId());
+                                item2.setNguoiTao(userId);
+                                item2.setNguoiSua(userId);
+                                item2.setNgayTao(new Date());
+                            }
+                        }
+                        listFile.add(item2);
+                    }
+                }
+            }
+        }
+        sangKienService.InsertListFile(listFile, maSangKien, userId, userId, listFolder);
+        sangKienService.insertLinhVucNC(sangKien.getLinhVucNghienCuu(), maSangKien, userId, userId);
+        return msg;
+    }
+
+    public ExecServiceResponse ListSKHoiDong(ExecServiceRequest execServiceRequest) {
+        try {
+
+            String orgId = SecurityUtils.getPrincipal().getORGID();
+            String userId = SecurityUtils.getPrincipal().getUserId();
+
+            String tenDeTai = "";
+            String page = "0";
+            String pagezise = "20";
+            TimKiemReq timKiemReq = new TimKiemReq();
+            String loaiTimKiem ="";
+            for (Api_Service_Input obj : execServiceRequest.getParameters()) {
+                if ("LOAI_TIM_KIEM".equals(obj.getName())) {
+                    loaiTimKiem = obj.getValue().toString();
+                    //break;
+                } else
+                if ("TIM_KIEM".equals(obj.getName())) {
+                    Gson gsons = new GsonBuilder().serializeNulls().create();
+                    timKiemReq = gsons.fromJson(obj.getValue().toString(), TimKiemReq.class);
+                    //break;
+                } else if ("PAGE_NUM".equals(obj.getName())) {
+                    page = obj.getValue().toString();
+                    //break;
+                } else if ("PAGE_ROW_NUM".equals(obj.getName())) {
+                    pagezise = obj.getValue().toString();
+                    //break;
+                }
+            }
+            List<SangKienResp> listSk = sangKienService.ListSkHoiDong(loaiTimKiem,timKiemReq, userId, page, pagezise,orgId);
+            List<SangKienResp> listSkNew = new ArrayList<>();
+            if (listSk != null && listSk.size() > 0) {
+                List<DanhSachChung> listChucDanh = sangKienService.ListChucDanh();
+                for (SangKienResp item : listSk) {
+                    List<DanhSachThanhVien> listHD =  sangKienService.ListHDByMaSK(item.getMaSangKien());
+                    item.setDanhSachThanhVien(listHD);
+                    listSkNew.add(item);
+                }
+            }
+
+            return new ExecServiceResponse(listSkNew, 1, "Danh sách thành công.");
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return new ExecServiceResponse(-1, "Thực hiện thất bại");
+    }
+
+
 }
