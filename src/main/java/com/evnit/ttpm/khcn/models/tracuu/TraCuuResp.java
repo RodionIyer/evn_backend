@@ -18,4 +18,6 @@ public class TraCuuResp  extends BaseModel {
     public String  tenChuNhiemTG;
     public Integer  nam;
     public String  donViChuTri;
+    public String  tenNghienCuu;
+    public Integer totalItem;
 }

@@ -397,7 +397,7 @@ public class KeHoachController {
                     maTrangThai = obj.getValue().toString();
                     //break;
                 } else if ("NAM".equals(obj.getName())) {
-                    nam = obj.getValue().toString();
+                    nam = obj.getValue() != null ? obj.getValue().toString() : "";
                     //break;
                 } else if ("PAGE_NUM".equals(obj.getName())) {
                     page = obj.getValue().toString();

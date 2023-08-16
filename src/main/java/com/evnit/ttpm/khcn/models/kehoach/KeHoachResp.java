@@ -25,4 +25,5 @@ public class KeHoachResp  extends BaseModel {
     private Boolean tongHop;
     private List<KeHoachChiTietReq> listKeHoach;
     private List<FileReq> listFile;
+    private String tenDeTai;
 }

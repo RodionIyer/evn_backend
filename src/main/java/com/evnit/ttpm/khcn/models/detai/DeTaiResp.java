@@ -89,4 +89,5 @@ public class DeTaiResp extends BaseModel {
     public Date thoiGianHop;
     public String ketQuaPhieuDanhGia;
     public List<TienDoThucHien> listTienDoCongViec;
+    public Integer lanGiaHanThu;
 }

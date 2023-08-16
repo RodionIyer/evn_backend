@@ -3,6 +3,8 @@ package com.evnit.ttpm.khcn.services.kehoach;
 import com.evnit.ttpm.khcn.models.detai.DeTaiResp;
 import com.evnit.ttpm.khcn.models.kehoach.*;
 import com.evnit.ttpm.khcn.util.Util;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 @Component
@@ -303,6 +306,8 @@ public class KeHoachServiceImpl implements KeHoachService {
 
     @Override
     public List<KeHoachResp> ListKeHoachGiaoViec(String nam,String maTrangThai,String page,String pageSize,String orgId) throws Exception{
+        Gson gson = new Gson();
+        List<Integer> intArray = gson.fromJson(nam, new TypeToken<List<Integer>>() {}.getType());
         String queryString = "SELECT COUNT(kh.NGAY_TAO) OVER() as TotalPage,kh.[MA_KE_HOACH] maKeHoach,kh.[TEN_KE_HOACH] name,kh.[NAM] nam,kh.[MA_DON_VI] maDonVi,kh.[MA_TRANG_THAI] maTrangThai,kh.[NGUOI_TAO] nguoiTao,kh.[NGAY_TAO] ngayTao,kh.[NGUOI_SUA] nguoiSua,kh.[TONG_HOP] tongHop," +
                 "kh.[Y_KIEN_NGUOI_PHE_DUYET] yKienNguoiPheDuyet,kh.[TEN_BANG_TONG_HOP] tenBangTongHop,kh.[KY_TONG_HOP] kyTongHop,kh.[CAP_TAO] capTao  ";
         queryString +=" , tt.TEN_TRANG_THAI tenTrangThai, FORMAT (NGAY_SUA, 'dd/MM/yyyy') as ngayGui, u.USERNAME nguoiGui";
@@ -311,9 +316,9 @@ public class KeHoachServiceImpl implements KeHoachService {
         queryString +=" LEFT JOIN Q_USER u ON kh.NGUOI_SUA = u.USERID";
         queryString +=" WHERE 1 = 1 AND kh.MA_TRANG_THAI IN('CGIAO','DGIAO') ";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
-        if(Util.isNotEmpty(nam)){
+        if(Util.isNotEmpty(intArray)){
             queryString +=" AND kh.NAM IN (:NAM)";
-            parameters.addValue("NAM",nam);
+            parameters.addValue("NAM",intArray);
         }
 //        if(Util.isNotEmpty(maTrangThai)){
 //            queryString +=" AND kh.MA_TRANG_THAI = :MA_TRANG_THAI";
