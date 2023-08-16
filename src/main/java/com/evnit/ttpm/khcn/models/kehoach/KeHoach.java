@@ -19,4 +19,5 @@ public class KeHoach {
     private String  yKienNguoiPheDuyet;
     private String tenBangTongHop;
     private Integer kyTongHop;
+    private String capTao;
 }

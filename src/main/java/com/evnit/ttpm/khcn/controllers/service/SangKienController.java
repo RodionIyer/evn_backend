@@ -432,9 +432,9 @@ public class SangKienController {
             return new ExecServiceResponse(listSangKienNew, 1, msg);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
+            return new ExecServiceResponse(ex.getMessage(),-1, "Thực hiện thất bại");
         }
 
-        return new ExecServiceResponse(-1, "Thực hiện thất bại");
     }
 
     public ExecServiceResponse ListLichSu(ExecServiceRequest execServiceRequest) {

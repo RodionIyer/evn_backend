@@ -46,9 +46,9 @@ public class KeHoachController {
         String token = "";
         List<DonVi> listDonVi = excelService.getListDonVi(orgId);
         String capTao = "DONVI";
-        if (listDonVi != null && listDonVi.size() > 0) {
-            capTao = "TCT";
-        }
+//        if (listDonVi != null && listDonVi.size() > 0) {
+//            capTao = "TCT";
+//        }
         for (Api_Service_Input obj : execServiceRequest.getParameters()) {
             if ("KE_HOACH".equals(obj.getName())) {
                 Gson gsons = new GsonBuilder().serializeNulls().create();
@@ -56,7 +56,12 @@ public class KeHoachController {
                 kehoach.setMaDonVi(orgId);
                 kehoach.setNguoiTao(userId);
                 kehoach.setNguoiSua(userId);
-                kehoach.setCapTao(capTao);
+                if(!Util.isNotEmpty(kehoach.getCapTao())){
+                    kehoach.setCapTao("DONVI");
+                }
+                capTao = kehoach.getCapTao();
+
+               // kehoach.setCapTao(capTao);
                 //break;
             } else if ("LIST_KE_HOACH_CHI_TIET".equals(obj.getName())) {
                 Gson gsons = new GsonBuilder().serializeNulls().create();
@@ -114,6 +119,7 @@ public class KeHoachController {
                             deTaiReq.setNgayTao(new Date());
                             deTaiReq.setNguoiSua(userId);
                             deTaiReq.setMaTrangThai("CHUA_GUI");
+                            deTaiReq.setOrgId(keHoachResp.getMaDonVi());
                             deTaiService.insert(deTaiReq, maDetai);
                         }
                     }

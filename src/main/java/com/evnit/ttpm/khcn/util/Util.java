@@ -191,4 +191,19 @@ public class Util {
 		return "";
 	}
 
+	public static String formatNumberVn(Object obj){
+		if(obj !=null && !obj.toString().isEmpty()){
+			try{
+				double number = Double.parseDouble(obj.toString());
+				Formatter formatter = new Formatter();
+				formatter.format("%,.0f", number);
+				return formatter.toString();
+			}
+			catch (NumberFormatException ex){
+				ex.printStackTrace();
+			}
+		}
+		return "";
+	}
+
 }
