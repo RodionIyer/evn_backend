@@ -449,6 +449,7 @@ public class DeTaiServiceImpl implements DeTaiService {
         }
 
         if (listFile != null && listFile.size() > 0) {
+
             String queryString = "INSERT INTO [dbo].[DT_DETAI_FILE]([MA_FILE],[MA_DETAI],[MA_LOAI_FILE],[SO_KY_HIEU],[NGAY_VAN_BAN],[TEN_FILE],[KICH_THUOC],[KIEU_FILE],[LOAI_FILE],[DUONG_DAN],[NGUOI_TAO],[NGAY_TAO],[NGUOI_SUA],[NGAY_SUA],[DA_XOA],ROWID,FILE_BASE64)" +
                     " VALUES(newid(),:MA_DETAI,:MA_LOAI_FILE,:SO_KY_HIEU,:NGAY_VAN_BAN,:TEN_FILE,:KICH_THUOC,:KIEU_FILE,:LOAI_FILE,:DUONG_DAN,:NGUOI_TAO,GETDATE(),:NGUOI_SUA,GETDATE(),0,:ROWID,:FILE_BASE64)";
             SqlParameterSource[] paramArr = new SqlParameterSource[listFile.size()];
@@ -530,6 +531,7 @@ public class DeTaiServiceImpl implements DeTaiService {
 
     @Override
     public List<Folder> ListFolderFileTamUng() throws Exception {
+
         String queryString = "SELECT MA_LOAI_FILE maFolder,TEN_LOAI_FILE fileName,GHI_CHU ghiChu  FROM DT_DM_LOAI_FILE WHERE THUC_HIEN_TAM_UNG=1 AND TRANG_THAI=1 ORDER BY SAP_XEP ";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
