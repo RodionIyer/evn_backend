@@ -820,6 +820,36 @@ public class DeTaiController {
             }
         }
 
+        List<FileReq> listFileTamUng = new ArrayList<>();
+        List<String> listFolderTamUng = new ArrayList<>();
+        if (detai != null && detai.getListFolderFileTamUng() != null && detai.getListFolderFileTamUng().size() > 0) {
+            listFolderTamUng = detai.getListFolderFileTamUng().stream().map(Folder::getMaFolder).collect(Collectors.toList());
+            for (Folder item : detai.getListFolderFileTamUng()) {
+                if (item != null && item.getListFile() != null && item.getListFile().size() > 0) {
+                    for (FileReq item2 : item.getListFile()) {
+                        item2.setMaLoaiFile(item.getMaFolder());
+                        if (Util.isNotEmpty(item2.getBase64())) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("ddMMYYYYhhmmss");
+                            String dateString = sdf.format(new Date());
+                            String path = "/khcn/" + orgId + "/" + userId + "/" + dateString;
+                            FileUpload file = uploadFileToServer(path, item2.getFileName(), item2.getBase64(), token);
+                            if (file != null) {
+                                item2.setDuongDan(file.getPath());
+                                item2.setBase64(null);
+                                item2.setFileName(file.getName());
+                                item2.setRowid(file.getRowId());
+                                item2.setNguoiTao(userId);
+                                item2.setNguoiSua(userId);
+                                item2.setNgayTao(new Date());
+                            }
+                        }
+                        listFileTamUng.add(item2);
+                    }
+                }
+            }
+        }
+
+        deTaiService.insertFileDeTai(listFileTamUng, detai.getMaDeTai(), userId, userId, listFolderTamUng);
 
         deTaiService.insertNguoiThucHien(listThanhVien, maDetai, userId, userId);
         deTaiService.insertFileDeTai(listFile, maDetai, userId, userId, listFolder);
