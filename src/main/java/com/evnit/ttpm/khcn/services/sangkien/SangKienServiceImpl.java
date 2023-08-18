@@ -241,8 +241,8 @@ public class SangKienServiceImpl implements SangKienService {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         if (role != null && role.roleCode.equals("KHCN_ROLE_CANBO_KHCN")) {
            // queryString += " AND sk.MA_DON_VI_DAU_TU =:ORGID";
-            queryString +=" AND ((MA_CAPDO ='EVN' AND (MA_DON_VI_CHU_TRI IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID) OR 124=:ORGID))";
-            queryString +=" OR (MA_CAPDO='TCT'  AND MA_DON_VI_CHU_TRI IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID))";
+            queryString +=" AND ((MA_CAPDO ='EVN' AND (sk.MA_DON_VI_DAU_TU IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID) OR 124=:ORGID))";
+            queryString +=" OR (MA_CAPDO='TCT'  AND sk.MA_DON_VI_DAU_TU IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID))";
             queryString +=" OR (sk.MA_DON_VI_DAU_TU =:ORGID))";
             parameters.addValue("ORGID", orgId);
         } else {

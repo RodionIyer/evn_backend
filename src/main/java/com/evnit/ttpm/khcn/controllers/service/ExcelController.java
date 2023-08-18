@@ -113,7 +113,7 @@ public class ExcelController {
 
                 "<td colspan='6' class='x33' style='mso-ignore:colspan;'></td>\n" + " </tr>\n" + " <tr height='83' style='mso-height-source:userset;height:62.25pt'>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>STT</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Hoạt động</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Nguồn kinh phí (EVN/Đơn vị)</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Kinh phí dự kiến (triệu đồng)</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Đơn vị chủ trì</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Chủ nhiệm nhiệm vụ</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Nội dung hoạt động</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Thời gian dự kiến thực hiện (từ tháng/năm đến tháng/năm)</td>\n" + " </tr>\n" + " <tr height='20' style='mso-height-source:userset;height:15pt'>\n" + " </tr>\n" + " <tr height='20' style='mso-height-source:userset;height:15pt'>\n" + " </tr>\n" + "{tempChung}" + "<![if supportMisalignedColumns]>\n" + " <tr height='0' style='display:none'>\n" + "  <td width='43' style='width:32.25pt;'></td>\n" + "  <td width='217' style='width:162.75pt;'></td>\n" + "  <td width='60' style='width:45pt;'></td>\n" + "  <td width='76' style='width:57pt;'></td>\n" + "  <td width='70' style='width:52.5pt;'></td>\n" + "  <td width='78' style='width:58.5pt;'></td>\n" + "  <td width='88' style='width:66pt;'></td>\n" + "  <td width='76' style='width:57pt;'></td>\n" + " </tr>\n" + " <![endif]>\n" + "</table>\n" + "\n" + "</body>\n" + "\n" + "</html>\n";
 
-        if (kehoach != null && kehoach.getCapTao() != null && kehoach.getCapTao().equals("TCT")) {
+        if (kehoach != null && kehoach.getCapTao() != null && (kehoach.getCapTao().equals("TCT") || kehoach.getCapTao().equals("EVN") )) {
             html = html.replace("{tieudedonvi}", "Năm: " + kehoach.getNAM());
             html = html.replace("{tieudenam}", "");
             html = html.replace("{tieudedutoan}", "");
@@ -168,7 +168,7 @@ public class ExcelController {
                 htmlCap2 = htmlTempCap.replace("{stt2}", i + "." + j);
                 htmlCap2 = htmlCap2.replace("{temp2}", item1.getTEN_NHOM());
 
-                if (kehoach != null && kehoach.getCapTao() != null && kehoach.getCapTao().equals("TCT")) {
+                if (kehoach != null && kehoach.getCapTao() != null && (kehoach.getCapTao().equals("TCT") || kehoach.getCapTao().equals("EVN"))) {
                     //htmlDonVi = htmlTempDonVi;
                     String htmlDonViChiTiet = "";
                     k = 1;
@@ -898,8 +898,8 @@ public class ExcelController {
                     listHeader.add("STT");
                     listHeader.add("Tên Đề tài /nhiệm vụ");
                     listHeader.add("Chủ nhiệm/ đồng chủ nhiệm");
-                    listHeader.add("Cấp quản lý");
                     listHeader.add("Đơn vị chủ trì");
+                    listHeader.add("Lĩnh vực khoa học");
                     listHeader.add("Kinh phí");
                     listHeader.add("Nguồn kinh phí");
                     listHeader.add("Tổng kinh phí quyết toán");
@@ -909,7 +909,7 @@ public class ExcelController {
                     listHeader.add("Tên Đề tài /nhiệm vụ");
                     listHeader.add("Chủ nhiệm/ đồng chủ nhiệm");
                     listHeader.add("Cấp quản lý");
-                    listHeader.add("Đơn vị chủ trì");
+                    listHeader.add("Lĩnh vực khoa học");
                     listHeader.add("Kinh phí");
                     listHeader.add("Nguồn kinh phí");
                     listHeader.add("Tổng kinh phí quyết toán");
@@ -917,16 +917,41 @@ public class ExcelController {
                 }
 
             } else if (loaiTimKiem != null && loaiTimKiem.equals("SANGKIEN")) {
-                listHeader.add("STT");
-                listHeader.add("Tên giải pháp");
-                listHeader.add("Tác giả/ đồng tác giả");
-                listHeader.add("Cấp sáng kiến");
-                listHeader.add("Lĩnh vực áp dụng");
-                listHeader.add("Đơn vị đăng ký/áp dụng");
-                listHeader.add("Số tiền làm lợi năm đầu tiên áp dụng");
-                listHeader.add("Thù lao cho tác giả");
-                listHeader.add("Thù lao cho người áp dụng lần đầu");
-                listHeader.add("Tổng cộng");
+                if (loaiThongKe.equals("KHOAHOC")) {
+                    listHeader.add("STT");
+                    listHeader.add("Tên giải pháp");
+                    listHeader.add("Tác giả/ đồng tác giả");
+                    listHeader.add("Cấp sáng kiến");
+                    listHeader.add("Đơn vị đầu tư");
+                    listHeader.add("Đơn vị đăng ký/áp dụng");
+                    listHeader.add("Số tiền làm lợi năm đầu tiên áp dụng");
+                    listHeader.add("Thù lao cho tác giả");
+                    listHeader.add("Thù lao cho người áp dụng lần đầu");
+                    listHeader.add("Tổng cộng");
+                }else if (loaiThongKe.equals("CAPDETAI")) {
+                    listHeader.add("STT");
+                    listHeader.add("Tên giải pháp");
+                    listHeader.add("Tác giả/ đồng tác giả");
+                    listHeader.add("Lĩnh vực áp dụng");
+                    listHeader.add("Đơn vị chủ đầu tư");
+                    listHeader.add("Đơn vị đăng ký/áp dụng");
+                    listHeader.add("Số tiền làm lợi năm đầu tiên áp dụng");
+                    listHeader.add("Thù lao cho tác giả");
+                    listHeader.add("Thù lao cho người áp dụng lần đầu");
+                    listHeader.add("Tổng cộng");
+
+                }else if (loaiThongKe.equals("CAPDONVI")) {
+                    listHeader.add("STT");
+                    listHeader.add("Tên giải pháp");
+                    listHeader.add("Tác giả/ đồng tác giả");
+                    listHeader.add("Cấp sáng kiến");
+                    listHeader.add("Lĩnh vực áp dụng");
+                    listHeader.add("Đơn vị đăng ký/áp dụng");
+                    listHeader.add("Số tiền làm lợi năm đầu tiên áp dụng");
+                    listHeader.add("Thù lao cho tác giả");
+                    listHeader.add("Thù lao cho người áp dụng lần đầu");
+                    listHeader.add("Tổng cộng");
+                }
             }
             int width = listHeader.size() - 1;
 
@@ -963,13 +988,33 @@ public class ExcelController {
                         writeExportData(sheet, rows, cellIndex, item2.getTenDeTaiSK(), 0);
                         cellIndex++;
                         writeExportData(sheet, rows, cellIndex, item2.getTenChuNhiemTG(), 0);
-                        cellIndex++;
-                        writeExportData(sheet, rows, cellIndex, item2.getCapQuanLy(), 0);
-                        cellIndex++;
-                        writeExportData(sheet, rows, cellIndex, item2.getLinhVucKhoaHoc(), 0);
-                        cellIndex++;
-                        writeExportData(sheet, rows, cellIndex, item2.getDonViChuTri(), 0);
+
+
                         if (loaiTimKiem != null && loaiTimKiem.equals("DETAI")) {
+                            if (loaiThongKe.equals("KHOAHOC")) {
+                                cellIndex++;
+                                writeExportData(sheet, rows, cellIndex, item2.getCapQuanLy(), 0);
+                                cellIndex++;
+                                writeExportData(sheet, rows, cellIndex, item2.getDonViChuTri(), 0);
+
+                            }else if (loaiThongKe.equals("CAPDETAI")){
+                                cellIndex++;
+                                writeExportData(sheet, rows, cellIndex, item2.getDonViChuTri(), 0);
+                                cellIndex++;
+                                writeExportData(sheet, rows, cellIndex, item2.getLinhVucKhoaHoc(), 0);
+
+                            }else if (loaiThongKe.equals("CAPDONVI")) {
+                                cellIndex++;
+                                writeExportData(sheet, rows, cellIndex, item2.getCapQuanLy(), 0);
+                                cellIndex++;
+                                writeExportData(sheet, rows, cellIndex, item2.getLinhVucKhoaHoc(), 0);
+                            }
+//                            cellIndex++;
+//                            writeExportData(sheet, rows, cellIndex, item2.getCapQuanLy(), 0);
+//                            cellIndex++;
+//                            writeExportData(sheet, rows, cellIndex, item2.getLinhVucKhoaHoc(), 0);
+//                            cellIndex++;
+//                            writeExportData(sheet, rows, cellIndex, item2.getDonViChuTri(), 0);
                             cellIndex++;
                             writeExportData(sheet, rows, cellIndex, item2.getKinhPhi(), 0);
                             cellIndex++;

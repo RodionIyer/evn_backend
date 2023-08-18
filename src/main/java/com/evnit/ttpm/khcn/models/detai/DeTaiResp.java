@@ -90,4 +90,5 @@ public class DeTaiResp extends BaseModel {
     public String ketQuaPhieuDanhGia;
     public List<TienDoThucHien> listTienDoCongViec;
     public Integer lanGiaHanThu;
+    public String viewLoi;
 }

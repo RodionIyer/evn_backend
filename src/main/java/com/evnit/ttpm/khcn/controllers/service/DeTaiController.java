@@ -1184,16 +1184,19 @@ public class DeTaiController {
         List<Folder> listFolderFileNew = new ArrayList<>();
         if (listFile != null && listFile.size() > 0) {
             for (Folder folder : listFolderFile) {
+                try{
                 List<FileReq> listFile2 = listFile.stream().filter(c -> c.getMaLoaiFile().equals(folder.getMaFolder())).collect(Collectors.toList());
                 if (listFile2 != null && listFile2.size() > 0) {
                     folder.setListFile(listFile2);
                 }
+                }catch (Exception ex){}
                 listFolderFileNew.add(folder);
             }
         }else{
             listFolderFileNew = listFolderFile;
         }
         listDeTai.setListFolderFile(listFolderFileNew);
+        listDeTai.setViewLoi("file Gia Han:"+listFolderFile.size());
 
 
 //        List<Folder> listFolderFileGiaoHD = deTaiService.ListFolderFileBanGiaoLuuTruKQ();

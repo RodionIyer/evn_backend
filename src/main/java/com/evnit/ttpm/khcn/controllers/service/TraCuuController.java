@@ -52,8 +52,9 @@ public class TraCuuController {
 
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
+            return new ExecServiceResponse("Lỗi:"+ex.getMessage(),-1, "Thực hiện thất bại");
         }
 
-        return new ExecServiceResponse(-1, "Thực hiện thất bại");
+
     }
 }
