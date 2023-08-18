@@ -2326,7 +2326,7 @@ public class DeTaiController {
                     //break;
                 }
             }
-            List<KeHoachResp> listTenKh = deTaiService.ListKeHoachDeTai(tenKh);
+            List<KeHoachResp> listTenKh = deTaiService.ListKeHoachDeTai(tenKh, userId, orgId);
 
 
             return new ExecServiceResponse(listTenKh, 1, "Danh Sách thành công.");

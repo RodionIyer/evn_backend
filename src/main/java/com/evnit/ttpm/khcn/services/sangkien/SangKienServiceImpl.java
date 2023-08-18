@@ -241,8 +241,8 @@ public class SangKienServiceImpl implements SangKienService {
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         if (role != null && role.roleCode.equals("KHCN_ROLE_CANBO_KHCN")) {
             // queryString += " AND sk.MA_DON_VI_DAU_TU =:ORGID";
-            queryString += " AND ((MA_CAPDO ='EVN' AND (MA_DON_VI_CHU_TRI IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID) OR 124=:ORGID))";
-            queryString += " OR (MA_CAPDO='TCT'  AND MA_DON_VI_CHU_TRI IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID))";
+            queryString += " AND ((MA_CAPDO ='EVN' AND (MA_DON_VI_DAU_TU IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID) OR 124=:ORGID))";
+            queryString += " OR (MA_CAPDO='TCT'  AND MA_DON_VI_DAU_TU IN (SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT =:ORGID))";
             queryString += " OR (sk.MA_DON_VI_DAU_TU =:ORGID))";
             parameters.addValue("ORGID", orgId);
         } else {
@@ -270,19 +270,22 @@ public class SangKienServiceImpl implements SangKienService {
                 queryString += " AND sk.MA_DON_VI_DAU_TU = :MA_DON_VI_DAU_TU";
                 parameters.addValue("MA_DON_VI_DAU_TU", timKiemReq.getDonVi());
             }
-        } else if (loaiTimKiem != null && loaiTimKiem.equals("NGHIEMTHU") && timKiemReq != null) {
-            if (Util.isNotEmpty(timKiemReq.getCapDo())) {
-                queryString += " AND sk.MA_CAPDO = :MA_CAPDO";
-                parameters.addValue("MA_CAPDO", timKiemReq.getCapDo());
+        } else if (loaiTimKiem != null && loaiTimKiem.equals("NGHIEMTHU")) {
+            if(timKiemReq != null){
+                if (Util.isNotEmpty(timKiemReq.getCapDo())) {
+                    queryString += " AND sk.MA_CAPDO = :MA_CAPDO";
+                    parameters.addValue("MA_CAPDO", timKiemReq.getCapDo());
+                }
+                if (Util.isNotEmpty(timKiemReq.getNam())) {
+                    queryString += " AND sk.NAM = :NAM";
+                    parameters.addValue("NAM", timKiemReq.getNam());
+                }
+                if (Util.isNotEmpty(timKiemReq.getDonVi())) {
+                    queryString += " AND sk.MA_DON_VI_DAU_TU = :MA_DON_VI_DAU_TU";
+                    parameters.addValue("MA_DON_VI_DAU_TU", timKiemReq.getDonVi());
+                }
             }
-            if (Util.isNotEmpty(timKiemReq.getNam())) {
-                queryString += " AND sk.NAM = :NAM";
-                parameters.addValue("NAM", timKiemReq.getNam());
-            }
-            if (Util.isNotEmpty(timKiemReq.getDonVi())) {
-                queryString += " AND sk.MA_DON_VI_DAU_TU = :MA_DON_VI_DAU_TU";
-                parameters.addValue("MA_DON_VI_DAU_TU", timKiemReq.getDonVi());
-            }
+            queryString += " AND sk.MA_TRANG_THAI = 'DA_TRA_THU_LAO'";
         }
 
         queryString += " ORDER BY sk.NGAY_TAO DESC OFFSET " + (Util.toInt(page) * Util.toInt(pageSize)) + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";

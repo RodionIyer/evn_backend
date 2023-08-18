@@ -339,7 +339,7 @@ public class DeTaiServiceImpl implements DeTaiService {
     }
 
     @Override
-    public List<KeHoachResp> ListKeHoachDeTai(String ten) throws Exception {
+    public List<KeHoachResp> ListKeHoachDeTai(String ten, String userId, String orgId) throws Exception {
         String queryString = "SELECT COUNT(kh.NGAY_TAO) OVER() as TotalPage," +
                 "kh.[MA_KE_HOACH] maKeHoach," +
                 "kh.[TEN_KE_HOACH] name," +
@@ -360,6 +360,12 @@ public class DeTaiServiceImpl implements DeTaiService {
         queryString += " LEFT JOIN DT_DE_TAI dt on dt.MA_KE_HOACH = kh.MA_KE_HOACH";
         queryString += " WHERE 1 = 1 ";//AND kh.MA_TRANG_THAI IN('CHO_PHE_DUYET','Y_CAU_HIEU_CHINH','DA_PHE_DUYET') ";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
+        RoleResp role = CheckQuyen(userId);
+        if (role != null && role.roleCode.equals("KHCN_ROLE_CANBO_KHCN")) {
+            queryString += " AND (dt.ORGID =:ORGID OR dt.NGUOI_TAO = :USERID OR NGUOI_SUA = :USERID)";
+            parameters.addValue("ORGID", orgId);
+            parameters.addValue("USERID", userId);
+        }
         if (Util.isNotEmpty(ten)) {
             queryString += " AND kh.TEN_KE_HOACH LIKE :TEN";
             parameters.addValue("TEN", "%" + ten + "%");
@@ -895,7 +901,7 @@ public class DeTaiServiceImpl implements DeTaiService {
         } else if (loaiTimKiem != null && loaiTimKiem.equals("DANGTHUCHIEN")) {
             queryString += " AND dt.MA_TRANG_THAI IN('DANG_THUC_HIEN')";
         } else if (loaiTimKiem != null && loaiTimKiem.equals("NGHIEMTHU")) {
-            queryString += " AND dt.MA_TRANG_THAI IN('CHUA_GUI_HS_NTHU','YCAU_CAP_NHAT_HS_NTHU','DA_RA_SOAT_HS_NTHU','DA_TLHDNT','DA_NTHU')";
+            queryString += " AND dt.MA_TRANG_THAI IN(YCAU_CAP_NHAT_HS_NTHU','DA_RA_SOAT_HS_NTHU','DA_TLHDNT','DA_NTHU')";
         } else if (loaiTimKiem != null && loaiTimKiem.equals("HOANTHANH")) {
             queryString += " AND dt.MA_TRANG_THAI IN('HOAN_THANH')";
         }

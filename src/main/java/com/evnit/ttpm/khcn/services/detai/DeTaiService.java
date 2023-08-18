@@ -24,7 +24,7 @@ public interface DeTaiService {
 
     DeTaiResp ChiTietDeTai(String maDeTai) throws Exception;
 
-    List<KeHoachResp> ListKeHoachDeTai(String ten) throws Exception;
+    List<KeHoachResp> ListKeHoachDeTai(String ten,  String userId, String orgId) throws Exception;
 
     List<UserResp> ListUser(String ten) throws Exception;
 
