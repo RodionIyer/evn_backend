@@ -171,6 +171,7 @@ public class DeTaiController {
             String nhomNguoiGui = deTaiService.GetMailNguoiThucHien(detai.getMaDeTai());
             deTaiService.insertSendMail(userId, nhomNguoiGui, detai.getNoiDungGuiMail(), "DETAI", tieude);
         }
+        msg = "danh sach tam ung:"+listFileTamUng.size()+"danh sach tam ung fodler:"+listFolderTamUng.size();
         return msg;
     }
     public String GiaHan(DeTaiReq detai, String userId, String orgId, String token) throws Exception {
@@ -1181,6 +1182,12 @@ public class DeTaiController {
         List<FileReq> listFile = deTaiService.ListFileByMaDeTai(maDeTai);
 
         List<Folder> listFolderFile = deTaiService.ListFolderFileGiaHan();
+        if(listFolderFile != null && listFolderFile.size() >0){}else{
+            Folder folder = new Folder();
+            folder.setMaFolder("VBAN_GIAHAN");
+            folder.setFileName("Văn bản, quyết định xin gia hạn");
+            listFolderFile.add(folder);
+        }
         List<Folder> listFolderFileNew = new ArrayList<>();
         if (listFile != null && listFile.size() > 0) {
             for (Folder folder : listFolderFile) {

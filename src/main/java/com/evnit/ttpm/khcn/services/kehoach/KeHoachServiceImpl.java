@@ -282,8 +282,9 @@ public class KeHoachServiceImpl implements KeHoachService {
     public List<KeHoachResp> ListKeHoachPheDuyet(List<String> nam,String maTrangThai,String page,String pageSize,String orgId) throws Exception{
         String queryString = "SELECT COUNT(kh.NGAY_TAO) OVER() as TotalPage,kh.[MA_KE_HOACH] maKeHoach,kh.[TEN_KE_HOACH] name,kh.[NAM] nam,kh.[MA_DON_VI] maDonVi,kh.[MA_TRANG_THAI] maTrangThai,kh.[NGUOI_TAO] nguoiTao,kh.[NGAY_TAO] ngayTao,kh.[NGUOI_SUA] nguoiSua,kh.[TONG_HOP] tongHop," +
                 "kh.[Y_KIEN_NGUOI_PHE_DUYET] yKienNguoiPheDuyet,kh.[TEN_BANG_TONG_HOP] tenBangTongHop,kh.[KY_TONG_HOP] kyTongHop,kh.[CAP_TAO] capTao  ";
-        queryString +=" , tt.TEN_TRANG_THAI tenTrangThai, FORMAT (NGAY_SUA, 'dd/MM/yyyy') as ngayGui, u.USERNAME nguoiGui";
+        queryString +=" , tt.TEN_TRANG_THAI tenTrangThai, FORMAT (kh.NGAY_SUA, 'dd/MM/yyyy') as ngayGui, u.USERNAME nguoiGui";
         queryString +=" FROM [dbo].[KH_KE_HOACH] kh";
+        queryString +=" INNER JOIN KH_KE_HOACH_CHI_TIET ct ON ct.MA_KE_HOACH =kh.MA_KE_HOACH ";
         queryString +=" LEFT JOIN KH_DM_TRANG_THAI tt ON kh.MA_TRANG_THAI = tt.MA_TRANG_THAI";
         queryString +=" LEFT JOIN Q_USER u ON kh.NGUOI_SUA = u.USERID";
         queryString +=" WHERE 1 = 1 AND kh.MA_TRANG_THAI IN('CHO_PHE_DUYET','Y_CAU_HIEU_CHINH','DA_PHE_DUYET') ";

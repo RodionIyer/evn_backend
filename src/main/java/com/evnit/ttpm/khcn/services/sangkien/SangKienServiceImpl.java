@@ -253,8 +253,8 @@ public class SangKienServiceImpl implements SangKienService {
                     " OR sk.NGUOI_TAO = :USERID OR sk.NGUOI_SUA = :USERID)";
             parameters.addValue("USERID", userId);
         }
-        if(loaiTimKiem != null && loaiTimKiem.equals("XETDUYET")){
-            if(Util.isNotEmpty(timKiemReq.getCapDo())) {
+        if (loaiTimKiem != null && loaiTimKiem.equals("XETDUYET") && timKiemReq != null) {
+            if (Util.isNotEmpty(timKiemReq.getCapDo())) {
                 queryString += " AND sk.MA_CAPDO = :MA_CAPDO";
                 parameters.addValue("MA_CAPDO", timKiemReq.getCapDo());
             }
@@ -270,8 +270,8 @@ public class SangKienServiceImpl implements SangKienService {
                 queryString += " AND sk.MA_DON_VI_DAU_TU = :MA_DON_VI_DAU_TU";
                 parameters.addValue("MA_DON_VI_DAU_TU", timKiemReq.getDonVi());
             }
-        }else  if(loaiTimKiem != null && loaiTimKiem.equals("NGHIEMTHU")){
-            if(Util.isNotEmpty(timKiemReq.getCapDo())) {
+        } else if (loaiTimKiem != null && loaiTimKiem.equals("NGHIEMTHU") && timKiemReq != null) {
+            if (Util.isNotEmpty(timKiemReq.getCapDo())) {
                 queryString += " AND sk.MA_CAPDO = :MA_CAPDO";
                 parameters.addValue("MA_CAPDO", timKiemReq.getCapDo());
             }

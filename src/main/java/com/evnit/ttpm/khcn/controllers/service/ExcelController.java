@@ -50,52 +50,59 @@ public class ExcelController {
         }
 
         if (!StringUtils.isEmpty(maKeHoach)) {
-//            try {
-//                String pathSave = wordController.KeHoach(maKeHoach, orgId);
-//                if (Util.isNotEmpty(pathSave)) {
-//                    File file = new File(pathSave);
-//                    byte[] fileContent = Files.readAllBytes(file.toPath());
-//                    String fileBase64 = Base64.getEncoder().encodeToString(fileContent);
-//                    boolean result2 = Files.deleteIfExists(file.toPath());
-//                    return new ExecServiceResponse(fileBase64, 1, "Thành công.");
-//                }
-//            } catch (Exception ex) {
-//            }
-            KeHoach kehoach = excelService.getFirstMaKeHoach(maKeHoach);
-            String maDonVi =orgId;
-            if(Util.isNotEmpty(kehoach.getMaDonVi())){
-                maDonVi =kehoach.getMaDonVi();
-            }
-            List<DonVi> listDonVi = excelService.getListDonVi(maDonVi);
-            List<DanhSachMau> listDanhSachMau = excelService.getListDanhsachMau();
-            DonVi donVi = excelService.getFirstDonVi(maDonVi);
-            List<KeHoachChiTiet> listKeHoachChiTiet = excelService.getListKeHoachChiTiet(maKeHoach);
-            List<NguonKinhPhi> listNguonKinhPhi = excelService.getListNguonKinhPhi();
-
             try {
-                String path = System.getProperty("user.dir");
-                String html = CreateHtml(listDonVi, listDanhSachMau, donVi, listKeHoachChiTiet, listNguonKinhPhi, kehoach);
-                if (html != null) {
-                    UUID uuid = UUID.randomUUID();
-                    String pathHtml = path + "/file" + uuid + ".html";
-                    File newHtmlFile = new File(pathHtml);
-                    FileUtils.writeStringToFile(newHtmlFile, html);
-                    Document doc = new Document(pathHtml);
+                String pathSave ="";
+                KeHoach kehoach = excelService.getFirstMaKeHoach(maKeHoach);
+                if(kehoach != null && (kehoach.getCapTao().equals("TCT") || kehoach.getCapTao().equals("EVN"))){
+                    pathSave = wordController.KeHoachTongHop(maKeHoach, orgId);
+                }else{
+                    pathSave = wordController.KeHoach(maKeHoach, orgId);
+                }
 
-                    String fileName = "xuat_bieu_mau_" + uuid + ".docx";
-                    String pathSave = path + "/" + fileName;
-                    doc.save(pathSave);
+                if (Util.isNotEmpty(pathSave)) {
                     File file = new File(pathSave);
                     byte[] fileContent = Files.readAllBytes(file.toPath());
                     String fileBase64 = Base64.getEncoder().encodeToString(fileContent);
-                    boolean result = Files.deleteIfExists(newHtmlFile.toPath());
                     boolean result2 = Files.deleteIfExists(file.toPath());
                     return new ExecServiceResponse(fileBase64, 1, "Thành công.");
                 }
-
             } catch (Exception ex) {
-                ex.getMessage();
             }
+//            KeHoach kehoach = excelService.getFirstMaKeHoach(maKeHoach);
+//            String maDonVi =orgId;
+//            if(Util.isNotEmpty(kehoach.getMaDonVi())){
+//                maDonVi =kehoach.getMaDonVi();
+//            }
+//            List<DonVi> listDonVi = excelService.getListDonVi(maDonVi);
+//            List<DanhSachMau> listDanhSachMau = excelService.getListDanhsachMau();
+//            DonVi donVi = excelService.getFirstDonVi(maDonVi);
+//            List<KeHoachChiTiet> listKeHoachChiTiet = excelService.getListKeHoachChiTiet(maKeHoach);
+//            List<NguonKinhPhi> listNguonKinhPhi = excelService.getListNguonKinhPhi();
+//
+//            try {
+//                String path = System.getProperty("user.dir");
+//                String html = CreateHtml(listDonVi, listDanhSachMau, donVi, listKeHoachChiTiet, listNguonKinhPhi, kehoach);
+//                if (html != null) {
+//                    UUID uuid = UUID.randomUUID();
+//                    String pathHtml = path + "/file" + uuid + ".html";
+//                    File newHtmlFile = new File(pathHtml);
+//                    FileUtils.writeStringToFile(newHtmlFile, html);
+//                    Document doc = new Document(pathHtml);
+//
+//                    String fileName = "xuat_bieu_mau_" + uuid + ".docx";
+//                    String pathSave = path + "/" + fileName;
+//                    doc.save(pathSave);
+//                    File file = new File(pathSave);
+//                    byte[] fileContent = Files.readAllBytes(file.toPath());
+//                    String fileBase64 = Base64.getEncoder().encodeToString(fileContent);
+//                    boolean result = Files.deleteIfExists(newHtmlFile.toPath());
+//                    boolean result2 = Files.deleteIfExists(file.toPath());
+//                    return new ExecServiceResponse(fileBase64, 1, "Thành công.");
+//                }
+//
+//            } catch (Exception ex) {
+//                ex.getMessage();
+//            }
         }
 
         return new ExecServiceResponse(-1, "Không thành công.");
@@ -108,7 +115,7 @@ public class ExcelController {
                 //"<td colspan='5' class='x40'><font class=\"font8\" style=\"text-decoration: none;\">{tieudedonvi}&nbsp;</font><font class=\"font9\" style=\"text-decoration: none;\">{tendonvi}</font></td>\n" +
                 //"<td class='x37'><font class=\"font8\" style=\"text-decoration: none;\">{tieudenam}</font><font class=\"font9\" style=\"text-decoration: none;\">&nbsp;{nam}</font></td>\n" +
 
-                "<td class='x37'></td>\n" + " </tr>\n" + " <tr height='30' style='mso-height-source:userset;height:22.5pt'>\n" + "<td height='30' class='x30' style='height:22.5pt;'></td>\n" + "<td class='x33'><font class=\"font8\" style=\"text-decoration: none;\">{tieudedutoan}</font></td>\n" +
+                "<td class='x37'></td>\n" + " </tr>\n" + " <tr height='30' style='mso-height-source:userset;height:22.5pt'>\n" + "<td height='30' class='x30' style='height:22.5pt;'></td>\n" + "<td class='x33' style=\"width:100%;\"><font class=\"font8\" style=\"text-decoration: none;\">{tieudedutoan}</font></td>\n" +
                 // "<td class='x33'><font class=\"font8\" style=\"text-decoration: none;\">Tổng dự toán (triệu đồng):&nbsp;</font><font class=\"font9\" style=\"text-decoration: none;\">xxx</font></td>\n" +
 
                 "<td colspan='6' class='x33' style='mso-ignore:colspan;'></td>\n" + " </tr>\n" + " <tr height='83' style='mso-height-source:userset;height:62.25pt'>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>STT</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Hoạt động</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Nguồn kinh phí (EVN/Đơn vị)</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Kinh phí dự kiến (triệu đồng)</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Đơn vị chủ trì</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Chủ nhiệm nhiệm vụ</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Nội dung hoạt động</td>\n" + "<td rowspan='3' height='121' class='x38' style='border-bottom:1px solid windowtext;height:90.75pt;'>Thời gian dự kiến thực hiện (từ tháng/năm đến tháng/năm)</td>\n" + " </tr>\n" + " <tr height='20' style='mso-height-source:userset;height:15pt'>\n" + " </tr>\n" + " <tr height='20' style='mso-height-source:userset;height:15pt'>\n" + " </tr>\n" + "{tempChung}" + "<![if supportMisalignedColumns]>\n" + " <tr height='0' style='display:none'>\n" + "  <td width='43' style='width:32.25pt;'></td>\n" + "  <td width='217' style='width:162.75pt;'></td>\n" + "  <td width='60' style='width:45pt;'></td>\n" + "  <td width='76' style='width:57pt;'></td>\n" + "  <td width='70' style='width:52.5pt;'></td>\n" + "  <td width='78' style='width:58.5pt;'></td>\n" + "  <td width='88' style='width:66pt;'></td>\n" + "  <td width='76' style='width:57pt;'></td>\n" + " </tr>\n" + " <![endif]>\n" + "</table>\n" + "\n" + "</body>\n" + "\n" + "</html>\n";
@@ -118,9 +125,15 @@ public class ExcelController {
             html = html.replace("{tieudenam}", "");
             html = html.replace("{tieudedutoan}", "");
         } else {
+            Double tong =0D;
+            try{
+            List<String> listTotal = listKeHoachChiTiet.stream().map(KeHoachChiTiet::getDU_TOAN).collect(Collectors.toList());
+            List<Double>  listTotalInt = listTotal.stream().map(Double::parseDouble).collect(Collectors.toList());
+            tong = listTotalInt.stream().mapToDouble(Double::doubleValue).sum();
+            }catch (Exception ex){}
             html = html.replace("{tieudedonvi}", "Tên Đơn vị: " + donVi.getTenNhom());
             html = html.replace("{tieudenam}", "Năm: " + kehoach.getNAM());
-            html = html.replace("{tieudedutoan}", "Tổng dự toán (triệu đồng): ");
+            html = html.replace("{tieudedutoan}", "Tổng dự toán (triệu đồng): "+ Util.formatNumberVn(tong) +" đồng");
         }
         String htmlChung = CreateBodyHtml(listDonVi, listDanhSachMau, donVi, listKeHoachChiTiet, listNguonKinhPhi,kehoach);
         html = html.replace("{tempChung}", htmlChung);
@@ -275,8 +288,8 @@ public class ExcelController {
             return new ExecServiceResponse(-1, "Bạn không thuộc đơn vị nào.");
         } else {
 
-            List<DonVi> listDonVi = excelService.getListDonVi(orgId);
-            List<DanhSachMau> listDanhSachMau = excelService.getListDanhsachMau();
+           //List<DonVi> listDonVi = excelService.getListDonVi(orgId);
+           // List<DanhSachMau> listDanhSachMau = excelService.getListDanhsachMau();
             DonVi donVi = excelService.getFirstDonVi(orgId);
 
             boolean checkChild = false;
@@ -314,9 +327,9 @@ public class ExcelController {
 //                if(checkChild){
 //                    tieude ="BẢNG TỔNG HỢP ĐỊNH HƯỚNG HOẠT ĐỘNG KHCN";
 //                }
-                CellStyle cellStyleCenter = createStyleTitle(sheet, 1);
+              //  CellStyle cellStyleCenter = createStyleTitle(sheet, 1);
                 // cellStyleCenter.setAlignment(HorizontalAlignment.CENTER);
-                Row row = sheet.createRow(0);
+            //    Row row = sheet.createRow(0);
 //                sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 7));
 //                Cell cell = row.createCell(0);
 //                cell.setCellStyle(cellStyleCenter);
@@ -326,9 +339,9 @@ public class ExcelController {
                 //don vi nam
                 //   if (checkChild) {
                 DonViNam = "Năm: " + Year.now().getValue();
-                Row row11 = sheet.createRow(1);
+                Row row11 = sheet.getRow(1);
                 sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 7));
-                Cell cell11 = row11.createCell(1);
+                Cell cell11 = row11.getCell(1);
                 cell11.setCellStyle(cellStyle);
                 cell11.setCellValue(DonViNam);
 //                } else {

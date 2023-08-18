@@ -42,7 +42,7 @@ public class ExcelServiceImpl  implements ExcelService {
 
     @Override
     public DonVi getFirstDonVi(String orgId) {
-        String queryString = "SELECT * FROM S_ORGANIZATION WHERE [ENABLE] = 1 AND ORGID = :ORGID";
+        String queryString = "SELECT *,ORGID AS MA_NHOM,ORGDESC AS TEN_NHOM FROM S_ORGANIZATION WHERE [ENABLE] = 1 AND ORGID = :ORGID";
         try {
             MapSqlParameterSource parameters = new MapSqlParameterSource().addValue("ORGID", orgId);
             List<DonVi> obj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(DonVi.class));
