@@ -568,10 +568,10 @@ public class ExcelController {
         CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
         cellStyle.setFont(font);
 
-//        cellStyle.setBorderTop(BorderStyle.THIN);
-//        cellStyle.setBorderBottom(BorderStyle.THIN);
-//        cellStyle.setBorderLeft(BorderStyle.THIN);
-//        cellStyle.setBorderRight(BorderStyle.THIN);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
 
         if (position == 1) {
             cellStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -594,10 +594,10 @@ public class ExcelController {
         CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
         cellStyle.setFont(font);
 
-//        cellStyle.setBorderTop(BorderStyle.THIN);
-//        cellStyle.setBorderBottom(BorderStyle.THIN);
-//        cellStyle.setBorderLeft(BorderStyle.THIN);
-//        cellStyle.setBorderRight(BorderStyle.THIN);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
 
         if (position == 1) {
             cellStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -663,10 +663,10 @@ public class ExcelController {
         cellStyle.setFont(font);
         cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-//        cellStyle.setBorderBottom(BorderStyle.THIN);
-//        cellStyle.setBorderLeft(BorderStyle.THIN);
-//        cellStyle.setBorderTop(BorderStyle.THIN);
-//        cellStyle.setBorderRight(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
         cellStyle.setWrapText(true);
         if (position == 1) {
             cellStyle.setAlignment(HorizontalAlignment.CENTER);
