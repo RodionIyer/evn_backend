@@ -198,9 +198,10 @@ public class DeTaiServiceImpl implements DeTaiService {
                 " dt.[THOI_GIAN_KET_THUC] thoiGianThucHienDen,dt.[MA_NGUON_KINH_PHI] nguonKinhPhi,dt.[TONG_KINH_PHI] tongKinhPhi,dt.[MA_PHUONG_THUC_KHOAN] phuongThucKhoanChi,dt.[KINH_PHI_KHOAN] kinhPhiKhoan,dt.[KINH_PHI_KHONG_KHOAN] kinhPhiKhongKhoan,dt.[TINH_CAP_THIET] tinhCapThietCuaDeTaiNhiemVu," +
                 " dt.[MUC_TIEU] mucTieu,dt.[NHIEM_VU] nhiemVuVaPhamViNghienCuu,dt.[KET_QUA_DU_KIEN] ketQuaDuKien,dt.[KIEN_NGHI_DE_XUAT] kienNghiDeXuat,dt.[KET_LUAN_HOI_DONG_XET_DUYET] ketLuanHoiDongXetDuyet,dt.[MA_KET_QUA_NGHIEM_THU] maKetQuaNhiemThu," +
                 " dt.[KET_QUA_THUC_TE_NGHIEM_THU] ketQuaThucTeNghiemThu,dt.[TON_TAI_KHAC_PHUC_NGHIEM_THU] tonTaiKhacPhucNghiemThu,dt.[DIEM_NGHIEM_THU] diemNghiemThu,dt.[MA_TRANG_THAI] maTrangThai,dt.[NGUOI_TAO] nguoiTao,dt.[NGAY_TAO] ngayTao,dt.[NGUOI_SUA] nguoiSua," +
-                " dt.DIA_DIEM diaDiem,dt.THOI_GIAN_HOP thoiGianHop,dt.KET_QUA_PHIEU_DANH_GIA ketQuaPhieuDanhGia, A.LAN_GIA_HAN soLanGiaHan " +
+                " dt.DIA_DIEM diaDiem,dt.THOI_GIAN_HOP thoiGianHop,dt.KET_QUA_PHIEU_DANH_GIA ketQuaPhieuDanhGia, A.LAN_GIA_HAN soLanGiaHan, dt.THOI_GIAN_HOP_NT thoiGianHopNT," +
+                " dt.KET_QUA_PHIEU_DANH_GIA_NT  ketQuaPhieuDanhGiaNT,LY_DO_NT lyDoNT, DIA_DIEM_NT diaDiemNT, TONG_KINH_PHI tongPhiQT " +
                 " FROM [dbo].[DT_DE_TAI] dt " +
-                " LEFT JOIN (SELECT MA_DETAI, MAX(LAN_GIA_HAN) AS LAN_GIA_HAN FROM DT_DETAI_GIA_HAN GROUP BY MA_DETAI) A ON A.MA_DETAI = DT.MA_DETAI " +
+                " LEFT JOIN (SELECT MA_DETAI, MAX(LAN_GIA_HAN) AS LAN_GIA_HAN, MAX(LAN_GIA_HAN) AS lanGiaHanThu FROM DT_DETAI_GIA_HAN GROUP BY MA_DETAI) A ON A.MA_DETAI = DT.MA_DETAI " +
                 " WHERE dt.MA_DETAI = :MA_DETAI";
 
 
@@ -339,7 +340,7 @@ public class DeTaiServiceImpl implements DeTaiService {
     }
 
     @Override
-    public List<KeHoachResp> ListKeHoachDeTai(String ten) throws Exception {
+    public List<KeHoachResp> ListKeHoachDeTai(String ten, String userId, String orgId) throws Exception {
         String queryString = "SELECT COUNT(kh.NGAY_TAO) OVER() as TotalPage," +
                 "kh.[MA_KE_HOACH] maKeHoach," +
                 "kh.[TEN_KE_HOACH] name," +
@@ -360,6 +361,12 @@ public class DeTaiServiceImpl implements DeTaiService {
         queryString += " LEFT JOIN DT_DE_TAI dt on dt.MA_KE_HOACH = kh.MA_KE_HOACH";
         queryString += " WHERE 1 = 1 ";//AND kh.MA_TRANG_THAI IN('CHO_PHE_DUYET','Y_CAU_HIEU_CHINH','DA_PHE_DUYET') ";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
+        RoleResp role = CheckQuyen(userId);
+        if (role != null && role.roleCode.equals("KHCN_ROLE_CANBO_KHCN")) {
+            queryString += " AND (dt.ORGID =:ORGID OR dt.NGUOI_TAO = :USERID OR NGUOI_SUA = :USERID)";
+            parameters.addValue("ORGID", orgId);
+            parameters.addValue("USERID", userId);
+        }
         if (Util.isNotEmpty(ten)) {
             queryString += " AND kh.TEN_KE_HOACH LIKE :TEN";
             parameters.addValue("TEN", "%" + ten + "%");
@@ -680,6 +687,17 @@ public class DeTaiServiceImpl implements DeTaiService {
     }
 
     @Override
+    public int updateTongKinhPhi(String maDeTai, String tongKinhPhi) throws Exception {
+        int result = 0;
+        String queryString = "UPDATE [DT_DE_TAI] SET  TONG_KINH_PHI_QT = :TONG_KINH_PHI WHERE MA_DETAI = :MA_DETAI";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("MA_DETAI", maDeTai);
+        parameters.addValue("TONG_KINH_PHI", tongKinhPhi);
+        result = jdbcTemplate.update(queryString, parameters);
+        return result;
+    }
+
+    @Override
     public int insertLichSu(String maDeTai, String maTrangThaiCu, String maTrangThaiMoi, String ghiChu, String nguoiTao) throws Exception {
         int result = 0;
         String queryString = "INSERT INTO [dbo].[DT_DETAI_LICH_SU]([MA_TRANG_THAI_LICH_SU],[MA_DETAI],[MA_TRANG_THAI_CU],[MA_TRANG_THAI_MOI],[GHI_CHU],[NGUOI_TAO],[NGAY_TAO]) ";
@@ -697,6 +715,9 @@ public class DeTaiServiceImpl implements DeTaiService {
     @Override
     public int insertSendMail(String nguoiGui, String nhomNguoiNhan, String noiDung, String loai, String tieuDe) throws Exception {
         int result = 0;
+        if(!Util.isNotEmpty(noiDung)){
+            noiDung ="";
+        }
         String queryString = "INSERT INTO [dbo].[API_GUI_EMAIL]([MA_EMAIL],[NGUOI_GUI],[NHOM_NGUOI_NHAN],[NOI_DUNG],[LOAI],[DA_GUI],[DA_XOA],[DANG_XU_LY],[TIEU_DE],[NGAY_TAO])";
         queryString += " VALUES(newid(),:NGUOI_GUI,:NHOM_NGUOI_NHAN,:NOI_DUNG,:LOAI,0,0,0,:TIEU_DE,GETDATE())";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
@@ -895,7 +916,7 @@ public class DeTaiServiceImpl implements DeTaiService {
         } else if (loaiTimKiem != null && loaiTimKiem.equals("DANGTHUCHIEN")) {
             queryString += " AND dt.MA_TRANG_THAI IN('DANG_THUC_HIEN')";
         } else if (loaiTimKiem != null && loaiTimKiem.equals("NGHIEMTHU")) {
-            queryString += " AND dt.MA_TRANG_THAI IN('CHUA_GUI_HS_NTHU','YCAU_CAP_NHAT_HS_NTHU','DA_RA_SOAT_HS_NTHU','DA_TLHDNT','DA_NTHU')";
+            queryString += " AND dt.MA_TRANG_THAI IN('YCAU_CAP_NHAT_HS_NTHU','DA_RA_SOAT_HS_NTHU','DA_TLHDNT','DA_NTHU')";
         } else if (loaiTimKiem != null && loaiTimKiem.equals("HOANTHANH")) {
             queryString += " AND dt.MA_TRANG_THAI IN('HOAN_THANH')";
         }

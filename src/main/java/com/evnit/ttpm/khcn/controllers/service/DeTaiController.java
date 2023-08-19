@@ -89,9 +89,10 @@ public class DeTaiController {
             return new ExecServiceResponse(1, msg);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
+            return new ExecServiceResponse(ex.getMessage(),-1, "Thực hiện thất bại");
         }
 
-        return new ExecServiceResponse(-1, "Thực hiện thất bại");
+
     }
 
     public String HoSoNhiemThu(DeTaiReq detai, String userId, String orgId, String token) throws Exception {
@@ -269,7 +270,11 @@ public class DeTaiController {
         if (deTaiResp != null && !deTaiResp.getMaTrangThai().equals(detai.getMaTrangThai())) {
             deTaiService.insertLichSu(detai.getMaDeTai(), deTaiResp.getMaTrangThai(), detai.getMaTrangThai(), detai.getNoiDungGuiMail(),userId);
         }
-        deTaiService.insertNguoiThucHienHD(detai.getDanhSachThanhVien(), detai.getMaDeTai(), userId, userId);
+        List<DanhSachThanhVien> danhSachThanhVien = detai.getDanhSachThanhVien();
+        if(danhSachThanhVien != null && danhSachThanhVien.size() >0){
+            danhSachThanhVien = danhSachThanhVien.stream().filter(c -> Util.isNotEmpty(c.getTen())).collect(Collectors.toUnmodifiableList());
+        }
+        deTaiService.insertNguoiThucHienHD(danhSachThanhVien, detai.getMaDeTai(), userId, userId);
 
 //        if (detai.getIsEmail() != null && detai.getIsEmail() == true) {
 //            List<DanhSachChung> listTrangThai = deTaiService.ListDanhSachTrangThai();
@@ -376,7 +381,11 @@ public class DeTaiController {
         if (deTaiResp != null && !deTaiResp.getMaTrangThai().equals(detai.getMaTrangThai())) {
             deTaiService.insertLichSu(detai.getMaDeTai(), deTaiResp.getMaTrangThai(), detai.getMaTrangThai(), detai.getNoiDungGuiMail(),userId);
         }
-        deTaiService.insertHoiDong(detai.getDanhSachThanhVienHD(), detai.getMaDeTai(), userId, userId,0);
+        List<DanhSachThanhVien> danhSachThanhVienHD = detai.getDanhSachThanhVienHD();
+        if(danhSachThanhVienHD != null && danhSachThanhVienHD.size() >0){
+           danhSachThanhVienHD = detai.getDanhSachThanhVienHD().stream().filter(c -> Util.isNotEmpty(c.getTen())).collect(Collectors.toList());
+        }
+        deTaiService.insertHoiDong(danhSachThanhVienHD, detai.getMaDeTai(), userId, userId,0);
 
 //        if (detai.getIsEmail() != null && detai.getIsEmail() == true) {
 //            List<DanhSachChung> listTrangThai = deTaiService.ListDanhSachTrangThai();
@@ -429,7 +438,12 @@ public class DeTaiController {
         if (deTaiResp != null && !deTaiResp.getMaTrangThai().equals(detai.getMaTrangThai())) {
             deTaiService.insertLichSu(detai.getMaDeTai(), deTaiResp.getMaTrangThai(), detai.getMaTrangThai(), detai.getNoiDungGuiMail(),userId);
         }
-        deTaiService.insertHoiDong(detai.getDanhSachThanhVienHD(), detai.getMaDeTai(), userId, userId,1);
+        List<DanhSachThanhVien> danhSachThanhVienHD = detai.getDanhSachThanhVienHD();
+        if(danhSachThanhVienHD != null && danhSachThanhVienHD.size() >0){
+            danhSachThanhVienHD = detai.getDanhSachThanhVienHD().stream().filter(c -> Util.isNotEmpty(c.getTen())).collect(Collectors.toList());
+        }
+
+        deTaiService.insertHoiDong(danhSachThanhVienHD, detai.getMaDeTai(), userId, userId,1);
 
 //        if (detai.getIsEmail() != null && detai.getIsEmail() == true) {
 //            List<DanhSachChung> listTrangThai = deTaiService.ListDanhSachTrangThai();
@@ -612,6 +626,10 @@ public class DeTaiController {
         DeTaiResp deTaiResp = deTaiService.ChiTietDeTai(detai.getMaDeTai());
 
         deTaiService.updateTrangThai(detai.getMaDeTai(), detai.getMaTrangThai());
+        if(detai.getMethodType() != null && detai.getMethodType().equals("NGHIEMTHU")){
+            deTaiService.updateTongKinhPhi(detai.getMaDeTai(), detai.getTongKinhPhi());
+        }
+
         if (deTaiResp != null && !deTaiResp.getMaTrangThai().equals(detai.getMaTrangThai())) {
             deTaiService.insertLichSu(detai.getMaDeTai(), deTaiResp.getMaTrangThai(), detai.getMaTrangThai(), detai.getNoiDungGuiMail(),userId);
         }
@@ -788,7 +806,7 @@ public class DeTaiController {
             listThanhVien.add(thanhVien);
         }
         if (detai != null && detai.getDanhSachThanhVien() != null && detai.getDanhSachThanhVien().size() > 0) {
-            List<DanhSachThanhVien> listThanhVienNew = detai.getDanhSachThanhVien().stream().filter(c -> c.getTen() !=null).collect(Collectors.toList());
+            List<DanhSachThanhVien> listThanhVienNew = detai.getDanhSachThanhVien().stream().filter(c -> Util.isNotEmpty(c.getTen())).collect(Collectors.toList());
             listThanhVien.addAll(listThanhVienNew);
         }
         List<FileReq> listFile = new ArrayList<>();
@@ -976,6 +994,7 @@ public class DeTaiController {
     }
 
     public ExecServiceResponse ListDanhSachDeTaiChung(ExecServiceRequest execServiceRequest) {
+        List<DeTaiResp> listDeTaiNew = new ArrayList<>();
         try {
 
             String orgId = SecurityUtils.getPrincipal().getORGID();
@@ -1004,7 +1023,7 @@ public class DeTaiController {
                 }
             }
             List<DeTaiResp> listDeTai = deTaiService.ListDeTaiChung(loaiTimKiem,timKiemReq, userId, page, pagezise,orgId);
-            List<DeTaiResp> listDeTaiNew = new ArrayList<>();
+
             if (listDeTai != null && listDeTai.size() > 0) {
                 List<DanhSachChung> listCapdo = deTaiService.ListDanhSachCapDo();
                 List<DanhSachChung> listDonViChuTri = deTaiService.ListDanhSachDonViChuTri();
@@ -1044,9 +1063,11 @@ public class DeTaiController {
 
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
+            return new ExecServiceResponse(ex.getMessage(),-1, "Thực hiện thất bại");
+
         }
 
-        return new ExecServiceResponse(-1, "Thực hiện thất bại");
+
     }
 
     public ExecServiceResponse ChiTietDanhSachDeTai(ExecServiceRequest execServiceRequest) {
@@ -1113,8 +1134,8 @@ public class DeTaiController {
     public DeTaiResp chiTietGiaHan(String maDeTai) throws Exception{
         DeTaiResp listDeTai = deTaiService.ChiTietDeTai(maDeTai);
         List<DanhSachChung> listCapdo = deTaiService.ListDanhSachCapDo();
-        List<DanhSachChung> listDonViChuTri = deTaiService.ListDanhSachDonViChuTri();
-        List<DanhSachChung> listTrangThai = deTaiService.ListDanhSachTrangThai();
+        //List<DanhSachChung> listDonViChuTri = deTaiService.ListDanhSachDonViChuTri();
+       // List<DanhSachChung> listTrangThai = deTaiService.ListDanhSachTrangThai();
         List<DanhSachThanhVien> listThanhVien = deTaiService.ListNguoiThucHienByMaDeTai(listDeTai.getMaDeTai());
 
         if (listDeTai != null && listDeTai.getMaDeTai() != null) {
@@ -1407,7 +1428,7 @@ public class DeTaiController {
             listFolderFileNew = listFolderFile;
         }
         listDeTai.setListFolderFile(listFolderFileNew);
-        List<Folder> listFolderFileHD = deTaiService.ListFolderFileHOIDONG();
+        List<Folder> listFolderFileHD = deTaiService.ListFolderFileHOIDONGNT();
         List<Folder> listFolderFileHDNew = listFolderFileHD.stream().filter(c -> c.getMaFolder().equals("NGHIEM_THU_QDINHHOIDONG")).collect(Collectors.toList());
         List<Folder> listFolderFileTLHD = new ArrayList<>();
         if(listFolderFileHDNew != null && listFolderFileHDNew.size() >0){
@@ -2336,7 +2357,7 @@ public class DeTaiController {
                     //break;
                 }
             }
-            List<KeHoachResp> listTenKh = deTaiService.ListKeHoachDeTai(tenKh);
+            List<KeHoachResp> listTenKh = deTaiService.ListKeHoachDeTai(tenKh, userId, orgId);
 
 
             return new ExecServiceResponse(listTenKh, 1, "Danh Sách thành công.");

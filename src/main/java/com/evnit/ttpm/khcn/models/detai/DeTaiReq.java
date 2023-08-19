@@ -11,6 +11,7 @@ import java.util.List;
 public class DeTaiReq {
 
         public String method;
+        public String methodType;
         public Integer thang;
         public Integer nam;
         public String lyDo;

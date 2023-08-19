@@ -80,6 +80,7 @@ public class DeTaiResp extends BaseModel {
     public String ketQuaThucTeNghiemThu;
     public String tonTaiKhacPhucNghiemThu;
     public String diemNghiemThu;
+    public String thoiGianHopNT;
     public String maTrangThai;
     public String tenTrangThai;
     public String nguoiTao;
@@ -90,5 +91,9 @@ public class DeTaiResp extends BaseModel {
     public String ketQuaPhieuDanhGia;
     public List<TienDoThucHien> listTienDoCongViec;
     public Integer lanGiaHanThu;
+    public String ketQuaPhieuDanhGiaNT;
+    public String lyDoNT;
+    public String diaDiemNT;
+    public String tongPhiQT;
     public String viewLoi;
 }

@@ -258,15 +258,15 @@ public class SangKienServiceImpl implements SangKienService {
                 queryString += " AND sk.MA_CAPDO = :MA_CAPDO";
                 parameters.addValue("MA_CAPDO", timKiemReq.getCapDo());
             }
-            if(Util.isNotEmpty(timKiemReq.getTrangThai())) {
+            if (Util.isNotEmpty(timKiemReq.getTrangThai())) {
                 queryString += " AND sk.MA_TRANG_THAI = :MA_TRANG_THAI";
                 parameters.addValue("MA_TRANG_THAI", timKiemReq.getTrangThai());
             }
-            if(Util.isNotEmpty(timKiemReq.getNam())) {
+            if (Util.isNotEmpty(timKiemReq.getNam())) {
                 queryString += " AND sk.NAM = :NAM";
                 parameters.addValue("NAM", timKiemReq.getNam());
             }
-            if(Util.isNotEmpty(timKiemReq.getDonVi())) {
+            if (Util.isNotEmpty(timKiemReq.getDonVi())) {
                 queryString += " AND sk.MA_DON_VI_DAU_TU = :MA_DON_VI_DAU_TU";
                 parameters.addValue("MA_DON_VI_DAU_TU", timKiemReq.getDonVi());
             }
@@ -546,11 +546,11 @@ public class SangKienServiceImpl implements SangKienService {
     }
 
     @Override
-    public List<SangKienResp> ListSkHoiDong(String loaiTimKiem, TimKiemReq timKiemReq, String userId, String page, String pageSize,String orgId) throws Exception {
+    public List<SangKienResp> ListSkHoiDong(String loaiTimKiem, TimKiemReq timKiemReq, String userId, String page, String pageSize, String orgId) throws Exception {
         String queryString = "SELECT [MA_SANGKIEN] maSangKien,[TEN_SANGKIEN] tenGiaiPhap,[MA_CAPDO] capDoSangKien,[MA_DON_VI_DAU_TU] donViChuDauTu,[NAM] nam," +
                 "[LA_THU_TRUONG] thuTruongDonVi,[U_NHUOC_DIEM] uuNhuocDiem,[NOI_DUNG_GPHAP] noiDungGiaiPhap,[QTRINH_APDUNG] quaTrinhApDung,[HIEU_QUA_THUC_TIEN] hieuQuaThucTe," +
                 "[TOM_TAT_GIAI_PHAP] tomTat,[NGUOI_THAM_GIA_ADUNG] thamGiaToChuc,[SO_TIEN_HIEU_QUA] soTienLamLoi,[NGAY_XET_DUYET] ngayApDung,[KET_QUA_DANH_GIA_XET_DUYET] ketQuaDanhGiaXetDuyet,[KIEN_NGHI_HOI_DONG_XET_DUYET] kienNghiHoiDongXetDuyet,[THU_LAO] thuLao,[MA_TRANG_THAI] maTrangThai,[NGUOI_TAO] nguoiTao, [DON_VI_AP_DUNG] donViApDung " +
-                "  FROM [dbo].[SK_SANGKIEN] sk "+
+                "  FROM [dbo].[SK_SANGKIEN] sk " +
                 " WHERE 1=1 AND [MA_SANGKIEN] IN(SELECT [MA_SANGKIEN] FROM [SK_SANGKIEN_HOIDONG])";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
@@ -575,7 +575,7 @@ public class SangKienServiceImpl implements SangKienService {
     }
 
     @Override
-    public List<DanhSachChung> ListChucDanh() throws Exception{
+    public List<DanhSachChung> ListChucDanh() throws Exception {
         int result = 0;
         try {
             String queryString = "SELECT MA_CHUC_DANH id, TEN_CHUC_DANH name FROM SK_DM_CHUC_DANH ";
@@ -595,7 +595,7 @@ public class SangKienServiceImpl implements SangKienService {
                 " WHERE MA_SANGKIEN = :MA_SANGKIEN";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("MA_SANGKIEN",maSK);
+        parameters.addValue("MA_SANGKIEN", maSK);
 
         List<DanhSachThanhVien> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(DanhSachThanhVien.class));
         return listObj;

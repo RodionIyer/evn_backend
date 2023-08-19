@@ -24,7 +24,7 @@ public interface DeTaiService {
 
     DeTaiResp ChiTietDeTai(String maDeTai) throws Exception;
 
-    List<KeHoachResp> ListKeHoachDeTai(String ten) throws Exception;
+    List<KeHoachResp> ListKeHoachDeTai(String ten,  String userId, String orgId) throws Exception;
 
     List<UserResp> ListUser(String ten) throws Exception;
 
@@ -46,6 +46,7 @@ public interface DeTaiService {
     List<DanhSachChung> ListDanhSachTrangThai() throws Exception;
 
     int updateTrangThai(String maDeTai, String maTrangThai) throws Exception;
+    int updateTongKinhPhi(String maDeTai, String tongKinhPhi) throws Exception;
 
     int insertSendMail(String nguoiGui, String nhomNguoiNhan, String noiDung, String loai, String tieuDe) throws Exception;
 
