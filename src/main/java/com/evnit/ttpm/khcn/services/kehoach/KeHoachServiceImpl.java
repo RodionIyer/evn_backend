@@ -1,6 +1,7 @@
 package com.evnit.ttpm.khcn.services.kehoach;
 
 import com.evnit.ttpm.khcn.models.detai.DeTaiResp;
+import com.evnit.ttpm.khcn.models.detai.RoleResp;
 import com.evnit.ttpm.khcn.models.kehoach.*;
 import com.evnit.ttpm.khcn.util.Util;
 import com.google.common.reflect.TypeToken;
@@ -167,7 +168,7 @@ public class KeHoachServiceImpl implements KeHoachService {
     public int InsertFile(FileReq item,String maKeHoach) throws Exception{
 
             String queryString = "INSERT INTO [dbo].[KH_KE_HOACH_FILE]([MA_FILE],[MA_KE_HOACH],[SO_KY_HIEU],[NGAY_VAN_BAN],[TEN_FILE],[KICH_THUOC],[KIEU_FILE],[LOAI_FILE],[DUONG_DAN],[NGUOI_TAO],[NGAY_TAO],[NGUOI_SUA],[NGAY_SUA],[DA_XOA],[ROWID],FILE_BASE64)   " +
-                    " VALUES(newid(),:MA_KE_HOACH,:SO_KY_HIEU,GETDATE(),:TEN_FILE,:KICH_THUOC,:KIEU_FILE,:LOAI_FILE,:DUONG_DAN,:NGUOI_TAO,GETDATE(),:NGUOI_SUA,GETDATE(),0,:ROWID,:FILE_BASE64) ";
+                    " VALUES(newid(),:MA_KE_HOACH,:SO_KY_HIEU,:NGAY_VAN_BAN,:TEN_FILE,:KICH_THUOC,:KIEU_FILE,:LOAI_FILE,:DUONG_DAN,:NGUOI_TAO,GETDATE(),:NGUOI_SUA,GETDATE(),0,:ROWID,:FILE_BASE64) ";
 
                 MapSqlParameterSource parameters = new MapSqlParameterSource();
                 //parameters.addValue("MA_FILE", item.getMafile());
@@ -179,7 +180,7 @@ public class KeHoachServiceImpl implements KeHoachService {
                 parameters.addValue("LOAI_FILE", item.getLoaiFile());
                 parameters.addValue("DUONG_DAN", item.getDuongDan());
                 parameters.addValue("NGUOI_TAO", item.getNguoiTao());
-               // parameters.addValue("NGAY_TAO", item.getNgayTao());
+                parameters.addValue("NGAY_VAN_BAN", item.getNgayVanBan());
                 parameters.addValue("NGUOI_SUA", item.getNguoiSua());
                 parameters.addValue("ROWID", item.getRowid());
                 parameters.addValue("FILE_BASE64", item.getBase64());
@@ -279,7 +280,7 @@ public class KeHoachServiceImpl implements KeHoachService {
     }
 
     @Override
-    public List<KeHoachResp> ListKeHoachPheDuyet(List<String> nam,String maTrangThai,String page,String pageSize,String orgId) throws Exception{
+    public List<KeHoachResp> ListKeHoachPheDuyet(List<String> nam,String maTrangThai,String page,String pageSize,String orgId,String userId) throws Exception{
         String queryString = "SELECT COUNT(kh.NGAY_TAO) OVER() as TotalPage,kh.[MA_KE_HOACH] maKeHoach,kh.[TEN_KE_HOACH] name,kh.[NAM] nam,kh.[MA_DON_VI] maDonVi,kh.[MA_TRANG_THAI] maTrangThai,kh.[NGUOI_TAO] nguoiTao,kh.[NGAY_TAO] ngayTao,kh.[NGUOI_SUA] nguoiSua,kh.[TONG_HOP] tongHop," +
                 "kh.[Y_KIEN_NGUOI_PHE_DUYET] yKienNguoiPheDuyet,kh.[TEN_BANG_TONG_HOP] tenBangTongHop,kh.[KY_TONG_HOP] kyTongHop,kh.[CAP_TAO] capTao  ";
         queryString +=" , tt.TEN_TRANG_THAI tenTrangThai, FORMAT (kh.NGAY_SUA, 'dd/MM/yyyy') as ngayGui, u.USERNAME nguoiGui";
@@ -297,16 +298,36 @@ public class KeHoachServiceImpl implements KeHoachService {
             queryString +=" AND kh.MA_TRANG_THAI = :MA_TRANG_THAI";
             parameters.addValue("MA_TRANG_THAI",maTrangThai);
         }
-
-        queryString +=" AND kh.MA_DON_VI IN(SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT= :ORGID) ORDER BY kh.NGAY_TAO DESC OFFSET " +(Util.toInt(page) * Util.toInt(pageSize)) +" ROWS FETCH NEXT "+pageSize+" ROWS ONLY";
+      //  RoleResp role = CheckQuyen(userId);
+//        if (role != null && role.roleCode.equals("KHCN_ROLE_CANBO_KHCN")) {
+//            queryString += " AND (kh.MA_DON_VI =:ORGID OR kh.NGUOI_TAO = :USERID OR NGUOI_SUA = :USERID)";
+//            parameters.addValue("ORGID", orgId);
+//            parameters.addValue("USERID", userId);
+//        } else {
+            queryString += " AND (kh.MA_DON_VI IN(SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT= :ORGID) OR kh.MA_DON_VI=124) ORDER BY kh.NGAY_TAO DESC OFFSET " + (Util.toInt(page) * Util.toInt(pageSize)) + " ROWS FETCH NEXT " + pageSize + " ROWS ONLY";
+//        }
         parameters.addValue("ORGID",orgId);
 
         List<KeHoachResp> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(KeHoachResp.class));
         return listObj;
     }
 
+//    @Override
+//    public RoleResp CheckQuyen(String userId) throws Exception {
+//        String queryString = "SELECT r.[ROLEID] roleId,r.[ROLEDESC] roleDesc,r.[ROLECODE] roleCode FROM Q_ROLE r, Q_USER_ROLE ur  WHERE r.ROLEID =ur.ROLEID AND ur.USERID=:USERID ";
+//        MapSqlParameterSource parameters = new MapSqlParameterSource();
+//
+//        parameters.addValue("USERID", userId);
+//
+//        List<RoleResp> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(RoleResp.class));
+//        if (listObj != null && listObj.size() > 0) {
+//            return listObj.get(0);
+//        }
+//        return null;
+//    }
+
     @Override
-    public List<KeHoachResp> ListKeHoachGiaoViec(String nam,String maTrangThai,String page,String pageSize,String orgId) throws Exception{
+    public List<KeHoachResp> ListKeHoachGiaoViec(String nam,String maTrangThai,String page,String pageSize,String orgId,String userId) throws Exception{
         Gson gson = new Gson();
         List<Integer> intArray = gson.fromJson(nam, new TypeToken<List<Integer>>() {}.getType());
         String queryString = "SELECT COUNT(kh.NGAY_TAO) OVER() as TotalPage,kh.[MA_KE_HOACH] maKeHoach,kh.[TEN_KE_HOACH] name,kh.[NAM] nam,kh.[MA_DON_VI] maDonVi,kh.[MA_TRANG_THAI] maTrangThai,kh.[NGUOI_TAO] nguoiTao,kh.[NGAY_TAO] ngayTao,kh.[NGUOI_SUA] nguoiSua,kh.[TONG_HOP] tongHop," +
@@ -326,7 +347,7 @@ public class KeHoachServiceImpl implements KeHoachService {
 //            parameters.addValue("MA_TRANG_THAI",maTrangThai);
 //        }
 
-        queryString +=" AND kh.MA_DON_VI IN(:ORGID) ORDER BY kh.NGAY_TAO DESC OFFSET "+(Util.toInt(page) * Util.toInt(pageSize)) +" ROWS FETCH NEXT "+pageSize+" ROWS ONLY";
+        queryString +=" AND (kh.MA_DON_VI IN(SELECT ORGID FROM S_ORGANIZATION WHERE ORGID_PARENT= :ORGID) OR kh.MA_DON_VI=124) ORDER BY kh.NGAY_TAO DESC OFFSET "+(Util.toInt(page) * Util.toInt(pageSize)) +" ROWS FETCH NEXT "+pageSize+" ROWS ONLY";
         parameters.addValue("ORGID",orgId);
 
         List<KeHoachResp> listObj = jdbcTemplate.query(queryString, parameters, BeanPropertyRowMapper.newInstance(KeHoachResp.class));

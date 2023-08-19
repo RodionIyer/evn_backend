@@ -2480,7 +2480,7 @@ public class DeTaiController {
                     //break;
                 }
             }
-            List<DeTaiResp> listDeTai = deTaiService.ListDeTaiHoiDong(loaiTimKiem,timKiemReq, userId, page, pagezise,orgId);
+            List<DeTaiResp> listDeTai = deTaiService.ListDeTaiHoiDong(loaiTimKiem,timKiemReq, userId, page, pagezise,orgId,timKiemReq.getLoaiHD());
             List<DeTaiResp> listDeTaiNew = new ArrayList<>();
             if (listDeTai != null && listDeTai.size() > 0) {
                 List<DanhSachChung> listCapdo = deTaiService.ListDanhSachCapDo();

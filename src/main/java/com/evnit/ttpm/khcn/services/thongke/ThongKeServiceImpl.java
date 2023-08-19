@@ -65,21 +65,28 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            if (thongKeReq.getPhanLoai().equals("NGHIEMTHU")) {
-//                whereDT += " AND CONVERT(VARCHAR(10), dt.THOI_GIAN_KET_THUC, 111) < CONVERT(VARCHAR(10), GETDATE(), 111)";
-//            } else {
-//                whereDT += " AND CONVERT(VARCHAR(10), dt.THOI_GIAN_BAT_DAU, 111) <= CONVERT(VARCHAR(10), GETDATE(), 111)" +
-//                        " AND CONVERT(VARCHAR(10), GETDATE(), 111) <= CONVERT(VARCHAR(10), dt.THOI_GIAN_KET_THUC, 111)";
-//            }
+            if (thongKeReq.getPhanLoai().equals("NGHIEMTHU")) {
+                if (Util.isNotEmpty(thongKeReq.getFromNam())) {
+                    whereDT += " AND YEAR(dt.THOI_GIAN_BAT_DAU) >= :FROM_NAM ";
+                    parameters.addValue("FROM_NAM", thongKeReq.getFromNam());
+                }
+                if (Util.isNotEmpty(thongKeReq.getToNam())) {
+                    whereDT += " AND YEAR(dt.THOI_GIAN_BAT_DAU) >= :TO_NAM ";
+                    parameters.addValue("TO_NAM", thongKeReq.getFromNam());
+                }
+            } else {
+                if (Util.isNotEmpty(thongKeReq.getFromNam())) {
+                    whereDT += " AND YEAR(dt.THOI_GIAN_KET_THUC) >= :FROM_NAM ";
+                    parameters.addValue("FROM_NAM", thongKeReq.getFromNam());
+                }
+                if (Util.isNotEmpty(thongKeReq.getToNam())) {
+                    whereDT += " AND YEAR(dt.THOI_GIAN_KET_THUC) <= :TO_NAM ";
+                    parameters.addValue("TO_NAM", thongKeReq.getToNam());
+                }
+            }
         }
-        if (Util.isNotEmpty(thongKeReq.getFromNam())) {
-            whereDT += " AND YEAR(dt.THOI_GIAN_BAT_DAU) >= :FROM_NAM ";
-            parameters.addValue("FROM_NAM", thongKeReq.getFromNam());
-        }
-        if (Util.isNotEmpty(thongKeReq.getToNam())) {
-            whereDT += " AND YEAR(dt.THOI_GIAN_KET_THUC) <= :TO_NAM ";
-            parameters.addValue("TO_NAM", thongKeReq.getToNam());
-        }
+
+
         String queryString = "SELECT * FROM (" +
                 " SELECT 'DETAI' loaiDeTaiSK," +
                 " dt.TEN_DETAI tenDeTaiSK," +

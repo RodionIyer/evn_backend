@@ -115,7 +115,7 @@ public class KeHoachController {
                             deTaiReq.setTenDeTai(item.getNoiDungDangKy());
                             deTaiReq.setMaKeHoach(item.getMaKeHoach());
                             deTaiReq.setDonViChuTri(item.getMaDonVi());
-                            deTaiReq.setNguoiTao(nguoiTao);
+                            deTaiReq.setNguoiTao(item.getNguoiTao());
                             deTaiReq.setNgayTao(new Date());
                             deTaiReq.setNguoiSua(userId);
                             deTaiReq.setMaTrangThai("CHUA_GUI");
@@ -359,7 +359,7 @@ public class KeHoachController {
                     //break;
                 }
             }
-            List<KeHoachResp> listKeHoach = keHoachService.ListKeHoachPheDuyet(nam, maTrangThai, page, pagezise, orgId);
+            List<KeHoachResp> listKeHoach = keHoachService.ListKeHoachPheDuyet(nam, maTrangThai, page, pagezise, orgId,userId);
             List<KeHoachResp> listKeHoachnew = new ArrayList<>();
             if (listKeHoach != null && listKeHoach.size() > 0) {
                 for (KeHoachResp item : listKeHoach) {
@@ -407,7 +407,7 @@ public class KeHoachController {
                     //break;
                 }
             }
-            List<KeHoachResp> listKeHoach = keHoachService.ListKeHoachGiaoViec(nam, maTrangThai, page, pagezise, orgId);
+            List<KeHoachResp> listKeHoach = keHoachService.ListKeHoachGiaoViec(nam, maTrangThai, page, pagezise, orgId,userId);
             List<KeHoachResp> listKeHoachnew = new ArrayList<>();
             if (listKeHoach != null && listKeHoach.size() > 0) {
                 for (KeHoachResp item : listKeHoach) {

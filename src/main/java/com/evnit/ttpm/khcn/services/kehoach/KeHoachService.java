@@ -19,8 +19,8 @@ public interface KeHoachService {
     KeHoachResp KeHoachByMa(String maKeHoach) throws Exception;
     List<KeHoachResp> ListKeHoach(String nam,String maTrangThai,String page,String pageSize,String orgId) throws Exception;
     int UpdateTongHop(List<String> listMaKeHoachChiTiet) throws Exception;
-    List<KeHoachResp> ListKeHoachPheDuyet(List<String> nam,String maTrangThai,String page,String pageSize,String orgId) throws Exception;
-    List<KeHoachResp> ListKeHoachGiaoViec(String nam,String maTrangThai,String page,String pageSize,String orgId) throws Exception;
+    List<KeHoachResp> ListKeHoachPheDuyet(List<String> nam,String maTrangThai,String page,String pageSize,String orgId,String userId) throws Exception;
+    List<KeHoachResp> ListKeHoachGiaoViec(String nam,String maTrangThai,String page,String pageSize,String orgId,String userId) throws Exception;
     int InsertKeHoachLichSu(String maKeHoach,String trangThaiCu,String trangThaiMoi,String ghiChu,String nguoiTao) throws Exception;
     int EmailSend(String maKeHoach,String ghiChu,Integer nam,String maTrangThai,String nguoiTao) throws Exception;
     List<LichSuKeHoach> ListLichsuKeHoach(String maKeHoach) throws Exception;

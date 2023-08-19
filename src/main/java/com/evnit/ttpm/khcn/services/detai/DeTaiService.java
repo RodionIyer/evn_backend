@@ -100,5 +100,5 @@ public interface DeTaiService {
 
     List<UserResp> ListHoiDong(String ten, String capDonVi) throws Exception;
 
-    List<DeTaiResp> ListDeTaiHoiDong(String loaiTimKiem, TimKiemReq timKiemReq, String nguoiTao, String page, String pageSize, String orgId) throws Exception;
+    List<DeTaiResp> ListDeTaiHoiDong(String loaiTimKiem, TimKiemReq timKiemReq, String nguoiTao, String page, String pageSize, String orgId,int loaiHD) throws Exception;
 }

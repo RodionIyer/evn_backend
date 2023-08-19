@@ -955,13 +955,14 @@ public class DeTaiServiceImpl implements DeTaiService {
     }
 
     @Override
-    public List<DeTaiResp> ListDeTaiHoiDong(String loaiTimKiem, TimKiemReq timKiemReq, String userId, String page, String pageSize, String orgId) throws Exception {
+    public List<DeTaiResp> ListDeTaiHoiDong(String loaiTimKiem, TimKiemReq timKiemReq, String userId, String page, String pageSize, String orgId,int loaiHD) throws Exception {
         String queryString = "SELECT COUNT(dt.MA_DETAI) OVER() as totalPage, dt.[MA_DETAI] maDeTai,dt.[TEN_DETAI] tenDeTai,dt.[MA_KE_HOACH] maKeHoach,dt.[MA_CAPDO] capQuanLy,dt.[VAN_BAN] vanBanChiDaoSo,dt.[MA_DON_VI_CHU_TRI] donViChuTri,dt.[THOI_GIAN_BAT_DAU] thoiGianThucHienTu," +
                 " dt.[THOI_GIAN_KET_THUC] thoiGianThucHienDen,dt.[MA_NGUON_KINH_PHI] nguonKinhPhi,dt.[TONG_KINH_PHI] tongKinhPhi,dt.[MA_PHUONG_THUC_KHOAN] phuongThucKhoanChi,dt.[KINH_PHI_KHOAN] kinhPhiKhoan,dt.[KINH_PHI_KHONG_KHOAN] kinhPhiKhongKhoan,dt.[TINH_CAP_THIET] tinhCapThietCuaDeTaiNhiemVu," +
                 " dt.[MUC_TIEU] mucTieu,dt.[NHIEM_VU] nhiemVuVaPhamViNghienCuu,dt.[KET_QUA_DU_KIEN] ketQuaDuKien,dt.[KIEN_NGHI_DE_XUAT] kienNghiDeXuat,dt.[KET_LUAN_HOI_DONG_XET_DUYET] ketLuanHoiDongXetDuyet,dt.[MA_KET_QUA_NGHIEM_THU] maKetQuaNhiemThu," +
                 " dt.[KET_QUA_THUC_TE_NGHIEM_THU] ketQuaThucTeNghiemThu,dt.[TON_TAI_KHAC_PHUC_NGHIEM_THU] tonTaiKhacPhucNghiemThu,dt.[DIEM_NGHIEM_THU] diemNghiemThu,dt.[MA_TRANG_THAI] maTrangThai,dt.[NGUOI_TAO] nguoiTao,dt.[NGAY_TAO] ngayTao,dt.[NGUOI_SUA] nguoiSua" +
                 " FROM [dbo].[DT_DE_TAI] dt" +
-                " WHERE 1=1 AND MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_HOI_DONG)";
+                " INNER JOIN DT_DETAI_HOI_DONG hd ON dt.MA_DETAI =hd.MA_DETAI AND hd.LOAI_HDONG=" + loaiHD +
+                " WHERE 1=1 ";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         //parameters.addValue("USERID",nguoiTao);
