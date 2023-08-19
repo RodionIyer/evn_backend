@@ -137,10 +137,10 @@ public class DeTaiServiceImpl implements DeTaiService {
         parameters.addValue("THOI_GIAN_BAT_DAU", fromDate);
         parameters.addValue("THOI_GIAN_KET_THUC", toDate);
         parameters.addValue("MA_NGUON_KINH_PHI", deTaiReq.getNguonKinhPhi());
-        parameters.addValue("TONG_KINH_PHI", deTaiReq.getTongKinhPhi());
+        parameters.addValue("TONG_KINH_PHI", Util.ConvertStringToDouble(deTaiReq.getTongKinhPhi()));
         parameters.addValue("MA_PHUONG_THUC_KHOAN", deTaiReq.getPhuongThucKhoanChi());
-        parameters.addValue("KINH_PHI_KHOAN", deTaiReq.getKinhPhiKhoan());
-        parameters.addValue("KINH_PHI_KHONG_KHOAN", deTaiReq.getKinhPhiKhongKhoan());
+        parameters.addValue("KINH_PHI_KHOAN", Util.ConvertStringToDouble(deTaiReq.getKinhPhiKhoan()));
+        parameters.addValue("KINH_PHI_KHONG_KHOAN", Util.ConvertStringToDouble(deTaiReq.getKinhPhiKhongKhoan()));
         parameters.addValue("TINH_CAP_THIET", deTaiReq.getTinhCapThietCuaDeTaiNhiemVu());
         parameters.addValue("MUC_TIEU", deTaiReq.getMucTieu());
         parameters.addValue("NHIEM_VU", deTaiReq.getNhiemVuVaPhamViNghienCuu());
@@ -150,7 +150,7 @@ public class DeTaiServiceImpl implements DeTaiService {
         parameters.addValue("MA_KET_QUA_NGHIEM_THU", deTaiReq.getMaKetQuaNhiemThu());
         parameters.addValue("KET_QUA_THUC_TE_NGHIEM_THU", deTaiReq.getKetQuaThucTeNghiemThu());
         parameters.addValue("TON_TAI_KHAC_PHUC_NGHIEM_THU", deTaiReq.getTonTaiKhacPhucNghiemThu());
-        parameters.addValue("DIEM_NGHIEM_THU", deTaiReq.getDiemNghiemThu());
+        parameters.addValue("DIEM_NGHIEM_THU", Util.ConvertStringToDouble(deTaiReq.getDiemNghiemThu()));
         parameters.addValue("MA_TRANG_THAI", deTaiReq.getMaTrangThai());
 //        parameters.addValue("NGUOI_TAO", deTaiReq.getNguoiTao());
 //        parameters.addValue("NGAY_TAO", deTaiReq.getNgayTao());

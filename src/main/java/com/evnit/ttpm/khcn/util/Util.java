@@ -206,4 +206,15 @@ public class Util {
 		return "";
 	}
 
+	public static Double ConvertStringToDouble(String number){
+		try {
+			if(number != null){
+				return Double.parseDouble(number);
+			}
+		}catch (Exception ex){
+
+		}
+		return 0D;
+	}
+
 }

@@ -139,6 +139,10 @@ public class KeHoachServiceImpl implements KeHoachService {
 //                        item.setMaDonVi(orgId);
 //                    }
                     item.setCapTao(capTao);
+                    String nguoiTao2 = nguoiTao;
+                    if(Util.isNotEmpty(item.getNguoiTao())){
+                        nguoiTao2 =item.getNguoiTao();
+                    }
                    // parameters.addValue("MA_KE_HOACH_CTIET", item.getMaKeHoachChiTiet());
                     parameters.addValue("MA_KE_HOACH", maKeHoach);
                     parameters.addValue("MA_NHOM", item.getMaNhom());
@@ -148,7 +152,7 @@ public class KeHoachServiceImpl implements KeHoachService {
                     parameters.addValue("NGUOI_THUC_HIEN", item.getNguoiThucHien());
                     parameters.addValue("NOI_DUNG", item.getNoiDungHoatDong());
                     parameters.addValue("THOI_GIAN_THUC_HIEN", item.getThoiGianDuKien());
-                    parameters.addValue("NGUOI_TAO", nguoiTao);
+                    parameters.addValue("NGUOI_TAO", nguoiTao2);
                    // parameters.addValue("NGAY_TAO", item.getNgayTao());
                     parameters.addValue("NGUOI_SUA", nguoiTao);
                     parameters.addValue("NOI_DUNG_DANG_KY", item.getNoiDungDangKy());
@@ -287,10 +291,10 @@ public class KeHoachServiceImpl implements KeHoachService {
         queryString +=" FROM [dbo].[KH_KE_HOACH] kh";
         queryString +=" INNER JOIN KH_KE_HOACH_CHI_TIET ct ON ct.MA_KE_HOACH =kh.MA_KE_HOACH ";
         queryString +=" LEFT JOIN KH_DM_TRANG_THAI tt ON kh.MA_TRANG_THAI = tt.MA_TRANG_THAI";
-        queryString +=" LEFT JOIN Q_USER u ON kh.NGUOI_SUA = u.USERID";
+        queryString +=" LEFT JOIN Q_USER u ON kh.NGUOI_TAO = u.USERID";
         queryString +=" WHERE 1 = 1 AND kh.MA_TRANG_THAI IN('CHO_PHE_DUYET','Y_CAU_HIEU_CHINH','DA_PHE_DUYET') ";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
-        if(Util.isNotEmpty(nam)){
+        if(nam !=null && nam.size() >0){
             queryString +=" AND kh.NAM IN (:NAM)";
             parameters.addValue("NAM",nam);
         }
