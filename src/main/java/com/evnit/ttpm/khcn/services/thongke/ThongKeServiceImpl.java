@@ -61,24 +61,24 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_CAPDO", thongKeReq.getCapQuanLy());
         }
         if (Util.isNotEmpty(thongKeReq.getLinhVucNghienCuu())) {
-            whereDT += "AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
+            whereDT += " AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
+//            if (thongKeReq.getPhanLoai().equals("NGHIEMTHU")) {
+//                whereDT += " AND CONVERT(VARCHAR(10), dt.THOI_GIAN_KET_THUC, 111) < CONVERT(VARCHAR(10), GETDATE(), 111)";
+//            } else {
+//                whereDT += " AND CONVERT(VARCHAR(10), dt.THOI_GIAN_BAT_DAU, 111) <= CONVERT(VARCHAR(10), GETDATE(), 111)" +
+//                        " AND CONVERT(VARCHAR(10), GETDATE(), 111) <= CONVERT(VARCHAR(10), dt.THOI_GIAN_KET_THUC, 111)";
+//            }
         }
         if (Util.isNotEmpty(thongKeReq.getFromNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
+            whereDT += " AND YEAR(dt.THOI_GIAN_BAT_DAU) >= :FROM_NAM ";
+            parameters.addValue("FROM_NAM", thongKeReq.getFromNam());
         }
         if (Util.isNotEmpty(thongKeReq.getToNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
+            whereDT += " AND YEAR(dt.THOI_GIAN_KET_THUC) <= :TO_NAM ";
+            parameters.addValue("TO_NAM", thongKeReq.getToNam());
         }
         String queryString = "SELECT * FROM (" +
                 " SELECT 'DETAI' loaiDeTaiSK," +
@@ -129,20 +129,20 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
+//            if (thongKeReq.getPhanLoai().equals("NGHIEMTHU")) {
+//                whereDT += " AND CONVERT(VARCHAR(10), dt.THOI_GIAN_KET_THUC, 111) < CONVERT(VARCHAR(10), GETDATE(), 111)";
+//            } else {
+//                whereDT += " AND CONVERT(VARCHAR(10), dt.THOI_GIAN_BAT_DAU, 111) <= CONVERT(VARCHAR(10), GETDATE(), 111)" +
+//                        " AND CONVERT(VARCHAR(10), GETDATE(), 111) <= CONVERT(VARCHAR(10), dt.THOI_GIAN_KET_THUC, 111)";
+//            }
         }
         if (Util.isNotEmpty(thongKeReq.getFromNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
+            whereDT += " AND YEAR(dt.THOI_GIAN_BAT_DAU) >= :FROM_NAM ";
+            parameters.addValue("FROM_NAM", thongKeReq.getFromNam());
         }
         if (Util.isNotEmpty(thongKeReq.getToNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
+            whereDT += " AND YEAR(dt.THOI_GIAN_KET_THUC) <= :TO_NAM ";
+            parameters.addValue("TO_NAM", thongKeReq.getToNam());
         }
         String queryString = "SELECT * FROM (" +
                 " SELECT 'DETAI' loaiDeTaiSK," +
@@ -192,20 +192,20 @@ public class ThongKeServiceImpl implements ThongKeService {
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
         if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
+//            if (thongKeReq.getPhanLoai().equals("NGHIEMTHU")) {
+//                whereDT += " AND CONVERT(VARCHAR(10), dt.THOI_GIAN_KET_THUC, 111) < CONVERT(VARCHAR(10), GETDATE(), 111)";
+//            } else {
+//                whereDT += " AND CONVERT(VARCHAR(10), dt.THOI_GIAN_BAT_DAU, 111) <= CONVERT(VARCHAR(10), GETDATE(), 111)" +
+//                        " AND CONVERT(VARCHAR(10), GETDATE(), 111) <= CONVERT(VARCHAR(10), dt.THOI_GIAN_KET_THUC, 111)";
+//            }
         }
         if (Util.isNotEmpty(thongKeReq.getFromNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
+            whereDT += " AND YEAR(dt.THOI_GIAN_BAT_DAU) >= :FROM_NAM ";
+            parameters.addValue("FROM_NAM", thongKeReq.getFromNam());
         }
         if (Util.isNotEmpty(thongKeReq.getToNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
+            whereDT += " AND YEAR(dt.THOI_GIAN_KET_THUC) <= :TO_NAM ";
+            parameters.addValue("TO_NAM", thongKeReq.getToNam());
         }
         String queryString = "SELECT * FROM (" +
                 " SELECT 'DETAI' loaiDeTaiSK," +
@@ -284,22 +284,6 @@ public class ThongKeServiceImpl implements ThongKeService {
             whereDT += " AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU AND sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
-        if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getFromNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getToNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
         String queryString = "SELECT * FROM (" +
                 " SELECT  'SANGKIEN' AS loaiDeTaiSK," +
                 "sk.TEN_SANGKIEN tenDeTaiSK," +
@@ -348,22 +332,6 @@ public class ThongKeServiceImpl implements ThongKeService {
             whereDT += " AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU AND sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
         }
-        if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getFromNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getToNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
         String queryString = "SELECT * FROM (" +
                 " SELECT  'SANGKIEN' AS loaiDeTaiSK," +
                 " sk.TEN_SANGKIEN tenDeTaiSK, " +
@@ -411,22 +379,6 @@ public class ThongKeServiceImpl implements ThongKeService {
         if (Util.isNotEmpty(thongKeReq.getLinhVucNghienCuu())) {
             whereDT += " AND dmnc.MA_LVUC_NCUU =:MA_LVUC_NCUU AND sk.MA_SANGKIEN IN(SELECT MA_SANGKIEN FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
             parameters.addValue("MA_LVUC_NCUU", thongKeReq.getLinhVucNghienCuu());
-        }
-        if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getPhanLoai())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getFromNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
-        }
-        if (Util.isNotEmpty(thongKeReq.getToNam())) {
-//            whereDT += " AND dt.MA_DETAI IN(SELECT MA_DETAI FROM DT_DETAI_LVUC_NCUU WHERE MA_LVUC_NCUU =:MA_LVUC_NCUU)";
-//            parameters.addValue("MA_LVUC_NCUU",thongKeReq.getPhanLoai());
         }
         String queryString = "SELECT * FROM (" +
                 " SELECT  'SANGKIEN' AS loaiDeTaiSK, " +
