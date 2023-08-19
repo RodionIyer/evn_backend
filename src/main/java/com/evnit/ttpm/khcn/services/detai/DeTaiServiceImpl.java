@@ -199,7 +199,7 @@ public class DeTaiServiceImpl implements DeTaiService {
                 " dt.[MUC_TIEU] mucTieu,dt.[NHIEM_VU] nhiemVuVaPhamViNghienCuu,dt.[KET_QUA_DU_KIEN] ketQuaDuKien,dt.[KIEN_NGHI_DE_XUAT] kienNghiDeXuat,dt.[KET_LUAN_HOI_DONG_XET_DUYET] ketLuanHoiDongXetDuyet,dt.[MA_KET_QUA_NGHIEM_THU] maKetQuaNhiemThu," +
                 " dt.[KET_QUA_THUC_TE_NGHIEM_THU] ketQuaThucTeNghiemThu,dt.[TON_TAI_KHAC_PHUC_NGHIEM_THU] tonTaiKhacPhucNghiemThu,dt.[DIEM_NGHIEM_THU] diemNghiemThu,dt.[MA_TRANG_THAI] maTrangThai,dt.[NGUOI_TAO] nguoiTao,dt.[NGAY_TAO] ngayTao,dt.[NGUOI_SUA] nguoiSua," +
                 " dt.DIA_DIEM diaDiem,dt.THOI_GIAN_HOP thoiGianHop,dt.KET_QUA_PHIEU_DANH_GIA ketQuaPhieuDanhGia, A.LAN_GIA_HAN soLanGiaHan, dt.THOI_GIAN_HOP_NT thoiGianHopNT," +
-                " dt.KET_QUA_PHIEU_DANH_GIA_NT  ketQuaPhieuDanhGiaNT,LY_DO_NT lyDoNT, DIA_DIEM_NT diaDiemNT, TONG_KINH_PHI tongPhiQT " +
+                " dt.KET_QUA_PHIEU_DANH_GIA_NT  ketQuaPhieuDanhGiaNT,LY_DO_NT lyDoNT, DIA_DIEM_NT diaDiemNT, TONG_KINH_PHI_QT tongPhiQT " +
                 " FROM [dbo].[DT_DE_TAI] dt " +
                 " LEFT JOIN (SELECT MA_DETAI, MAX(LAN_GIA_HAN) AS LAN_GIA_HAN, MAX(LAN_GIA_HAN) AS lanGiaHanThu FROM DT_DETAI_GIA_HAN GROUP BY MA_DETAI) A ON A.MA_DETAI = DT.MA_DETAI " +
                 " WHERE dt.MA_DETAI = :MA_DETAI";
@@ -1053,18 +1053,19 @@ public class DeTaiServiceImpl implements DeTaiService {
 
     public int insertTLHDNT(DeTaiReq deTaiReq, String maDeTai) throws Exception {
         String queryString = "UPDATE [dbo].[DT_DE_TAI] SET DIA_DIEM_NT = :DIA_DIEM_NT,THOI_GIAN_HOP_NT = :THOI_GIAN_HOP_NT,KET_QUA_PHIEU_DANH_GIA_NT = :KET_QUA_PHIEU_DANH_GIA_NT," +
-                " KET_QUA_THUC_TE_NGHIEM_THU=:KET_QUA_THUC_TE_NGHIEM_THU, DIEM_NGHIEM_THU = :DIEM_NGHIEM_THU, MA_KET_QUA_NGHIEM_THU = :MA_KET_QUA_NGHIEM_THU, LY_DO_NT = :LY_DO_NT " +
+                " KET_QUA_THUC_TE_NGHIEM_THU=:KET_QUA_THUC_TE_NGHIEM_THU, DIEM_NGHIEM_THU = :DIEM_NGHIEM_THU, MA_KET_QUA_NGHIEM_THU = :MA_KET_QUA_NGHIEM_THU, LY_DO_NT = :LY_DO_NT," +
+                " TON_TAI_KHAC_PHUC_NGHIEM_THU =:TON_TAI_KHAC_PHUC_NGHIEM_THU " +
                 " WHERE MA_DETAI = :MA_DETAI";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
         parameters.addValue("MA_DETAI", maDeTai);
-        parameters.addValue("DIA_DIEM_NT", deTaiReq.getDiaDiem());
-        parameters.addValue("THOI_GIAN_HOP_NT", deTaiReq.getThoiGianHop());
-        parameters.addValue("KET_QUA_PHIEU_DANH_GIA_NT", deTaiReq.getKetQuaPhieuDanhGia());
+        parameters.addValue("DIA_DIEM_NT", deTaiReq.getDiaDiemNT());
+        parameters.addValue("THOI_GIAN_HOP_NT", deTaiReq.getThoiGianHopNT());
+        parameters.addValue("KET_QUA_PHIEU_DANH_GIA_NT", deTaiReq.getKetQuaPhieuDanhGiaNT());
         parameters.addValue("DIEM_NGHIEM_THU", deTaiReq.getDiemNghiemThu());
-        parameters.addValue("MA_KET_QUA_NGHIEM_THU", deTaiReq.getMaKetQuaNT());
+        parameters.addValue("MA_KET_QUA_NGHIEM_THU", deTaiReq.getMaKetQuaNhiemThu());
         parameters.addValue("KET_QUA_THUC_TE_NGHIEM_THU", deTaiReq.getKetQuaThucTeNghiemThu());
-        parameters.addValue("TON_TAI_KHAC_PHUC_NGHIEM_THU", deTaiReq.getTonTaiKhacNT());
-        parameters.addValue("LY_DO_NT", deTaiReq.getLyDo());
+        parameters.addValue("TON_TAI_KHAC_PHUC_NGHIEM_THU", deTaiReq.getTonTaiKhacPhucNghiemThu());
+        parameters.addValue("LY_DO_NT", deTaiReq.getLyDoNT());
         //  parameters.addValue("NGUOI_SUA", deTaiReq.getNguoiSua());
         int result = jdbcTemplate.update(queryString, parameters);
         return result;

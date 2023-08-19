@@ -48,4 +48,6 @@ public class SangKienResp  extends BaseModel {
     public String thuLaoChoNguoiLanDau;
     public List<DanhSachThanhVien> tacGiaGiaiPhap;
     public String donViApDung;
+    public List<String> lstTenLinhVucNghienCuu;
+    public String tenCapDo;
 }

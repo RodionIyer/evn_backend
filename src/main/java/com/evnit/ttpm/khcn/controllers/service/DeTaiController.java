@@ -627,7 +627,7 @@ public class DeTaiController {
 
         deTaiService.updateTrangThai(detai.getMaDeTai(), detai.getMaTrangThai());
         if(detai.getMethodType() != null && detai.getMethodType().equals("NGHIEMTHU")){
-            deTaiService.updateTongKinhPhi(detai.getMaDeTai(), detai.getTongKinhPhi());
+            deTaiService.updateTongKinhPhi(detai.getMaDeTai(), detai.getTongPhiQT());
         }
 
         if (deTaiResp != null && !deTaiResp.getMaTrangThai().equals(detai.getMaTrangThai())) {

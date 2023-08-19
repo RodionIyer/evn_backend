@@ -102,5 +102,9 @@ public class DeTaiReq {
         public List<Folder> listFolderBanGiao;
         public List<Folder> listFolderQuyetToan;
         public List<Folder> listFolderHSNT;
-
+        public String diaDiemNT;
+        public Date thoiGianHopNT;
+        public String lyDoNT;
+        public String ketQuaPhieuDanhGiaNT;
+        public String tongPhiQT;
 }

@@ -738,11 +738,19 @@ public class SangKienController {
                     listFolderFileNew.add(folder);
                 }
             }
-
             obj.setListFolderFile(listFolderFileNew);
+            List<String> lstMaLinhVucNC = sangKienService.ListLinhVucNghienCuuMa(maSangKien);
+            List<String> lstTenLinhVucNC = sangKienService.ListLinhVucNghienCuuTenWithSK(maSangKien);
+            if(lstMaLinhVucNC != null && lstMaLinhVucNC.size() > 0){
+                obj.setLinhVucNghienCuu(lstMaLinhVucNC);
+            }
+            if(lstTenLinhVucNC != null && lstTenLinhVucNC.size() > 0){
+                obj.setLstTenLinhVucNghienCuu(lstTenLinhVucNC);
+            }
+            if(listThanhVien != null && listThanhVien.size() > 0){
+                obj.setDanhSachThanhVien(listThanhVien);
+            }
         }
-        List<String> linhVucNC = sangKienService.ListLinhVucNghienCuuMa(maSangKien);
-        obj.setLinhVucNghienCuu(linhVucNC);
         return obj;
     }
 
@@ -767,9 +775,11 @@ public class SangKienController {
             }
 
             obj.setListFolderFile(listFolderFileNew);
+            List<String> linhVucNC = sangKienService.ListLinhVucNghienCuuMa(maSangKien);
+            if(linhVucNC != null && linhVucNC.size() > 0){
+                obj.setLinhVucNghienCuu(linhVucNC);
+            }
         }
-        List<String> linhVucNC = sangKienService.ListLinhVucNghienCuuMa(maSangKien);
-        obj.setLinhVucNghienCuu(linhVucNC);
         return obj;
     }
 

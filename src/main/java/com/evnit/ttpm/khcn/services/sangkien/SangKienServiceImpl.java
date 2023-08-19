@@ -306,10 +306,12 @@ public class SangKienServiceImpl implements SangKienService {
 
     @Override
     public SangKienResp ChiTietSangKien(String maSangKien) throws Exception {
-        String queryString = "SELECT [MA_SANGKIEN] maSangKien,[TEN_SANGKIEN] tenGiaiPhap,[MA_CAPDO] capDoSangKien,[MA_DON_VI_DAU_TU] donViChuDauTu,[NAM] nam," +
+        String queryString = "SELECT [MA_SANGKIEN] maSangKien,[TEN_SANGKIEN] tenGiaiPhap,SK.[MA_CAPDO] capDoSangKien,[MA_DON_VI_DAU_TU] donViChuDauTu,[NAM] nam," +
                 "[LA_THU_TRUONG] thuTruongDonVi,[U_NHUOC_DIEM] uuNhuocDiem,[NOI_DUNG_GPHAP] noiDungGiaiPhap,[QTRINH_APDUNG] quaTrinhApDung,[HIEU_QUA_THUC_TIEN] hieuQuaThucTe," +
-                "[TOM_TAT_GIAI_PHAP] tomTat,[NGUOI_THAM_GIA_ADUNG] thamGiaToChuc,[SO_TIEN_HIEU_QUA] soTienLamLoi,[NGAY_XET_DUYET] ngayApDung,[KET_QUA_DANH_GIA_XET_DUYET] ketQuaDanhGiaXetDuyet,[KIEN_NGHI_HOI_DONG_XET_DUYET] kienNghiHoiDongXetDuyet,[THU_LAO] thuLao,[MA_TRANG_THAI] maTrangThai,[NGUOI_TAO] nguoiTao, [DON_VI_AP_DUNG] donViApDung " +
-                "  FROM [dbo].[SK_SANGKIEN] sk WHERE sk.MA_SANGKIEN = :MA_SANGKIEN";
+                "[TOM_TAT_GIAI_PHAP] tomTat,[NGUOI_THAM_GIA_ADUNG] thamGiaToChuc,[SO_TIEN_HIEU_QUA] soTienLamLoi,[NGAY_XET_DUYET] ngayApDung,[KET_QUA_DANH_GIA_XET_DUYET] ketQuaDanhGiaXetDuyet,[KIEN_NGHI_HOI_DONG_XET_DUYET] kienNghiHoiDongXetDuyet,[THU_LAO] thuLao,[MA_TRANG_THAI] maTrangThai,[NGUOI_TAO] nguoiTao, [DON_VI_AP_DUNG] donViApDung , SDCSK.TEN_CAPDO                tenCapDo" +
+                "  FROM [dbo].[SK_SANGKIEN] sk " +
+                "  LEFT JOIN SK_DM_CAPDO_SANG_KIEN SDCSK on sk.MA_CAPDO = SDCSK.MA_CAPDO " +
+                "  WHERE sk.MA_SANGKIEN = :MA_SANGKIEN";
 
 
         MapSqlParameterSource parameters = new MapSqlParameterSource();
@@ -534,6 +536,24 @@ public class SangKienServiceImpl implements SangKienService {
         int result = 0;
         try {
             String queryString = "SELECT MA_LVUC_NCUU FROM SK_SANGKIEN_LVUC_NCUU WHERE MA_SANGKIEN = :MA_SANGKIEN";
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("MA_SANGKIEN", maSangKien);
+            List<String> obj = jdbcTemplate.queryForList(queryString, parameters, String.class);
+            if (obj != null && obj.size() > 0) {
+                return obj;
+            }
+        } catch (Exception ex) {
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<String> ListLinhVucNghienCuuTenWithSK(String maSangKien) {
+        int result = 0;
+        try {
+            String queryString = "SELECT DLN.TEN_LVUC_NCUU FROM SK_SANGKIEN_LVUC_NCUU a \n" +
+                    "    LEFT JOIN DM_LVUC_NCUU DLN on a.MA_LVUC_NCUU = DLN.MA_LVUC_NCUU\n" +
+                    "    WHERE MA_SANGKIEN = :MA_SANGKIEN";
             MapSqlParameterSource parameters = new MapSqlParameterSource();
             parameters.addValue("MA_SANGKIEN", maSangKien);
             List<String> obj = jdbcTemplate.queryForList(queryString, parameters, String.class);
