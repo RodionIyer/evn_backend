@@ -37,6 +37,7 @@ public interface SangKienService {
     RoleResp CheckQuyen(String userId) throws Exception;
     int insertLinhVucNC(List<String> linhVucNghienCuu,String maSangKien,String nguoiTao,String nguoiSua) throws Exception;
     List<String> ListLinhVucNghienCuuMa(String maSangKien) throws Exception;
+    List<String> ListLinhVucNghienCuuTenWithSK(String maSangKien) throws Exception;
     List<SangKienResp> ListSkHoiDong(String loaiTimKiem, TimKiemReq timKiemReq, String nguoiTao, String page, String pageSize, String orgId) throws Exception;
     List<DanhSachChung> ListChucDanh() throws Exception;
     List<DanhSachThanhVien> ListHDByMaSK(String maSK) throws Exception;

@@ -741,8 +741,14 @@ public class SangKienController {
 
             obj.setListFolderFile(listFolderFileNew);
         }
-        List<String> linhVucNC = sangKienService.ListLinhVucNghienCuuMa(maSangKien);
-        obj.setLinhVucNghienCuu(linhVucNC);
+        List<String> lstMaLinhVucNC = sangKienService.ListLinhVucNghienCuuMa(maSangKien);
+        List<String> lstTenLinhVucNC = sangKienService.ListLinhVucNghienCuuTenWithSK(maSangKien);
+        if(lstMaLinhVucNC != null && lstMaLinhVucNC.size() > 0){
+            obj.setLinhVucNghienCuu(lstMaLinhVucNC);
+        }
+        if(lstTenLinhVucNC != null && lstTenLinhVucNC.size() > 0){
+            obj.setLstTenLinhVucNghienCuu(lstTenLinhVucNC);
+        }
         return obj;
     }
 
