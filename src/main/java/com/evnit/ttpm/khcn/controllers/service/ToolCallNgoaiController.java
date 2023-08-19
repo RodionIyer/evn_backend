@@ -7,9 +7,12 @@ import com.evnit.ttpm.khcn.security.services.SecurityUtils;
 import com.evnit.ttpm.khcn.services.mail.MailService;
 import com.evnit.ttpm.khcn.services.storage.FileService;
 import com.evnit.ttpm.khcn.services.tonghopfile.TongHopFileService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,6 +38,13 @@ public class ToolCallNgoaiController {
     TongHopFileService tongHopFileService;
     @Autowired
     private MailService mailService;
+
+    @Value("${app.login.url}")
+    private String loginUrl;
+    @Value("${app.login.username}")
+    private String username;
+    @Value("${app.login.password}")
+    private String password;
 
     public ExecServiceResponse toolAutoUpload(String token) throws IOException {
 
@@ -65,16 +75,42 @@ public class ToolCallNgoaiController {
         return new ExecServiceResponse(1, "Thực hiện thành công");
     }
 
-    public ExecServiceResponse toolAutoEmail(String token){
+    public ExecServiceResponse toolAutoEmail(String token) {
         //String token ="";
         mailService.GetSendMailDB(token);
         return new ExecServiceResponse(-1, "Thực hiện thành công");
     }
 
-    public String Token(){
-       // HttpHeaders headers = new HttpHeaders();
-       // headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-       // headers.set("Authorization", bearerToken);
+    public String getToken() throws JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        RestTemplate restTemplate = new RestTemplate();
+
+        String requestBody = "{" +
+                "    \"username\": \"" + username + "\"," +
+                "    \"password\": \"" + password + "\"," +
+                "    \"expiration\": 120," +
+                "    \"deviceInfo\": {" +
+                "        \"deviceId\": \"ac5ac2c0-568a-4bf2-bb31-ae86e82eb120\"," +
+                "        \"deviceType\": \"Windows/windows-10/desktop/Chrome\"," +
+                "        \"appId\": \"KHCN\"," +
+                "        \"appVersion\": \"KHCN 1.0.0 build 18/04/2023\"" +
+                "    }\n" +
+                "}";
+
+        HttpEntity<Object> requestEntity = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> result = restTemplate.postForEntity(loginUrl, requestEntity,
+                String.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode responseJson = objectMapper.readTree(result.getBody());
+        return responseJson.get("data").get("accessToken").asText();
+    }
+
+    public String Token() {
+        // HttpHeaders headers = new HttpHeaders();
+        // headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        // headers.set("Authorization", bearerToken);
         // HttpEntity<String>: To get result as String.
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 //        ByteArrayResource contentsAsResource = new ByteArrayResource(fileByte) {
