@@ -272,7 +272,7 @@ public class DeTaiController {
         }
         List<DanhSachThanhVien> danhSachThanhVien = detai.getDanhSachThanhVien();
         if(danhSachThanhVien != null && danhSachThanhVien.size() >0){
-            danhSachThanhVien = danhSachThanhVien.stream().filter(c -> Util.isNotEmpty(c.getTen())).collect(Collectors.toUnmodifiableList());
+            danhSachThanhVien = danhSachThanhVien.stream().filter(c -> Util.isNotEmpty(c.getTen())).collect(Collectors.toList());
         }
         deTaiService.insertNguoiThucHienHD(danhSachThanhVien, detai.getMaDeTai(), userId, userId);
 

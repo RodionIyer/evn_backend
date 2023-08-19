@@ -90,43 +90,10 @@ public class KeHoachController {
                 msg = "Cập nhật thành công";
 
             } else {
+                kehoach.setMaKeHoach(maKeHoach);
                 keHoachService.insertKeHoach(kehoach, maKeHoach);
             }
-            if (kehoach.getMaTrangThai().equals("DGIAO")) {
-                List<KeHoachChiTietReq> listDeTai = keHoachService.ListChiTietbyMaKeHoach(kehoach.getMaKeHoach());
-                if (listDeTai != null && listDeTai.size() > 0) {
-                    List<DanhSachMau> listMau = keHoachService.ListMauByMaCha("NV_KHCN");
-                    List<String> listMauNV = new ArrayList<>();
-                    if (listMau != null && listMau.size() > 0) {
-                        listMauNV = listMau.stream().map(DanhSachMau::getMA_NHOM).collect(Collectors.toList());
-                    }
-                    List<String> finalListMauNV = listMauNV;
-                    List<KeHoachChiTietReq> listDeTaiNew = listDeTai.stream().filter(c -> finalListMauNV.contains(c.getMaNhom())).collect(Collectors.toList());
-                    if (listDeTaiNew != null && listDeTaiNew.size() > 0) {
-                        String nguoiTao =userId;
-                        KeHoachResp keHoachResp = keHoachService.KeHoachByMa(kehoach.getMaKeHoach());
-                        if(keHoachResp != null && keHoachResp.getNguoiTao() != null){
-                            nguoiTao = keHoachResp.getNguoiTao();
-                        }
-                        for (KeHoachChiTietReq item : listDeTaiNew) {
-                            DeTaiReq deTaiReq = new DeTaiReq();
-                            UUID uuid2 = UUID.randomUUID();
-                            String maDetai = uuid2.toString().toUpperCase();
-                            deTaiReq.setTenDeTai(item.getNoiDungDangKy());
-                            deTaiReq.setMaKeHoach(item.getMaKeHoach());
-                            deTaiReq.setDonViChuTri(item.getMaDonVi());
-                            deTaiReq.setNguoiTao(item.getNguoiTao());
-                            deTaiReq.setNgayTao(new Date());
-                            deTaiReq.setNguoiSua(userId);
-                            deTaiReq.setMaTrangThai("CHUA_GUI");
-                            deTaiReq.setOrgId(keHoachResp.getMaDonVi());
-                            deTaiService.insert(deTaiReq, maDetai);
-                        }
-                    }
-                }
 
-
-            }
             if (kehoach != null && kehoach.getTongHop() != null && kehoach.getTongHop() == true) {
                 List<String> listChi = listChiTiet.stream().map(KeHoachChiTietReq::getMaKeHoachChiTiet).collect(Collectors.toList());
                 keHoachService.UpdateTongHop(listChi);
@@ -162,6 +129,37 @@ public class KeHoachController {
             KeHoachResp keHoachResp = keHoachService.KeHoachByMa(maKeHoach);
             if (keHoachResp != null && !keHoachResp.getMaTrangThai().equals(kehoach.getMaTrangThai())) {
                 keHoachService.EmailSend(maKeHoach, kehoach.getYKienNguoiPheDuyet(), kehoach.getNam(), kehoach.getMaTrangThai(), kehoach.getNguoiTao());
+            }
+            if (kehoach.getMaTrangThai().equals("DGIAO")) {
+                List<KeHoachChiTietReq> listDeTai = keHoachService.ListChiTietbyMaKeHoach(kehoach.getMaKeHoach());
+                if (listDeTai != null && listDeTai.size() > 0) {
+                    List<DanhSachMau> listMau = keHoachService.ListMauByMaCha("NV_KHCN");
+                    List<String> listMauNV = new ArrayList<>();
+                    if (listMau != null && listMau.size() > 0) {
+                        listMauNV = listMau.stream().map(DanhSachMau::getMA_NHOM).collect(Collectors.toList());
+                    }
+                    List<String> finalListMauNV = listMauNV;
+                    List<KeHoachChiTietReq> listDeTaiNew = listDeTai.stream().filter(c -> finalListMauNV.contains(c.getMaNhom())).collect(Collectors.toList());
+                    if (listDeTaiNew != null && listDeTaiNew.size() > 0) {
+                        KeHoachResp keHoachResp2 = keHoachService.KeHoachByMa(kehoach.getMaKeHoach());
+                        for (KeHoachChiTietReq item : listDeTaiNew) {
+                            DeTaiReq deTaiReq = new DeTaiReq();
+                            UUID uuid2 = UUID.randomUUID();
+                            String maDetai = uuid2.toString().toUpperCase();
+                            deTaiReq.setTenDeTai(item.getNoiDungDangKy());
+                            deTaiReq.setMaKeHoach(item.getMaKeHoach());
+                            deTaiReq.setDonViChuTri(item.getMaDonVi());
+                            deTaiReq.setNguoiTao(item.getNguoiTao());
+                            deTaiReq.setNgayTao(new Date());
+                            deTaiReq.setNguoiSua(userId);
+                            deTaiReq.setMaTrangThai("CHUA_GUI");
+                            deTaiReq.setOrgId(keHoachResp2.getMaDonVi());
+                            deTaiService.insert(deTaiReq, maDetai);
+                        }
+                    }
+                }
+
+
             }
             return new ExecServiceResponse(1, msg);
         } catch (Exception ex) {
