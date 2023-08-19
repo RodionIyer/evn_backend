@@ -13,7 +13,7 @@ public class ThreadSystem extends Thread {
             try {
                 ///Xu ly goi api gui mail ở đây
                 ToolCallNgoaiController tool = new ToolCallNgoaiController();
-                String token ="";
+                String token = tool.getToken();
                 tool.toolAutoEmail(token);
                 tool.toolAutoUpload(token);
 
