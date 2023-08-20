@@ -759,7 +759,7 @@ public class SangKienController {
 
         if (obj != null && obj.getMaSangKien() != null) {
             List<DanhSachThanhVien> listThanhVien = sangKienService.ListNguoiThucHienByMa(maSangKien);
-            obj.setTacGiaGiaiPhap(listThanhVien);
+            obj.setDanhSachThanhVien(listThanhVien);
 
             List<FileReq> listFile = sangKienService.ListFileByMa(maSangKien);
             List<Folder> listFolderFile = sangKienService.ListFolderFile();

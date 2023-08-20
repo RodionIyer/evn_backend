@@ -632,7 +632,7 @@ public class WordController {
             builder.insertCell();
             builder.write("Năm sinh");
             builder.insertCell();
-            builder.write("Noi công tác");
+            builder.write("Nơi công tác");
             builder.insertCell();
             builder.write("Trình độ chuyên môn");
             builder.insertCell();
@@ -664,6 +664,7 @@ public class WordController {
                 List<SangKienModel> list = new ArrayList<>();
                 SangKienModel obj = new SangKienModel();
                 obj.setHoTen("");
+                obj.setVaiTro("");
                 obj.setNam("");
                 obj.setDonViCongTac("");
                 obj.setTrinhDoChuyenMon("");
@@ -672,6 +673,7 @@ public class WordController {
 
                 obj = new SangKienModel();
                 obj.setHoTen("");
+                obj.setVaiTro("");
                 obj.setNam("");
                 obj.setDonViCongTac("");
                 obj.setTrinhDoChuyenMon("");
@@ -684,6 +686,8 @@ public class WordController {
                     builder.write("");
                     builder.insertCell();
                     builder.write(item.getHoTen());
+                    builder.insertCell();
+                    builder.write(item.getVaiTro());
                     builder.insertCell();
                     builder.write(item.getNam());
                     builder.insertCell();
