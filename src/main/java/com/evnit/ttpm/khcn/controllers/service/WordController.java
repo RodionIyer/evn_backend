@@ -38,14 +38,13 @@ public class WordController {
     SangKienController sangKienController;
 
 
-
-    public String KeHoach(String maKeHoach,String orgId) {
+    public String KeHoach(String maKeHoach, String orgId) {
         try {
             List<DanhSachMau> listDanhSachMau = excelService.getListDanhsachMau();
             List<KeHoachChiTiet> listKeHoachChiTiet = new ArrayList<>();
             List<NguonKinhPhi> listNguonKinhPhi = new ArrayList<>();
             DonVi donVi = new DonVi();
-            int nam= Year.now().getValue();
+            int nam = Year.now().getValue();
             if (!StringUtils.isEmpty(maKeHoach)) {
                 KeHoach kehoach = excelService.getFirstMaKeHoach(maKeHoach);
                 //List<DonVi> listDonVi = excelService.getListDonVi(kehoach.getMA_DON_VI());
@@ -53,19 +52,20 @@ public class WordController {
                 donVi = excelService.getFirstDonVi(kehoach.getMaDonVi());
                 listKeHoachChiTiet = excelService.getListKeHoachChiTiet(maKeHoach);
                 listNguonKinhPhi = excelService.getListNguonKinhPhi();
-            }else{
+            } else {
                 donVi = excelService.getFirstDonVi(orgId);
             }
             Double tongDuToan = 0D;
-            if(listKeHoachChiTiet != null && listKeHoachChiTiet.size() >0){
-                try{
-                List<KeHoachChiTiet> listKeHoachChiTietTotal = listKeHoachChiTiet.stream().filter(c ->  Util.isNotEmpty(c.getDU_TOAN())).collect(Collectors.toList());
-                if(listKeHoachChiTietTotal != null && listKeHoachChiTietTotal.size() >0){
-                    List<String> listTotal = listKeHoachChiTietTotal.stream().map(KeHoachChiTiet::getDU_TOAN).collect(Collectors.toList());
-                    List<Double>  listTotalInt = listTotal.stream().map(Double::parseDouble).collect(Collectors.toList());
-                    tongDuToan = listTotalInt.stream().mapToDouble(Double::doubleValue).sum();
+            if (listKeHoachChiTiet != null && listKeHoachChiTiet.size() > 0) {
+                try {
+                    List<KeHoachChiTiet> listKeHoachChiTietTotal = listKeHoachChiTiet.stream().filter(c -> Util.isNotEmpty(c.getDU_TOAN())).collect(Collectors.toList());
+                    if (listKeHoachChiTietTotal != null && listKeHoachChiTietTotal.size() > 0) {
+                        List<String> listTotal = listKeHoachChiTietTotal.stream().map(KeHoachChiTiet::getDU_TOAN).collect(Collectors.toList());
+                        List<Double> listTotalInt = listTotal.stream().map(Double::parseDouble).collect(Collectors.toList());
+                        tongDuToan = listTotalInt.stream().mapToDouble(Double::doubleValue).sum();
+                    }
+                } catch (Exception ex) {
                 }
-                }catch (Exception ex){}
             }
             // Tạo một tài liệu mới
             Document doc = new Document();
@@ -114,8 +114,8 @@ public class WordController {
             builder.writeln();
             font.setSize(12);
             builder.getParagraphFormat().setAlignment(ParagraphAlignment.LEFT);
-            builder.writeln("Tên Đơn vị: " + donVi.getTenNhom() + "                Đăng ký định hướng hoạt động KHCN năm: " + nam);
-            builder.writeln("Tổng dự toán (đồng): "+Util.formatNumberVn(tongDuToan) +" đồng");
+            builder.writeln("Tên Đơn vị: " + donVi.getTenNhom() + "                Năm: " + nam);
+            builder.writeln("Tổng dự toán (triệu đồng): " + Util.formatNumberVn(tongDuToan));
             builder.writeln();
             builder.writeln();
 
@@ -128,10 +128,9 @@ public class WordController {
             builder.insertCell();
             builder.write("Hoạt động");
             builder.insertCell();
-            builder.write("Nguồn kinh phí (EVN hoặc Đơn vị)");
+            builder.write("Nguồn kinh phí\n(EVN/Đơn vị)");
             builder.insertCell();
-           // builder.write("Kinh phí dự kiến (đồng)");
-            builder.write("Dự toán (Triệu đồng)");
+            builder.write("Kinh phí dự kiến\n(triệu đồng)");
             builder.insertCell();
             builder.write("Đơn vị chủ trì");
             builder.insertCell();
@@ -139,36 +138,37 @@ public class WordController {
             builder.insertCell();
             builder.write("Nội dung hoạt động");
             builder.insertCell();
-            builder.write("Thời gian dự kiến thực hiện (Từ tháng/năm đến tháng/năm)");
+            builder.writeln("Thời gian dự kiến thực hiện\n(từ tháng/năm đến tháng/năm)");
             builder.endRow();
             builder.getCellFormat().setVerticalAlignment(CellVerticalAlignment.TOP);
-            int i=1;
-            List<DanhSachMau>  listDanhSachMauCha = listDanhSachMau.stream().filter(c -> c.getMA_NHOM_CHA()==null).collect(Collectors.toList());
-            for(DanhSachMau item :listDanhSachMauCha){
-                List<DanhSachMau>  listDanhSachMauChild =listDanhSachMau.stream().filter(c -> c.getMA_NHOM_CHA() != null && c.getMA_NHOM_CHA().equals(item.getMA_NHOM())).collect(Collectors.toList());
-                Double tong =0D;
-                List<String>  listDanhSachMauChildMa = listDanhSachMauChild.stream().map(DanhSachMau::getMA_NHOM).collect(Collectors.toList());
-                List<KeHoachChiTiet>  listKeHoachChiTietView = listKeHoachChiTiet.stream().filter(c -> listDanhSachMauChildMa.contains(c.getMA_NHOM())).collect(Collectors.toList());
-                if(listKeHoachChiTietView != null && listKeHoachChiTietView.size() >0){
-                    try{
+            int i = 1;
+            List<DanhSachMau> listDanhSachMauCha = listDanhSachMau.stream().filter(c -> c.getMA_NHOM_CHA() == null).collect(Collectors.toList());
+            for (DanhSachMau item : listDanhSachMauCha) {
+                List<DanhSachMau> listDanhSachMauChild = listDanhSachMau.stream().filter(c -> c.getMA_NHOM_CHA() != null && c.getMA_NHOM_CHA().equals(item.getMA_NHOM())).collect(Collectors.toList());
+                Double tong = 0D;
+                List<String> listDanhSachMauChildMa = listDanhSachMauChild.stream().map(DanhSachMau::getMA_NHOM).collect(Collectors.toList());
+                List<KeHoachChiTiet> listKeHoachChiTietView = listKeHoachChiTiet.stream().filter(c -> listDanhSachMauChildMa.contains(c.getMA_NHOM())).collect(Collectors.toList());
+                if (listKeHoachChiTietView != null && listKeHoachChiTietView.size() > 0) {
+                    try {
                         List<KeHoachChiTiet> listKeHoachChiTietTotal = listKeHoachChiTietView.stream().filter(c -> Util.isNotEmpty(c.getDU_TOAN())).collect(Collectors.toList());
-                        if(listKeHoachChiTietTotal != null && listKeHoachChiTietTotal.size() >0){
+                        if (listKeHoachChiTietTotal != null && listKeHoachChiTietTotal.size() > 0) {
                             List<String> listTotal = listKeHoachChiTietTotal.stream().map(KeHoachChiTiet::getDU_TOAN).collect(Collectors.toList());
-                            List<Double>  listTotalInt = listTotal.stream().map(Double::parseDouble).collect(Collectors.toList());
+                            List<Double> listTotalInt = listTotal.stream().map(Double::parseDouble).collect(Collectors.toList());
                             tong = listTotalInt.stream().mapToDouble(Double::doubleValue).sum();
                         }
-                    }catch (Exception ex){}
+                    } catch (Exception ex) {
+                    }
                 }
                 builder.getCellFormat().getShading().setBackgroundPatternColor(Color.WHITE);
                 font.setBold(true);
                 builder.insertCell();
-                builder.write(i+"");
+                builder.write(i + "");
                 builder.insertCell();
                 builder.write(item.getTEN_NHOM());
                 builder.insertCell();
                 builder.write("");
                 builder.insertCell();
-               // builder.write(Util.formatNumber(tong));
+                // builder.write(Util.formatNumber(tong));
                 builder.write("");
                 builder.insertCell();
                 builder.write("");
@@ -179,14 +179,14 @@ public class WordController {
                 builder.insertCell();
                 builder.write("");
                 builder.endRow();
-                if(listDanhSachMauChild != null && listDanhSachMauChild.size() >0){
-                    int j =1;
+                if (listDanhSachMauChild != null && listDanhSachMauChild.size() > 0) {
+                    int j = 1;
 
-                    for(DanhSachMau itemChild:listDanhSachMauChild){
+                    for (DanhSachMau itemChild : listDanhSachMauChild) {
                         builder.setItalic(true);
                         font.setBold(true);
                         builder.insertCell();
-                        builder.write(i+"."+j);
+                        builder.write(i + "." + j);
                         builder.insertCell();
                         builder.write(itemChild.getTEN_NHOM());
                         builder.insertCell();
@@ -205,16 +205,16 @@ public class WordController {
                         //String s = NumberFormat.getInstance(Locale.GERMANY).format(tong);
                         //builder.write(tongs);
                         j++;
-                        if(listKeHoachChiTiet != null && listKeHoachChiTiet.size() >0){
+                        if (listKeHoachChiTiet != null && listKeHoachChiTiet.size() > 0) {
                             listKeHoachChiTietView = listKeHoachChiTiet.stream().filter(c -> c.getMA_NHOM().equals(itemChild.getMA_NHOM())).collect(Collectors.toList());
-                            if(listKeHoachChiTietView != null && listKeHoachChiTietView.size() >0){
-                                for (KeHoachChiTiet chiTiet : listKeHoachChiTietView){
-                                    String tenNguonKinhPhi="";
-                                    if(Util.isNotEmpty(chiTiet.getMA_NGUON_KINH_PHI())){
-                                      List<NguonKinhPhi> listNguonKp =  listNguonKinhPhi.stream().filter(c -> c.getMA_NGUON_KINH_PHI().equals(chiTiet.getMA_NGUON_KINH_PHI())).collect(Collectors.toList());
-                                      if(listNguonKp != null && listNguonKp.size() >0){
-                                          tenNguonKinhPhi = listNguonKp.get(0).getTEN_NGUON_KINH_PHI();
-                                      }
+                            if (listKeHoachChiTietView != null && listKeHoachChiTietView.size() > 0) {
+                                for (KeHoachChiTiet chiTiet : listKeHoachChiTietView) {
+                                    String tenNguonKinhPhi = "";
+                                    if (Util.isNotEmpty(chiTiet.getMA_NGUON_KINH_PHI())) {
+                                        List<NguonKinhPhi> listNguonKp = listNguonKinhPhi.stream().filter(c -> c.getMA_NGUON_KINH_PHI().equals(chiTiet.getMA_NGUON_KINH_PHI())).collect(Collectors.toList());
+                                        if (listNguonKp != null && listNguonKp.size() > 0) {
+                                            tenNguonKinhPhi = listNguonKp.get(0).getTEN_NGUON_KINH_PHI();
+                                        }
                                     }
                                     builder.setItalic(false);
                                     font.setBold(false);
@@ -243,6 +243,7 @@ public class WordController {
                 }
                 i++;
             }
+
 //            for (DoiTuong doiTuong : list) {
 //                if (Util.isNotEmpty(doiTuong.getStt())) {
 //                    if (doiTuong.getStt().contains(".")){
@@ -271,6 +272,24 @@ public class WordController {
 //            }
             builder.endTable();
 
+            for (Cell cell : table.getRows().get(0).getCells()) {
+                for (Paragraph paragraph : cell.getParagraphs()) {
+                    paragraph.getParagraphFormat().setAlignment(ParagraphAlignment.CENTER);
+                }
+            }
+
+            for (Row row : table.getRows()) {
+                if (row == table.getFirstRow()) {
+                    continue;
+                }
+                if (row.getCells().getCount() > 3) {
+                    Cell cell = row.getCells().get(3);
+                    Paragraph paragraph = cell.getFirstParagraph();
+                    paragraph.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
+                }
+            }
+
+
             // Loại bỏ đoạn văn bản trắng đầu tiên
             if (doc.getFirstSection().getBody().getFirstParagraph().getText().trim().isEmpty()) {
                 doc.getFirstSection().getBody().getFirstParagraph().remove();
@@ -280,22 +299,23 @@ public class WordController {
             String path = System.getProperty("user.dir");
             UUID uuid = UUID.randomUUID();
             String fileName = "xuat_bieu_mau_" + uuid + ".docx";
-             String pathSave = path + "/" + fileName;
+            String pathSave = path + "/" + fileName;
             doc.save(pathSave);
-           return pathSave;
+            return pathSave;
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;
     }
-    public String KeHoachTongHop(String maKeHoach,String orgId) {
+
+    public String KeHoachTongHop(String maKeHoach, String orgId) {
         try {
             List<DanhSachMau> listDanhSachMau = excelService.getListDanhsachMau();
             List<KeHoachChiTiet> listKeHoachChiTiet = new ArrayList<>();
             List<NguonKinhPhi> listNguonKinhPhi = new ArrayList<>();
 
             DonVi donVi = new DonVi();
-            int nam= Year.now().getValue();
+            int nam = Year.now().getValue();
             if (!StringUtils.isEmpty(maKeHoach)) {
                 KeHoach kehoach = excelService.getFirstMaKeHoach(maKeHoach);
                 //List<DonVi> listDonVi = excelService.getListDonVi(kehoach.getMA_DON_VI());
@@ -303,19 +323,20 @@ public class WordController {
                 donVi = excelService.getFirstDonVi(kehoach.getMaDonVi());
                 listKeHoachChiTiet = excelService.getListKeHoachChiTiet(maKeHoach);
                 listNguonKinhPhi = excelService.getListNguonKinhPhi();
-            }else{
+            } else {
                 donVi = excelService.getFirstDonVi(orgId);
             }
             Double tongDuToan = 0D;
-            if(listKeHoachChiTiet != null && listKeHoachChiTiet.size() >0){
-                try{
+            if (listKeHoachChiTiet != null && listKeHoachChiTiet.size() > 0) {
+                try {
                     List<KeHoachChiTiet> listKeHoachChiTietTotal = listKeHoachChiTiet.stream().filter(c -> Util.isNotEmpty(c.getDU_TOAN())).collect(Collectors.toList());
-                    if(listKeHoachChiTietTotal != null && listKeHoachChiTietTotal.size() >0){
+                    if (listKeHoachChiTietTotal != null && listKeHoachChiTietTotal.size() > 0) {
                         List<String> listTotal = listKeHoachChiTietTotal.stream().map(KeHoachChiTiet::getDU_TOAN).collect(Collectors.toList());
-                        List<Double>  listTotalInt = listTotal.stream().map(Double::parseDouble).collect(Collectors.toList());
+                        List<Double> listTotalInt = listTotal.stream().map(Double::parseDouble).collect(Collectors.toList());
                         tongDuToan = listTotalInt.stream().mapToDouble(Double::doubleValue).sum();
                     }
-                }catch (Exception ex){}
+                } catch (Exception ex) {
+                }
             }
             // Tạo một tài liệu mới
             Document doc = new Document();
@@ -339,8 +360,8 @@ public class WordController {
             builder.writeln();
             font.setSize(12);
             builder.getParagraphFormat().setAlignment(ParagraphAlignment.LEFT);
-            builder.writeln("Tên Đơn vị: " + donVi.getTenNhom() + "                Đăng ký định hướng hoạt động KHCN năm: " + nam);
-            builder.writeln("Tổng dự toán (đồng): "+Util.formatNumberVn(tongDuToan) +" đồng");
+            builder.writeln("Tên Đơn vị: " + donVi.getTenNhom() + "                Năm: " + nam);
+            builder.writeln("Tổng dự toán (triệu đồng): " + Util.formatNumberVn(tongDuToan));
             builder.writeln();
             builder.writeln();
 
@@ -353,10 +374,9 @@ public class WordController {
             builder.insertCell();
             builder.write("Hoạt động");
             builder.insertCell();
-            builder.write("Nguồn kinh phí (EVN hoặc Đơn vị)");
+            builder.write("Nguồn kinh phí\n(EVN/Đơn vị)");
             builder.insertCell();
-           // builder.write("Kinh phí dự kiến (đồng)");
-            builder.write("Dự toán (Triệu đồng)");
+            builder.write("Kinh phí dự kiến\n(triệu đồng)");
             builder.insertCell();
             builder.write("Đơn vị chủ trì");
             builder.insertCell();
@@ -364,37 +384,38 @@ public class WordController {
             builder.insertCell();
             builder.write("Nội dung hoạt động");
             builder.insertCell();
-            builder.write("Thời gian dự kiến thực hiện (Từ tháng/năm đến tháng/năm)");
+            builder.writeln("Thời gian dự kiến thực hiện\n(từ tháng/năm đến tháng/năm)");
             builder.endRow();
             builder.getCellFormat().getShading().setBackgroundPatternColor(Color.WHITE);
             builder.getCellFormat().setVerticalAlignment(CellVerticalAlignment.TOP);
-            int i=1;
-            List<DanhSachMau>  listDanhSachMauCha = listDanhSachMau.stream().filter(c -> c.getMA_NHOM_CHA()==null).collect(Collectors.toList());
-            for(DanhSachMau item :listDanhSachMauCha){
-                List<DanhSachMau>  listDanhSachMauChild =listDanhSachMau.stream().filter(c ->c.getMA_NHOM_CHA() != null && c.getMA_NHOM_CHA().equals(item.getMA_NHOM())).collect(Collectors.toList());
-                Double tong =0D;
-                List<String>  listDanhSachMauChildMa = listDanhSachMauChild.stream().map(DanhSachMau::getMA_NHOM).collect(Collectors.toList());
-                List<KeHoachChiTiet>  listKeHoachChiTietView = listKeHoachChiTiet.stream().filter(c -> listDanhSachMauChildMa.contains(c.getMA_NHOM())).collect(Collectors.toList());
-                if(listKeHoachChiTietView != null && listKeHoachChiTietView.size() >0){
-                    try{
+            int i = 1;
+            List<DanhSachMau> listDanhSachMauCha = listDanhSachMau.stream().filter(c -> c.getMA_NHOM_CHA() == null).collect(Collectors.toList());
+            for (DanhSachMau item : listDanhSachMauCha) {
+                List<DanhSachMau> listDanhSachMauChild = listDanhSachMau.stream().filter(c -> c.getMA_NHOM_CHA() != null && c.getMA_NHOM_CHA().equals(item.getMA_NHOM())).collect(Collectors.toList());
+                Double tong = 0D;
+                List<String> listDanhSachMauChildMa = listDanhSachMauChild.stream().map(DanhSachMau::getMA_NHOM).collect(Collectors.toList());
+                List<KeHoachChiTiet> listKeHoachChiTietView = listKeHoachChiTiet.stream().filter(c -> listDanhSachMauChildMa.contains(c.getMA_NHOM())).collect(Collectors.toList());
+                if (listKeHoachChiTietView != null && listKeHoachChiTietView.size() > 0) {
+                    try {
                         List<KeHoachChiTiet> listKeHoachChiTietTotal = listKeHoachChiTietView.stream().filter(c -> c.getDU_TOAN() != null).collect(Collectors.toList());
-                        if(listKeHoachChiTietTotal != null && listKeHoachChiTietTotal.size() >0){
+                        if (listKeHoachChiTietTotal != null && listKeHoachChiTietTotal.size() > 0) {
                             List<String> listTotal = listKeHoachChiTietTotal.stream().map(KeHoachChiTiet::getDU_TOAN).collect(Collectors.toList());
-                            List<Double>  listTotalInt = listTotal.stream().map(Double::parseDouble).collect(Collectors.toList());
+                            List<Double> listTotalInt = listTotal.stream().map(Double::parseDouble).collect(Collectors.toList());
                             tong = listTotalInt.stream().mapToDouble(Double::doubleValue).sum();
                         }
-                    }catch (Exception ex){}
+                    } catch (Exception ex) {
+                    }
                 }
                 font.setBold(true);
                 builder.insertCell();
-                builder.write(i+"");
+                builder.write(i + "");
                 builder.insertCell();
                 builder.write(item.getTEN_NHOM());
                 builder.insertCell();
                 builder.write("");
                 builder.insertCell();
                 builder.write("");
-               // builder.write(Util.formatNumberVn(tong));
+                // builder.write(Util.formatNumberVn(tong));
                 builder.insertCell();
                 builder.write("");
                 builder.insertCell();
@@ -404,15 +425,15 @@ public class WordController {
                 builder.insertCell();
                 builder.write("");
                 builder.endRow();
-                if(listDanhSachMauChild != null && listDanhSachMauChild.size() >0){
-                    int j =1;
+                if (listDanhSachMauChild != null && listDanhSachMauChild.size() > 0) {
+                    int j = 1;
 
-                    for(DanhSachMau itemChild:listDanhSachMauChild){
+                    for (DanhSachMau itemChild : listDanhSachMauChild) {
 
                         builder.setItalic(true);
                         font.setBold(true);
                         builder.insertCell();
-                        builder.write(i+"."+j);
+                        builder.write(i + "." + j);
                         builder.insertCell();
                         builder.write(itemChild.getTEN_NHOM());
                         builder.insertCell();
@@ -431,22 +452,22 @@ public class WordController {
                         //String s = NumberFormat.getInstance(Locale.GERMANY).format(tong);
                         //builder.write(tongs);
                         j++;
-                        if(listKeHoachChiTiet != null && listKeHoachChiTiet.size() >0){
+                        if (listKeHoachChiTiet != null && listKeHoachChiTiet.size() > 0) {
                             builder.setItalic(false);
                             builder.setBold(false);
-                            List<KeHoachChiTiet> listKeHoachChiTietNotDonVi = listKeHoachChiTiet.stream().filter(c -> c.getMA_NHOM().equals(itemChild.getMA_NHOM()) && (c.getMA_DON_VI()==null || c.getMA_DON_VI().equals(orgId))).collect(Collectors.toList());
-                            List<KeHoachChiTiet> listKeHoachChiTietDonVi = listKeHoachChiTiet.stream().filter(c -> c.getMA_NHOM().equals(itemChild.getMA_NHOM()) && c.getMA_DON_VI() !=null && !c.getMA_DON_VI().equals(orgId)).collect(Collectors.toList());
+                            List<KeHoachChiTiet> listKeHoachChiTietNotDonVi = listKeHoachChiTiet.stream().filter(c -> c.getMA_NHOM().equals(itemChild.getMA_NHOM()) && (c.getMA_DON_VI() == null || c.getMA_DON_VI().equals(orgId))).collect(Collectors.toList());
+                            List<KeHoachChiTiet> listKeHoachChiTietDonVi = listKeHoachChiTiet.stream().filter(c -> c.getMA_NHOM().equals(itemChild.getMA_NHOM()) && c.getMA_DON_VI() != null && !c.getMA_DON_VI().equals(orgId)).collect(Collectors.toList());
 
                             //listKeHoachChiTietView.sort(Comparator.comparing(KeHoachChiTiet::getMA_DON_VI));
                             List<String> listDonVi = listKeHoachChiTietDonVi.stream().map(KeHoachChiTiet::getMA_DON_VI).collect(Collectors.toList());
 
-                          List<DonVi> listDonViView =  excelService.getListDonViByListMaDonVi(listDonVi);
-                            if(listKeHoachChiTietNotDonVi != null && listKeHoachChiTietNotDonVi.size() >0){
-                                for (KeHoachChiTiet chiTiet : listKeHoachChiTietNotDonVi){
-                                    String tenNguonKinhPhi="";
-                                    if(Util.isNotEmpty(chiTiet.getMA_NGUON_KINH_PHI())){
-                                        List<NguonKinhPhi> listNguonKp =  listNguonKinhPhi.stream().filter(c -> c.getMA_NGUON_KINH_PHI().equals(chiTiet.getMA_NGUON_KINH_PHI())).collect(Collectors.toList());
-                                        if(listNguonKp != null && listNguonKp.size() >0){
+                            List<DonVi> listDonViView = excelService.getListDonViByListMaDonVi(listDonVi);
+                            if (listKeHoachChiTietNotDonVi != null && listKeHoachChiTietNotDonVi.size() > 0) {
+                                for (KeHoachChiTiet chiTiet : listKeHoachChiTietNotDonVi) {
+                                    String tenNguonKinhPhi = "";
+                                    if (Util.isNotEmpty(chiTiet.getMA_NGUON_KINH_PHI())) {
+                                        List<NguonKinhPhi> listNguonKp = listNguonKinhPhi.stream().filter(c -> c.getMA_NGUON_KINH_PHI().equals(chiTiet.getMA_NGUON_KINH_PHI())).collect(Collectors.toList());
+                                        if (listNguonKp != null && listNguonKp.size() > 0) {
                                             tenNguonKinhPhi = listNguonKp.get(0).getTEN_NGUON_KINH_PHI();
                                         }
                                     }
@@ -471,13 +492,13 @@ public class WordController {
                                     builder.endRow();
                                 }
                             }
-                            int k=1;
-                            if(listDonViView != null && listDonViView.size() >0){
+                            int k = 1;
+                            if (listDonViView != null && listDonViView.size() > 0) {
                                 builder.setItalic(true);
                                 font.setBold(true);
-                                for(DonVi dv :listDonViView){
+                                for (DonVi dv : listDonViView) {
                                     builder.insertCell();
-                                    builder.write(i+"."+j+"."+k);
+                                    builder.write(i + "." + j + "." + k);
                                     builder.insertCell();
                                     builder.write(dv.getTenNhom());
                                     builder.insertCell();
@@ -494,13 +515,13 @@ public class WordController {
                                     builder.write("");
                                     builder.endRow();
                                     k++;
-                                    List<KeHoachChiTiet>   listKeHoachChiTietDonVi2 =listKeHoachChiTietDonVi.stream().filter(c -> c.getMA_DON_VI().equals(dv.getMaNhom())).collect(Collectors.toList());
-                                    if(listKeHoachChiTietDonVi2 != null && listKeHoachChiTietDonVi2.size() >0){
-                                        for (KeHoachChiTiet chiTiet : listKeHoachChiTietDonVi2){
-                                            String tenNguonKinhPhi="";
-                                            if(Util.isNotEmpty(chiTiet.getMA_NGUON_KINH_PHI())){
-                                                List<NguonKinhPhi> listNguonKp =  listNguonKinhPhi.stream().filter(c -> c.getMA_NGUON_KINH_PHI().equals(chiTiet.getMA_NGUON_KINH_PHI())).collect(Collectors.toList());
-                                                if(listNguonKp != null && listNguonKp.size() >0){
+                                    List<KeHoachChiTiet> listKeHoachChiTietDonVi2 = listKeHoachChiTietDonVi.stream().filter(c -> c.getMA_DON_VI().equals(dv.getMaNhom())).collect(Collectors.toList());
+                                    if (listKeHoachChiTietDonVi2 != null && listKeHoachChiTietDonVi2.size() > 0) {
+                                        for (KeHoachChiTiet chiTiet : listKeHoachChiTietDonVi2) {
+                                            String tenNguonKinhPhi = "";
+                                            if (Util.isNotEmpty(chiTiet.getMA_NGUON_KINH_PHI())) {
+                                                List<NguonKinhPhi> listNguonKp = listNguonKinhPhi.stream().filter(c -> c.getMA_NGUON_KINH_PHI().equals(chiTiet.getMA_NGUON_KINH_PHI())).collect(Collectors.toList());
+                                                if (listNguonKp != null && listNguonKp.size() > 0) {
                                                     tenNguonKinhPhi = listNguonKp.get(0).getTEN_NGUON_KINH_PHI();
                                                 }
                                             }
@@ -535,6 +556,23 @@ public class WordController {
             }
             builder.endTable();
 
+            for (Cell cell : table.getRows().get(0).getCells()) {
+                for (Paragraph paragraph : cell.getParagraphs()) {
+                    paragraph.getParagraphFormat().setAlignment(ParagraphAlignment.CENTER);
+                }
+            }
+
+            for (Row row : table.getRows()) {
+                if (row == table.getFirstRow()) {
+                    continue;
+                }
+                if (row.getCells().getCount() > 3) {
+                    Cell cell = row.getCells().get(3);
+                    Paragraph paragraph = cell.getFirstParagraph();
+                    paragraph.getParagraphFormat().setAlignment(ParagraphAlignment.RIGHT);
+                }
+            }
+
             // Loại bỏ đoạn văn bản trắng đầu tiên
             if (doc.getFirstSection().getBody().getFirstParagraph().getText().trim().isEmpty()) {
                 doc.getFirstSection().getBody().getFirstParagraph().remove();
@@ -554,19 +592,19 @@ public class WordController {
     }
 
 
-    public ExecServiceResponse XuatMau(ExecServiceRequest execServiceRequest){
+    public ExecServiceResponse XuatMau(ExecServiceRequest execServiceRequest) {
         String msg = "Xuất thành công";
-        try{
+        try {
             String userId = SecurityUtils.getPrincipal().getUserId();
             String orgId = SecurityUtils.getPrincipal().getORGID();
-            String maSK ="";
+            String maSK = "";
             for (Api_Service_Input obj : execServiceRequest.getParameters()) {
                 if ("MA_SANGKIEN".equals(obj.getName())) {
                     maSK = obj.getValue().toString();
                 }
             }
 
-            String pathSave =  SangKien(maSK,orgId);
+            String pathSave = SangKien(maSK, orgId);
             if (Util.isNotEmpty(pathSave)) {
                 File file = new File(pathSave);
                 byte[] fileContent = Files.readAllBytes(file.toPath());
@@ -581,7 +619,7 @@ public class WordController {
         return new ExecServiceResponse(-1, "Thực hiện thất bại");
     }
 
-    public String SangKien(String maSk,String orgId) {
+    public String SangKien(String maSk, String orgId) {
         try {
             SangKienResp sangKienResp = sangKienController.chiTietSua(maSk);
 
@@ -618,7 +656,7 @@ public class WordController {
             builder.writeln("\tTôi (chúng tôi) có tên dưới đây:");
             builder.writeln();
 
-           // FormatDefault(builder);
+            // FormatDefault(builder);
             Table table = builder.startTable();
             builder.insertCell();
             table.autoFit(AutoFitBehavior.AUTO_FIT_TO_WINDOW);
@@ -640,27 +678,27 @@ public class WordController {
 // End row
             builder.endRow();
             font.setBold(false);
-            if(sangKienResp != null && sangKienResp.getDanhSachThanhVien() != null && sangKienResp.getDanhSachThanhVien().size() >0){
-                int i=1;
-                    for(DanhSachThanhVien item :sangKienResp.getDanhSachThanhVien()){
-                        builder.insertCell();
-                        builder.write(i+"");
-                        builder.insertCell();
-                        builder.write(item.getTen());
-                        builder.insertCell();
-                        builder.write(item.getTenChucDanh());
-                        builder.insertCell();
-                        builder.write(item.getNamSinh()+"");
-                        builder.insertCell();
-                        builder.write(item.getDiaChiNoiLamViec());
-                        builder.insertCell();
-                        builder.write(item.getThanhTuu());
-                        builder.insertCell();
-                        builder.write(item.getNoiDungThamGia());
-                        builder.endRow();
-                        i++;
-                    }
-            }else{
+            if (sangKienResp != null && sangKienResp.getDanhSachThanhVien() != null && sangKienResp.getDanhSachThanhVien().size() > 0) {
+                int i = 1;
+                for (DanhSachThanhVien item : sangKienResp.getDanhSachThanhVien()) {
+                    builder.insertCell();
+                    builder.write(i + "");
+                    builder.insertCell();
+                    builder.write(item.getTen());
+                    builder.insertCell();
+                    builder.write(item.getTenChucDanh());
+                    builder.insertCell();
+                    builder.write(item.getNamSinh() + "");
+                    builder.insertCell();
+                    builder.write(item.getDiaChiNoiLamViec());
+                    builder.insertCell();
+                    builder.write(item.getThanhTuu());
+                    builder.insertCell();
+                    builder.write(item.getNoiDungThamGia());
+                    builder.endRow();
+                    i++;
+                }
+            } else {
                 List<SangKienModel> list = new ArrayList<>();
                 SangKienModel obj = new SangKienModel();
                 obj.setHoTen("");
@@ -679,7 +717,7 @@ public class WordController {
                 obj.setTrinhDoChuyenMon("");
                 obj.setNoiDung("");
                 list.add(obj);
-                for(SangKienModel item :list){
+                for (SangKienModel item : list) {
                     // builder.getRowFormat().setHeight(100);
 //                builder.getRowFormat().setHeightRule(HeightRule.EXACTLY);
                     builder.insertCell();
@@ -741,7 +779,7 @@ public class WordController {
             builder.endTable();
             builder.writeln();
             builder.writeln("\tĐề nghị xét công nhận giải pháp sau đây là sáng kiến:........");
-            builder.writeln("\tChủ đầu tư tạo ra sáng kiến:"+sangKienResp.getTenCapDoSangKien());
+            builder.writeln("\tChủ đầu tư tạo ra sáng kiến:" + sangKienResp.getTenCapDoSangKien());
             font.setBold(true);
             builder.writeln("\tA. Mô tả giải pháp:");
             builder.writeln("\t1. Tình trạng kỹ thuật hoặc tổ chức sản xuất hiện tại, chỉ rõ ưu khuyết điểm của giải pháp kỹ thuật, giải pháp tổ chức sản xuất hiện đang được áp dụng tại EVN / Đơn vị");
@@ -761,29 +799,29 @@ public class WordController {
             font.setBold(true);
             builder.writeln("\t3. Quá trình áp dụng giải pháp trên thực tiễn hoặc áp dụng thử:");
             font.setBold(false);
-            builder.writeln("\t"+sangKienResp.getQuaTrinhApDung());
+            builder.writeln("\t" + sangKienResp.getQuaTrinhApDung());
             font.setBold(true);
             builder.writeln("\t4. Hiệu quả thực tế thu được khi áp dụng giải pháp:");
             font.setBold(false);
-            builder.writeln("\t"+sangKienResp.getHieuQuaThucTe());
+            builder.writeln("\t" + sangKienResp.getHieuQuaThucTe());
             font.setBold(true);
             builder.writeln("\tB. Số tiền làm lợi trong năm đầu tiên áp dụng giải pháp:");
             font.setBold(false);
-            builder.writeln("\t"+Util.formatNumber(sangKienResp.getSoTienLamLoi()));
+            builder.writeln("\t" + Util.formatNumber(sangKienResp.getSoTienLamLoi()));
             font.setBold(true);
             builder.writeln("\tC. Danh mục tài liệu nộp kèm báo cáo:");
             font.setBold(false);
-            if(sangKienResp != null && sangKienResp.getListFolderFile() != null ){
-                for(Folder folder :sangKienResp.getListFolderFile()){
+            if (sangKienResp != null && sangKienResp.getListFolderFile() != null) {
+                for (Folder folder : sangKienResp.getListFolderFile()) {
 
-                    String file ="";
-                    if(folder.getListFile() != null && folder.getListFile().size() >0){
+                    String file = "";
+                    if (folder.getListFile() != null && folder.getListFile().size() > 0) {
                         List<String> listFile = folder.getListFile().stream().map(FileReq::getFileName).collect(Collectors.toList());
                         file = String.join(", ", listFile);
                     }
-                    builder.writeln("\t"+folder.getFileName()+":"+file);
+                    builder.writeln("\t" + folder.getFileName() + ":" + file);
                 }
-            }else{
+            } else {
                 builder.writeln("\t........");
             }
 
@@ -827,7 +865,7 @@ public class WordController {
             obj.setTrinhDoChuyenMon("");
             obj.setNoiDung("");
             list.add(obj);
-            for(SangKienModel item :list){
+            for (SangKienModel item : list) {
                 // builder.getRowFormat().setHeight(100);
 //                builder.getRowFormat().setHeightRule(HeightRule.EXACTLY);
                 builder.insertCell();
