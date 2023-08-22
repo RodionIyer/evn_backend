@@ -271,6 +271,7 @@ public class SangKienServiceImpl implements SangKienService {
                 parameters.addValue("MA_DON_VI_DAU_TU", timKiemReq.getDonVi());
             }
         } else if (loaiTimKiem != null && loaiTimKiem.equals("NGHIEMTHU") && timKiemReq != null) {
+            queryString += " AND sk.MA_TRANG_THAI = 'DA_TRA_THU_LAO'";
             if (Util.isNotEmpty(timKiemReq.getCapDo())) {
                 queryString += " AND sk.MA_CAPDO = :MA_CAPDO";
                 parameters.addValue("MA_CAPDO", timKiemReq.getCapDo());
