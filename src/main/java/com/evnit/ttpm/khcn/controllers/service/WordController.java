@@ -179,7 +179,39 @@ public class WordController {
                 builder.insertCell();
                 builder.write("");
                 builder.endRow();
-                if (listDanhSachMauChild != null && listDanhSachMauChild.size() > 0) {
+                if ("CHI_PHI".equals(item.getMA_NHOM())) {
+                    listKeHoachChiTietView = listKeHoachChiTiet.stream().filter(c -> "CHI_PHI".equals(c.getMA_NHOM())).collect(Collectors.toList());
+                    if (listKeHoachChiTietView.size() > 0) {
+                        for (KeHoachChiTiet chiTiet : listKeHoachChiTietView) {
+                            String tenNguonKinhPhi = "";
+                            if (Util.isNotEmpty(chiTiet.getMA_NGUON_KINH_PHI())) {
+                                List<NguonKinhPhi> listNguonKp = listNguonKinhPhi.stream().filter(c -> c.getMA_NGUON_KINH_PHI().equals(chiTiet.getMA_NGUON_KINH_PHI())).collect(Collectors.toList());
+                                if (listNguonKp.size() > 0) {
+                                    tenNguonKinhPhi = listNguonKp.get(0).getTEN_NGUON_KINH_PHI();
+                                }
+                            }
+                            builder.setItalic(false);
+                            font.setBold(false);
+                            builder.insertCell();
+                            builder.write("");
+                            builder.insertCell();
+                            builder.write(chiTiet.getNOI_DUNG_DANG_KY());
+                            builder.insertCell();
+                            builder.write(tenNguonKinhPhi);
+                            builder.insertCell();
+                            builder.write(Util.formatNumberVn(chiTiet.getDU_TOAN()));
+                            builder.insertCell();
+                            builder.write(chiTiet.getDON_VI_CHU_TRI());
+                            builder.insertCell();
+                            builder.write(chiTiet.getCHU_NHIEM_NHIEM_VU());
+                            builder.insertCell();
+                            builder.write(chiTiet.getNOI_DUNG());
+                            builder.insertCell();
+                            builder.write(chiTiet.getTHOI_GIAN_THUC_HIEN());
+                            builder.endRow();
+                        }
+                    }
+                } else if (listDanhSachMauChild != null && listDanhSachMauChild.size() > 0) {
                     int j = 1;
 
                     for (DanhSachMau itemChild : listDanhSachMauChild) {
@@ -425,7 +457,39 @@ public class WordController {
                 builder.insertCell();
                 builder.write("");
                 builder.endRow();
-                if (listDanhSachMauChild != null && listDanhSachMauChild.size() > 0) {
+                if ("CHI_PHI".equals(item.getMA_NHOM())) {
+                    listKeHoachChiTietView = listKeHoachChiTiet.stream().filter(c -> "CHI_PHI".equals(c.getMA_NHOM())).collect(Collectors.toList());
+                    if (listKeHoachChiTietView.size() > 0) {
+                        for (KeHoachChiTiet chiTiet : listKeHoachChiTietView) {
+                            String tenNguonKinhPhi = "";
+                            if (Util.isNotEmpty(chiTiet.getMA_NGUON_KINH_PHI())) {
+                                List<NguonKinhPhi> listNguonKp = listNguonKinhPhi.stream().filter(c -> c.getMA_NGUON_KINH_PHI().equals(chiTiet.getMA_NGUON_KINH_PHI())).collect(Collectors.toList());
+                                if (listNguonKp.size() > 0) {
+                                    tenNguonKinhPhi = listNguonKp.get(0).getTEN_NGUON_KINH_PHI();
+                                }
+                            }
+                            builder.setItalic(false);
+                            font.setBold(false);
+                            builder.insertCell();
+                            builder.write("");
+                            builder.insertCell();
+                            builder.write(chiTiet.getNOI_DUNG_DANG_KY());
+                            builder.insertCell();
+                            builder.write(tenNguonKinhPhi);
+                            builder.insertCell();
+                            builder.write(Util.formatNumberVn(chiTiet.getDU_TOAN()));
+                            builder.insertCell();
+                            builder.write(chiTiet.getDON_VI_CHU_TRI());
+                            builder.insertCell();
+                            builder.write(chiTiet.getCHU_NHIEM_NHIEM_VU());
+                            builder.insertCell();
+                            builder.write(chiTiet.getNOI_DUNG());
+                            builder.insertCell();
+                            builder.write(chiTiet.getTHOI_GIAN_THUC_HIEN());
+                            builder.endRow();
+                        }
+                    }
+                } else if (listDanhSachMauChild != null && listDanhSachMauChild.size() > 0) {
                     int j = 1;
 
                     for (DanhSachMau itemChild : listDanhSachMauChild) {
